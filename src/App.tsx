@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import heroImage from './assets/images/daos_hero_cake_1785892806355.jpg';
 import treatsImage from './assets/images/daos_baker_treats_1785892816667.jpg';
+import PublicOrderSchedule from './components/PublicOrderSchedule';
+import AppsScriptGuideModal from './components/AppsScriptGuideModal';
 
 // Types
 interface MenuItem {
@@ -120,6 +122,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [googleFormUrl, setGoogleFormUrl] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const [isAppsScriptModalOpen, setIsAppsScriptModalOpen] = useState(false);
 
   // Smooth scroll handler
   const scrollToSection = (id: string) => {
@@ -157,7 +160,7 @@ export default function App() {
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8 font-medium text-stone-700">
+          <nav className="hidden md:flex items-center gap-7 font-medium text-stone-700">
             <button 
               onClick={() => scrollToSection('menu')} 
               className="hover:text-amber-800 transition-colors cursor-pointer text-sm"
@@ -178,6 +181,13 @@ export default function App() {
               id="nav-order-form"
             >
               Order Form
+            </button>
+            <button 
+              onClick={() => scrollToSection('order-schedule')} 
+              className="hover:text-amber-800 transition-colors cursor-pointer text-sm text-amber-900 font-semibold"
+              id="nav-order-schedule"
+            >
+              Public Schedule
             </button>
             <button 
               onClick={() => scrollToSection('about')} 
@@ -242,6 +252,13 @@ export default function App() {
               id="mobile-nav-order-form"
             >
               Order Form
+            </button>
+            <button
+              onClick={() => scrollToSection('order-schedule')}
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-amber-900 bg-amber-50"
+              id="mobile-nav-order-schedule"
+            >
+              Public Schedule
             </button>
             <button
               onClick={() => scrollToSection('about')}
@@ -762,6 +779,11 @@ export default function App() {
           </div>
         </section>
 
+        {/* 5.5 Public Order Schedule Feed (data.json integration) */}
+        <PublicOrderSchedule
+          onOpenAppsScriptGuide={() => setIsAppsScriptModalOpen(true)}
+        />
+
         {/* 6. About Section */}
         <section id="about" className="py-16 md:py-24 bg-white border-b border-stone-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -946,6 +968,12 @@ export default function App() {
 
         </div>
       </footer>
+
+      {/* Google Apps Script Integration Guide Modal */}
+      <AppsScriptGuideModal
+        isOpen={isAppsScriptModalOpen}
+        onClose={() => setIsAppsScriptModalOpen(false)}
+      />
 
     </div>
   );
