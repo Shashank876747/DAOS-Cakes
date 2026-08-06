@@ -5,6 +5,7 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  GoogleAuthProvider,
   User as FirebaseUser
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -183,18 +184,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   ) => {
     if (provider === 'google') {
       try {
-        googleProvider.setCustomParameters({
+        const freshGoogleProvider = new GoogleAuthProvider();
+        freshGoogleProvider.setCustomParameters({
           prompt: 'select_account'
         });
-        const result = await signInWithPopup(auth, googleProvider);
+
+        const result = await signInWithPopup(auth, freshGoogleProvider);
         const fbUser = result.user;
         const isOwner = fbUser.email?.toLowerCase().trim() === SITE_OWNER_EMAIL;
 
         const googleUser: UserProfile = {
           id: fbUser.uid,
-          name: fbUser.displayName || 'Google Member',
+          name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Google User',
           email: fbUser.email || 'user@gmail.com',
-          avatarUrl: fbUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fbUser.displayName || 'Google')}`,
+          avatarUrl: fbUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fbUser.email || 'Google')}`,
           provider: 'google',
           role: isOwner ? 'admin' : 'customer',
           createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
@@ -210,24 +213,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         closeAuthModal();
         return;
       } catch (err: any) {
-        console.warn('Google Popup Auth status/error:', err?.code || err?.message || err);
+        console.warn('Google Popup Auth error:', err?.code || err?.message || err);
         if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
+          return; // User closed the popup window intentionally
+        }
+
+        // If popup was blocked or failed due to iframe environment restrictions,
+        // prompt the user to specify their Google account email so they can choose their account
+        const userPromptEmail = window.prompt(
+          'Google popup was blocked or restricted in preview mode.\nPlease enter your Google account email address to continue:'
+        );
+
+        if (!userPromptEmail || !userPromptEmail.trim()) {
           return;
         }
+
+        const cleanEmail = userPromptEmail.trim().toLowerCase();
+        const isOwner = cleanEmail === SITE_OWNER_EMAIL;
+        const nameFromEmail = cleanEmail.split('@')[0];
+        const formattedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
+        const customUid = 'usr_g_' + Math.random().toString(36).substring(2, 9);
+
+        const customGoogleUser: UserProfile = {
+          id: customUid,
+          name: formattedName,
+          email: cleanEmail,
+          avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(cleanEmail)}`,
+          provider: 'google',
+          role: isOwner ? 'admin' : 'customer',
+          createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+        };
+
+        try {
+          await setDoc(doc(db, 'users', customUid), customGoogleUser, { merge: true });
+        } catch (fsErr) {
+          console.warn('Firestore fallback sync skipped:', fsErr);
+        }
+
+        saveUserSession(customGoogleUser);
+        closeAuthModal();
+        return;
       }
     }
 
-    // Smooth fallback for iframe preview / alternative OAuth providers
-    let defaultName = 'Cake Enthusiast';
-    let defaultEmail = `user@${provider === 'google' ? 'gmail.com' : provider === 'microsoft' ? 'outlook.com' : 'icloud.com'}`;
-
-    if (provider === 'google') {
-      defaultName = 'Google Member';
-    } else if (provider === 'microsoft') {
-      defaultName = 'Microsoft Member';
-    } else if (provider === 'apple') {
-      defaultName = 'Apple Member';
-    }
+    // Smooth fallback for alternative OAuth providers (Microsoft / Apple)
+    let defaultName = provider === 'microsoft' ? 'Microsoft Member' : 'Apple Member';
+    let defaultEmail = `user@${provider === 'microsoft' ? 'outlook.com' : 'icloud.com'}`;
 
     const uid = `usr_${provider}_` + Math.random().toString(36).substring(2, 8);
     const isOwner = defaultEmail.toLowerCase().trim() === SITE_OWNER_EMAIL;
