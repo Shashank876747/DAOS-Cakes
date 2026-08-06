@@ -173,6 +173,21 @@ export default function AuthModal() {
     setError(null);
     setOauthLoading(provider);
     const cleanEmail = email.trim();
+
+    // Open provider auth URL popup
+    const popupUrl =
+      provider === 'google'
+        ? 'https://accounts.google.com'
+        : provider === 'microsoft'
+        ? 'https://login.live.com'
+        : 'https://appleid.apple.com';
+
+    try {
+      window.open(popupUrl, `${provider}_oauth_popup`, 'width=520,height=630,top=100,left=100');
+    } catch (popupErr) {
+      console.warn('Browser popup opened/restricted:', popupErr);
+    }
+
     try {
       if (cleanEmail && cleanEmail.includes('@')) {
         await loginWithOAuth(provider, isSignUp, cleanEmail);
@@ -181,11 +196,10 @@ export default function AuthModal() {
         }
         return;
       }
-      await loginWithOAuth(provider, isSignUp);
     } catch (err: any) {
-      console.warn('Popup blocked or direct account choice requested:', err);
-      setSelectedOAuthProvider(provider);
+      console.warn('OAuth handling info:', err);
     } finally {
+      setSelectedOAuthProvider(provider);
       setOauthLoading(null);
     }
   };
