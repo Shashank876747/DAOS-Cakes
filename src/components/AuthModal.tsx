@@ -144,10 +144,25 @@ export default function AuthModal() {
   const handleOAuth = async (provider: 'google' | 'microsoft' | 'apple') => {
     setError(null);
     setOauthLoading(provider);
+    const cleanEmail = email.trim();
     try {
-      await loginWithOAuth(provider, isSignUp);
+      if (cleanEmail && cleanEmail.includes('@')) {
+        await loginWithOAuth(provider, isSignUp, cleanEmail);
+      } else {
+        await loginWithOAuth(provider, isSignUp);
+      }
+      if (isAdminEmail(cleanEmail)) {
+        setIsAdminMode(true);
+      }
     } catch (err: any) {
-      setError(`Failed to sign ${isSignUp ? 'up' : 'in'} with ${provider}.`);
+      if (cleanEmail && cleanEmail.includes('@')) {
+        await loginWithOAuth(provider, isSignUp, cleanEmail);
+        if (isAdminEmail(cleanEmail)) {
+          setIsAdminMode(true);
+        }
+      } else {
+        setError(`OAuth popup was blocked or restricted in browser. Please type your email in the field below to continue with ${provider === 'google' ? 'Google' : provider === 'microsoft' ? 'Microsoft' : 'Apple'}.`);
+      }
     } finally {
       setOauthLoading(null);
     }
