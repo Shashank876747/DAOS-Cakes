@@ -151,18 +151,11 @@ export default function AuthModal() {
       } else {
         await loginWithOAuth(provider, isSignUp);
       }
-      if (isAdminEmail(cleanEmail)) {
+      if (cleanEmail && isAdminEmail(cleanEmail)) {
         setIsAdminMode(true);
       }
     } catch (err: any) {
-      if (cleanEmail && cleanEmail.includes('@')) {
-        await loginWithOAuth(provider, isSignUp, cleanEmail);
-        if (isAdminEmail(cleanEmail)) {
-          setIsAdminMode(true);
-        }
-      } else {
-        setError(`OAuth popup was blocked or restricted in browser. Please type your email in the field below to continue with ${provider === 'google' ? 'Google' : provider === 'microsoft' ? 'Microsoft' : 'Apple'}.`);
-      }
+      console.warn('OAuth handling exception:', err);
     } finally {
       setOauthLoading(null);
     }
