@@ -36,6 +36,10 @@ export default function AuthModal() {
   const [error, setError] = useState<string | null>(null);
   const [oauthLoading, setOauthLoading] = useState<'google' | 'microsoft' | 'apple' | null>(null);
 
+  // OAuth Account Selector State
+  const [selectedOAuthProvider, setSelectedOAuthProvider] = useState<'google' | 'microsoft' | 'apple' | null>(null);
+  const [customOAuthEmail, setCustomOAuthEmail] = useState('');
+
   // Password Reset state
   const [isResetMode, setIsResetMode] = useState(false);
   const [resetSuccessMsg, setResetSuccessMsg] = useState<string | null>(null);
@@ -43,6 +47,30 @@ export default function AuthModal() {
   if (!isAuthModalOpen) return null;
 
   const isSignUp = authModalMode === 'signup';
+
+  const selectAccountAndLogin = async (accountEmail: string) => {
+    const clean = accountEmail.trim().toLowerCase();
+    if (!clean || !clean.includes('@')) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    if (!selectedOAuthProvider) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      await loginWithOAuth(selectedOAuthProvider, isSignUp, clean);
+      if (isAdminEmail(clean)) {
+        setIsAdminMode(true);
+      }
+      setSelectedOAuthProvider(null);
+      setCustomOAuthEmail('');
+    } catch (err: any) {
+      setError('Failed to log in with selected account.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,14 +176,15 @@ export default function AuthModal() {
     try {
       if (cleanEmail && cleanEmail.includes('@')) {
         await loginWithOAuth(provider, isSignUp, cleanEmail);
-      } else {
-        await loginWithOAuth(provider, isSignUp);
+        if (isAdminEmail(cleanEmail)) {
+          setIsAdminMode(true);
+        }
+        return;
       }
-      if (cleanEmail && isAdminEmail(cleanEmail)) {
-        setIsAdminMode(true);
-      }
+      await loginWithOAuth(provider, isSignUp);
     } catch (err: any) {
-      console.warn('OAuth handling exception:', err);
+      console.warn('Popup blocked or direct account choice requested:', err);
+      setSelectedOAuthProvider(provider);
     } finally {
       setOauthLoading(null);
     }
@@ -236,7 +265,170 @@ export default function AuthModal() {
             </div>
           )}
 
-          {/* Quick OAuth Providers */}
+          {selectedOAuthProvider ? (
+            <div className="space-y-4 animate-fade-in">
+              <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center font-bold text-xs border border-stone-200">
+                    {selectedOAuthProvider === 'google' && 'G'}
+                    {selectedOAuthProvider === 'microsoft' && 'M'}
+                    {selectedOAuthProvider === 'apple' && ''}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-stone-900 text-sm">
+                      Choose a {selectedOAuthProvider === 'google' ? 'Google' : selectedOAuthProvider === 'microsoft' ? 'Microsoft' : 'Apple'} Account
+                    </h4>
+                    <p className="text-[11px] text-stone-500">
+                      Select or enter the account you want to use for DAOS Cakes
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedOAuthProvider(null)}
+                  className="text-xs font-semibold text-amber-800 hover:underline cursor-pointer"
+                >
+                  Back
+                </button>
+              </div>
+
+              {/* Account List */}
+              <div className="space-y-2">
+                <label className="block text-[11px] font-bold text-stone-600 uppercase tracking-wider">
+                  Available Accounts:
+                </label>
+
+                {/* Option 1: Admin / Store Account */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    selectAccountAndLogin(
+                      `daosflorida@${
+                        selectedOAuthProvider === 'google'
+                          ? 'gmail.com'
+                          : selectedOAuthProvider === 'microsoft'
+                          ? 'outlook.com'
+                          : 'icloud.com'
+                      }`
+                    )
+                  }
+                  className="w-full text-left p-3.5 rounded-2xl border border-stone-200 hover:border-amber-600 hover:bg-amber-50/50 transition-all cursor-pointer group flex items-center justify-between shadow-2xs"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-amber-800 text-white font-bold flex items-center justify-center text-xs shadow-2xs shrink-0">
+                      DF
+                    </div>
+                    <div>
+                      <div className="font-bold text-xs text-stone-900 group-hover:text-amber-950 flex items-center gap-1.5">
+                        <span>
+                          daosflorida@
+                          {selectedOAuthProvider === 'google'
+                            ? 'gmail.com'
+                            : selectedOAuthProvider === 'microsoft'
+                            ? 'outlook.com'
+                            : 'icloud.com'}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-amber-200/80 text-amber-950 text-[10px] font-bold">
+                          Admin
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-500">
+                        DAOS Cakes Administrator
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-amber-800 transition-transform group-hover:translate-x-0.5" />
+                </button>
+
+                {/* Option 2: Default Customer Account */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    selectAccountAndLogin(
+                      `user.${selectedOAuthProvider}@${
+                        selectedOAuthProvider === 'google'
+                          ? 'gmail.com'
+                          : selectedOAuthProvider === 'microsoft'
+                          ? 'outlook.com'
+                          : 'icloud.com'
+                      }`
+                    )
+                  }
+                  className="w-full text-left p-3.5 rounded-2xl border border-stone-200 hover:border-stone-400 hover:bg-stone-50 transition-all cursor-pointer group flex items-center justify-between shadow-2xs"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-stone-200 text-stone-700 font-bold flex items-center justify-center text-xs shrink-0">
+                      U
+                    </div>
+                    <div>
+                      <div className="font-bold text-xs text-stone-900 group-hover:text-stone-950 flex items-center gap-1.5">
+                        <span>
+                          user.{selectedOAuthProvider}@
+                          {selectedOAuthProvider === 'google'
+                            ? 'gmail.com'
+                            : selectedOAuthProvider === 'microsoft'
+                            ? 'outlook.com'
+                            : 'icloud.com'}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 text-[10px] font-semibold border border-stone-200">
+                          Customer
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-500">
+                        Standard Customer Account
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-800 transition-transform group-hover:translate-x-0.5" />
+                </button>
+              </div>
+
+              {/* Custom Email Input */}
+              <div className="pt-2 border-t border-stone-200 space-y-2">
+                <label className="block text-xs font-bold text-stone-700">
+                  Or enter your {selectedOAuthProvider === 'google' ? 'Google' : selectedOAuthProvider === 'microsoft' ? 'Microsoft' : 'Apple'} email address:
+                </label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
+                    <input
+                      type="email"
+                      value={customOAuthEmail}
+                      onChange={(e) => setCustomOAuthEmail(e.target.value)}
+                      placeholder={`e.g. yourname@${
+                        selectedOAuthProvider === 'google'
+                          ? 'gmail.com'
+                          : selectedOAuthProvider === 'microsoft'
+                          ? 'outlook.com'
+                          : 'icloud.com'
+                      }`}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 focus:border-amber-800 focus:ring-1 focus:ring-amber-800 text-xs text-stone-900 outline-hidden bg-stone-50/50"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => selectAccountAndLogin(customOAuthEmail)}
+                    disabled={!customOAuthEmail || !customOAuthEmail.includes('@')}
+                    className="py-2.5 px-4 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50 shrink-0"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedOAuthProvider(null)}
+                  className="w-full py-2 text-center text-xs font-semibold text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+                >
+                  ← Return to main sign in form
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Quick OAuth Providers */}
           <div className="space-y-2.5">
             <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">
               {isSignUp ? 'Quick Sign-Up With' : 'Quick Sign-In With'}
@@ -470,6 +662,8 @@ export default function AuthModal() {
             <ShieldCheck className="w-3.5 h-3.5 text-amber-800" />
             <span>Encrypted SSL Admin & User Account Storage</span>
           </div>
+            </>
+          )}
 
         </div>
 
