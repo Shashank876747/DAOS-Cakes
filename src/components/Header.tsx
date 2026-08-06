@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Cake, Menu as MenuIcon, X, User, LogIn, UserPlus, Sliders, ShieldCheck, Sparkles, Bell } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, isAdminEmail } from '../context/AuthContext';
 import { useSite } from '../context/SiteContext';
 import UserProfileModal from './UserProfileModal';
 
@@ -9,6 +9,8 @@ export default function Header() {
   const [userModalOpen, setUserModalOpen] = useState(false);
   const { user, openAuthModal } = useAuth();
   const { content, isAdminMode, setIsAdminMode, openAdminEditor } = useSite();
+
+  const isUserAdmin = isAdminEmail(user?.email);
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
@@ -89,7 +91,7 @@ export default function Header() {
             {/* Admin Quick Switch Toggle */}
             <button
               onClick={() => {
-                if (user?.email?.toLowerCase().trim() === 'daosflorida@gmail.com') {
+                if (isUserAdmin) {
                   setIsAdminMode(true);
                   openAdminEditor();
                 } else {
@@ -97,15 +99,15 @@ export default function Header() {
                 }
               }}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border ${
-                isAdminMode && user?.email?.toLowerCase().trim() === 'daosflorida@gmail.com'
+                isAdminMode && isUserAdmin
                   ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200 shadow-2xs'
                   : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border-stone-200'
               }`}
-              title="Admin Site Content Editor (Restricted to Owner daosflorida@gmail.com)"
+              title="Admin Site Content Editor"
               id="header-admin-editor-btn"
             >
               <Sliders className="w-3.5 h-3.5 text-amber-800" />
-              <span>{isAdminMode && user?.email?.toLowerCase().trim() === 'daosflorida@gmail.com' ? 'Site Editor' : 'Owner Admin'}</span>
+              <span>{isAdminMode && isUserAdmin ? 'Site Editor' : 'Admin Mode'}</span>
             </button>
 
             {user ? (
@@ -156,7 +158,7 @@ export default function Header() {
 
           {/* Mobile menu toggle */}
           <div className="md:hidden flex items-center gap-2">
-            {user?.email?.toLowerCase().trim() === 'daosflorida@gmail.com' && (
+            {isUserAdmin && (
               <button
                 onClick={() => {
                   setIsAdminMode(!isAdminMode);
@@ -217,7 +219,7 @@ export default function Header() {
               Contact
             </button>
 
-            {user?.email?.toLowerCase().trim() === 'daosflorida@gmail.com' && (
+            {isUserAdmin && (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);

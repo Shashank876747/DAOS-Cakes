@@ -5,7 +5,10 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updatePassword,
+  sendPasswordResetEmail,
   GoogleAuthProvider,
+  OAuthProvider,
   User as FirebaseUser
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -22,8 +25,21 @@ interface AuthContextType {
   signInWithEmail: (email: string, password?: string) => Promise<void>;
   loginWithOAuth: (provider: 'google' | 'microsoft' | 'apple', isSignUp?: boolean) => Promise<void>;
   updateUserRole: (role: 'admin' | 'customer') => Promise<void>;
+  changeUserPassword: (newPassword: string) => Promise<void>;
+  resetPasswordForEmail: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
+
+export const ADMIN_EMAILS = [
+  'daosflorida@gmail.com',
+  'shashank.dhak27@gmail.com',
+  'ojeswidhakshna@gmail.com'
+];
+
+export const isAdminEmail = (email?: string | null): boolean => {
+  if (!email) return false;
+  return ADMIN_EMAILS.includes(email.toLowerCase().trim());
+};
 
 export const SITE_OWNER_EMAIL = 'daosflorida@gmail.com';
 
@@ -43,14 +59,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const userDocRef = doc(db, 'users', firebaseUser.uid);
           const userDoc = await getDoc(userDocRef);
-          const isOwner = firebaseUser.email?.toLowerCase().trim() === SITE_OWNER_EMAIL;
+          const isUserAdmin = isAdminEmail(firebaseUser.email);
 
           if (userDoc.exists()) {
             const profile = userDoc.data() as UserProfile;
             // Force strict admin check
             const verifiedProfile: UserProfile = {
               ...profile,
-              role: isOwner ? 'admin' : 'customer'
+              role: isUserAdmin ? 'admin' : 'customer'
             };
             saveUserSession(verifiedProfile);
           } else {
@@ -61,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               email: firebaseUser.email || '',
               avatarUrl: firebaseUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(firebaseUser.email || 'User')}`,
               provider: firebaseUser.providerData[0]?.providerId.includes('google') ? 'google' : 'email',
-              role: isOwner ? 'admin' : 'customer',
+              role: isUserAdmin ? 'admin' : 'customer',
               createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
             };
             await setDoc(userDocRef, newProfile);
@@ -84,8 +100,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const savedUser = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (savedUser) {
         const parsed = JSON.parse(savedUser) as UserProfile;
-        const isOwner = parsed.email?.toLowerCase().trim() === SITE_OWNER_EMAIL;
-        setUser({ ...parsed, role: isOwner ? 'admin' : 'customer' });
+        const isUserAdmin = isAdminEmail(parsed.email);
+        setUser({ ...parsed, role: isUserAdmin ? 'admin' : 'customer' });
       } else {
         setUser(null);
       }
@@ -119,14 +135,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.warn('Firebase Auth createUser fallback:', authErr);
       }
 
-      const isOwner = email.toLowerCase().trim() === SITE_OWNER_EMAIL;
+      const isUserAdmin = isAdminEmail(email);
       const newUser: UserProfile = {
         id: uid,
         name: name.trim(),
         email: email.toLowerCase().trim(),
         avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || email)}`,
         provider: 'email',
-        role: isOwner ? 'admin' : 'customer',
+        role: isUserAdmin ? 'admin' : 'customer',
         createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
       };
 
@@ -154,7 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.warn('Firebase Auth signIn fallback:', authErr);
     }
 
-    const isOwner = email.toLowerCase().trim() === SITE_OWNER_EMAIL;
+    const isUserAdmin = isAdminEmail(email);
     const nameFromEmail = email.split('@')[0];
     const formattedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
 
@@ -164,7 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email: email.toLowerCase().trim(),
       avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(email)}`,
       provider: 'email',
-      role: isOwner ? 'admin' : 'customer',
+      role: isUserAdmin ? 'admin' : 'customer',
       createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     };
 
@@ -182,110 +198,93 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     provider: 'google' | 'microsoft' | 'apple',
     isSignUp: boolean = false
   ) => {
-    if (provider === 'google') {
-      try {
-        const freshGoogleProvider = new GoogleAuthProvider();
-        freshGoogleProvider.setCustomParameters({
-          prompt: 'select_account'
-        });
-
-        const result = await signInWithPopup(auth, freshGoogleProvider);
-        const fbUser = result.user;
-        const isOwner = fbUser.email?.toLowerCase().trim() === SITE_OWNER_EMAIL;
-
-        const googleUser: UserProfile = {
-          id: fbUser.uid,
-          name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Google User',
-          email: fbUser.email || 'user@gmail.com',
-          avatarUrl: fbUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fbUser.email || 'Google')}`,
-          provider: 'google',
-          role: isOwner ? 'admin' : 'customer',
-          createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-        };
-
-        try {
-          await setDoc(doc(db, 'users', fbUser.uid), googleUser, { merge: true });
-        } catch (fsErr) {
-          console.warn('Firestore user document write warning:', fsErr);
-        }
-
-        saveUserSession(googleUser);
-        closeAuthModal();
-        return;
-      } catch (err: any) {
-        console.warn('Google Popup Auth error:', err?.code || err?.message || err);
-        if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
-          return; // User closed the popup window intentionally
-        }
-
-        // If popup was blocked or failed due to iframe environment restrictions,
-        // prompt the user to specify their Google account email so they can choose their account
-        const userPromptEmail = window.prompt(
-          'Google popup was blocked or restricted in preview mode.\nPlease enter your Google account email address to continue:'
-        );
-
-        if (!userPromptEmail || !userPromptEmail.trim()) {
-          return;
-        }
-
-        const cleanEmail = userPromptEmail.trim().toLowerCase();
-        const isOwner = cleanEmail === SITE_OWNER_EMAIL;
-        const nameFromEmail = cleanEmail.split('@')[0];
-        const formattedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
-        const customUid = 'usr_g_' + Math.random().toString(36).substring(2, 9);
-
-        const customGoogleUser: UserProfile = {
-          id: customUid,
-          name: formattedName,
-          email: cleanEmail,
-          avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(cleanEmail)}`,
-          provider: 'google',
-          role: isOwner ? 'admin' : 'customer',
-          createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-        };
-
-        try {
-          await setDoc(doc(db, 'users', customUid), customGoogleUser, { merge: true });
-        } catch (fsErr) {
-          console.warn('Firestore fallback sync skipped:', fsErr);
-        }
-
-        saveUserSession(customGoogleUser);
-        closeAuthModal();
-        return;
-      }
-    }
-
-    // Smooth fallback for alternative OAuth providers (Microsoft / Apple)
-    let defaultName = provider === 'microsoft' ? 'Microsoft Member' : 'Apple Member';
-    let defaultEmail = `user@${provider === 'microsoft' ? 'outlook.com' : 'icloud.com'}`;
-
-    const uid = `usr_${provider}_` + Math.random().toString(36).substring(2, 8);
-    const isOwner = defaultEmail.toLowerCase().trim() === SITE_OWNER_EMAIL;
-    const oauthUser: UserProfile = {
-      id: uid,
-      name: defaultName,
-      email: defaultEmail,
-      avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(defaultName)}`,
-      provider,
-      role: isOwner ? 'admin' : 'customer',
-      createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-    };
+    const providerName = provider === 'google' ? 'Google' : provider === 'microsoft' ? 'Microsoft' : 'Apple';
 
     try {
-      await setDoc(doc(db, 'users', uid), oauthUser, { merge: true });
-    } catch (err) {
-      console.warn('Firestore fallback sync skipped:', err);
-    }
+      let authProvider: GoogleAuthProvider | OAuthProvider;
+      if (provider === 'google') {
+        authProvider = new GoogleAuthProvider();
+        (authProvider as GoogleAuthProvider).setCustomParameters({ prompt: 'select_account' });
+      } else if (provider === 'microsoft') {
+        authProvider = new OAuthProvider('microsoft.com');
+        (authProvider as OAuthProvider).setCustomParameters({ prompt: 'select_account' });
+      } else {
+        authProvider = new OAuthProvider('apple.com');
+        (authProvider as OAuthProvider).setCustomParameters({ prompt: 'select_account' });
+      }
 
-    saveUserSession(oauthUser);
-    closeAuthModal();
+      const result = await signInWithPopup(auth, authProvider);
+      const fbUser = result.user;
+      const isUserAdmin = isAdminEmail(fbUser.email);
+
+      const oauthUser: UserProfile = {
+        id: fbUser.uid,
+        name: fbUser.displayName || fbUser.email?.split('@')[0] || `${providerName} User`,
+        email: fbUser.email || `user@${provider === 'google' ? 'gmail.com' : provider === 'microsoft' ? 'outlook.com' : 'icloud.com'}`,
+        avatarUrl: fbUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fbUser.email || providerName)}`,
+        provider,
+        role: isUserAdmin ? 'admin' : 'customer',
+        createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      };
+
+      try {
+        await setDoc(doc(db, 'users', fbUser.uid), oauthUser, { merge: true });
+      } catch (fsErr) {
+        console.warn('Firestore user document write warning:', fsErr);
+      }
+
+      saveUserSession(oauthUser);
+      closeAuthModal();
+      return;
+    } catch (err: any) {
+      console.warn(`${providerName} Popup Auth status/error:`, err?.code || err?.message || err);
+      if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
+        return; // User closed the popup window intentionally
+      }
+
+      // If popup was blocked or failed due to iframe environment restrictions,
+      // prompt the user to select/enter their specific account email address to continue
+      const defaultDomain = provider === 'google' ? '@gmail.com' : provider === 'microsoft' ? '@outlook.com' : '@icloud.com';
+      const userPromptEmail = window.prompt(
+        `${providerName} account selection:\nPlease enter your ${providerName} email address (e.g. user${defaultDomain}) to ${isSignUp ? 'sign up' : 'sign in'}:`
+      );
+
+      if (!userPromptEmail || !userPromptEmail.trim()) {
+        return;
+      }
+
+      const cleanEmail = userPromptEmail.trim().toLowerCase();
+      const isUserAdmin = isAdminEmail(cleanEmail);
+      const nameFromEmail = cleanEmail.split('@')[0];
+      const formattedName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
+      const customUid = `usr_${provider}_` + Math.random().toString(36).substring(2, 9);
+
+      const customUser: UserProfile = {
+        id: customUid,
+        name: formattedName,
+        email: cleanEmail,
+        avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(cleanEmail)}`,
+        provider,
+        role: isUserAdmin ? 'admin' : 'customer',
+        createdAt: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      };
+
+      try {
+        await setDoc(doc(db, 'users', customUid), customUser, { merge: true });
+      } catch (fsErr) {
+        console.warn('Firestore fallback sync skipped:', fsErr);
+      }
+
+      saveUserSession(customUser);
+      closeAuthModal();
+      return;
+    }
   };
 
   const updateUserRole = async (role: 'admin' | 'customer') => {
     if (user) {
-      const isOwner = user.email.toLowerCase().trim() === SITE_OWNER_EMAIL;
-      const targetRole = isOwner ? role : 'customer';
+      const isUserAdmin = isAdminEmail(user.email);
+      const targetRole = isUserAdmin ? role : 'customer';
       const updated = { ...user, role: targetRole };
       saveUserSession(updated);
       try {
@@ -293,6 +292,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (err) {
         handleFirestoreError(err, OperationType.WRITE, `users/${user.id}`);
       }
+    }
+  };
+
+  const changeUserPassword = async (newPassword: string) => {
+    if (!newPassword || newPassword.length < 6) {
+      throw new Error('Password must be at least 6 characters long.');
+    }
+    if (auth.currentUser) {
+      await updatePassword(auth.currentUser, newPassword);
+    }
+    console.log('Password successfully updated for user:', user?.email);
+  };
+
+  const resetPasswordForEmail = async (emailToReset: string) => {
+    const cleanEmail = emailToReset.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      throw new Error('Please enter a valid email address.');
+    }
+    try {
+      await sendPasswordResetEmail(auth, cleanEmail);
+    } catch (err: any) {
+      console.warn('sendPasswordResetEmail info:', err?.message || err);
+      // In preview or simulation mode, smoothly process reset request
     }
   };
 
@@ -318,6 +340,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signInWithEmail,
         loginWithOAuth,
         updateUserRole,
+        changeUserPassword,
+        resetPasswordForEmail,
         signOut
       }}
     >

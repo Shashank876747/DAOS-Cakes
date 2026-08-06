@@ -497,7 +497,7 @@ export default function App() {
       <AuthModal />
 
       {/* Admin Site Editor Modal */}
-      <AdminEditorModal />
+      <AdminEditorModal onOpenAppsScriptGuide={() => setIsAppsScriptModalOpen(true)} />
 
       {/* Floating Admin Toolbar */}
       <AdminToolbar />

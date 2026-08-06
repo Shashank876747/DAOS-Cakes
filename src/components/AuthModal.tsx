@@ -7,9 +7,11 @@ import {
   ArrowRight,
   ShieldCheck,
   UserCheck,
-  AlertCircle
+  AlertCircle,
+  KeyRound,
+  CheckCircle2
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, isAdminEmail } from '../context/AuthContext';
 import { useSite } from '../context/SiteContext';
 
 export default function AuthModal() {
@@ -20,7 +22,8 @@ export default function AuthModal() {
     openAuthModal,
     signUpWithEmail,
     signInWithEmail,
-    loginWithOAuth
+    loginWithOAuth,
+    resetPasswordForEmail
   } = useAuth();
 
   const { setIsAdminMode } = useSite();
@@ -33,9 +36,34 @@ export default function AuthModal() {
   const [error, setError] = useState<string | null>(null);
   const [oauthLoading, setOauthLoading] = useState<'google' | 'microsoft' | 'apple' | null>(null);
 
+  // Password Reset state
+  const [isResetMode, setIsResetMode] = useState(false);
+  const [resetSuccessMsg, setResetSuccessMsg] = useState<string | null>(null);
+
   if (!isAuthModalOpen) return null;
 
   const isSignUp = authModalMode === 'signup';
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setResetSuccessMsg(null);
+
+    if (!email || !email.includes('@')) {
+      setError('Please enter a valid email address to send the password reset link.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await resetPasswordForEmail(email);
+      setResetSuccessMsg(`Password reset instructions sent to ${email}. Check your email inbox!`);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to send password reset. Please verify your email.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validateSignUpForm = () => {
     // 1. Full Name Validation
@@ -95,8 +123,8 @@ export default function AuthModal() {
         await signInWithEmail(email, password);
       }
 
-      // Activate Admin Mode only if logging in as verified owner
-      if (email.toLowerCase().trim() === 'daosflorida@gmail.com') {
+      // Activate Admin Mode if logging in as verified administrator
+      if (isAdminEmail(email)) {
         setIsAdminMode(true);
       } else {
         setIsAdminMode(false);
@@ -275,10 +303,17 @@ export default function AuthModal() {
           </div>
 
           {/* Email & Password Form */}
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+          <form onSubmit={isResetMode ? handlePasswordReset : handleSubmit} className="space-y-3.5">
             
+            {resetSuccessMsg && (
+              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs rounded-xl flex items-start gap-2 animate-fade-in">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <span>{resetSuccessMsg}</span>
+              </div>
+            )}
+
             {/* Full Name Field with explicit Validation (Sign-Up Only) */}
-            {isSignUp && (
+            {isSignUp && !isResetMode && (
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="block text-xs font-semibold text-stone-700">
@@ -325,31 +360,47 @@ export default function AuthModal() {
             </div>
 
             {/* Password Field */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-semibold text-stone-700">
-                  Password <span className="text-amber-800">*</span>
-                </label>
-                {isSignUp && <span className="text-[10px] text-stone-400">Min. 6 characters</span>}
+            {!isResetMode && (
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-stone-700">
+                    Password <span className="text-amber-800">*</span>
+                  </label>
+                  {isSignUp ? (
+                    <span className="text-[10px] text-stone-400">Min. 6 characters</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setError(null);
+                        setResetSuccessMsg(null);
+                        setIsResetMode(true);
+                      }}
+                      className="text-[11px] font-semibold text-amber-800 hover:text-amber-900 hover:underline cursor-pointer"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (error) setError(null);
+                    }}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 focus:border-amber-800 focus:ring-1 focus:ring-amber-800 text-xs text-stone-900 outline-hidden bg-stone-50/50"
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (error) setError(null);
-                  }}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 focus:border-amber-800 focus:ring-1 focus:ring-amber-800 text-xs text-stone-900 outline-hidden bg-stone-50/50"
-                />
-              </div>
-            </div>
+            )}
 
             {/* Confirm Password Field (Sign-Up Only) */}
-            {isSignUp && (
+            {isSignUp && !isResetMode && (
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Confirm Password <span className="text-amber-800">*</span>
@@ -380,12 +431,29 @@ export default function AuthModal() {
               <span>
                 {loading
                   ? 'Processing...'
+                  : isResetMode
+                  ? 'Send Password Reset Link'
                   : isSignUp
                   ? 'Create Account'
                   : 'Sign In'}
               </span>
               <ArrowRight className="w-4 h-4" />
             </button>
+
+            {/* Return to Sign In button if in reset mode */}
+            {isResetMode && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsResetMode(false);
+                  setError(null);
+                  setResetSuccessMsg(null);
+                }}
+                className="w-full py-2 px-4 text-xs font-semibold text-stone-600 hover:text-stone-900 transition-colors cursor-pointer text-center"
+              >
+                ← Return to Sign In
+              </button>
+            )}
 
           </form>
 

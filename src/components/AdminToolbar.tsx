@@ -1,19 +1,19 @@
 import React from 'react';
-import { Sliders, Lock } from 'lucide-react';
+import { Sliders, Lock, FileSpreadsheet, ShoppingBag } from 'lucide-react';
 import { useSite } from '../context/SiteContext';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, isAdminEmail } from '../context/AuthContext';
 
 export default function AdminToolbar() {
-  const { isAdminMode, setIsAdminMode, openAdminEditor } = useSite();
+  const { content, isAdminMode, setIsAdminMode, openAdminEditor } = useSite();
   const { user } = useAuth();
 
-  const isOwner = user?.email?.toLowerCase().trim() === 'daosflorida@gmail.com';
+  const isUserAdmin = isAdminEmail(user?.email);
 
-  if (!isAdminMode || !isOwner) return null;
+  if (!isAdminMode || !isUserAdmin) return null;
 
   return (
     <div className="fixed bottom-5 right-5 z-40 animate-bounce-in">
-      <div className="bg-stone-900/95 text-white border border-amber-500/40 shadow-2xl rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 backdrop-blur-md">
+      <div className="bg-stone-900/95 text-white border border-amber-500/40 shadow-2xl rounded-2xl p-3 sm:p-3.5 flex items-center gap-2 sm:gap-3 backdrop-blur-md">
         
         {/* Admin Status Pill */}
         <div className="flex items-center gap-2 pl-1 pr-2">
@@ -22,7 +22,7 @@ export default function AdminToolbar() {
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
           </span>
           <span className="text-xs font-bold text-amber-300 font-serif hidden sm:inline">
-            Admin Mode Active
+            Admin Active
           </span>
         </div>
 
@@ -31,12 +31,35 @@ export default function AdminToolbar() {
         {/* Buttons */}
         <div className="flex items-center gap-2">
           <button
-            onClick={openAdminEditor}
-            className="px-3.5 py-1.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            onClick={() => openAdminEditor('orders')}
+            className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            title="View and manage customer cake orders"
+          >
+            <ShoppingBag className="w-3.5 h-3.5 text-amber-950" />
+            <span>Orders Dashboard</span>
+          </button>
+
+          <button
+            onClick={() => openAdminEditor('general')}
+            className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white font-semibold text-xs transition-all flex items-center gap-1.5 cursor-pointer border border-stone-700"
+            title="Edit website content and text"
           >
             <Sliders className="w-3.5 h-3.5 text-amber-300" />
-            <span>Edit Site Content</span>
+            <span className="hidden sm:inline">Site Content</span>
           </button>
+
+          {content.googleSheetUrl && (
+            <a
+              href={content.googleSheetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 rounded-xl bg-emerald-950/90 hover:bg-emerald-900 text-emerald-200 hover:text-white font-semibold text-xs transition-all flex items-center gap-1.5 cursor-pointer border border-emerald-700/50"
+              title="Open Associated Google Sheet Response Database"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden sm:inline">Google Sheet</span>
+            </a>
+          )}
 
           <button
             onClick={() => setIsAdminMode(false)}

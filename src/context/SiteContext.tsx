@@ -16,6 +16,7 @@ export interface SiteContent {
     ctaText: string;
   };
   googleFormUrl: string;
+  googleSheetUrl: string;
   about: {
     title: string;
     paragraph1: string;
@@ -52,6 +53,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     ctaText: 'Place Custom Order'
   },
   googleFormUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdQ7d5odCaliDzgkufvsD_hfwdhbi1meCHUyO_zMdgoLJVMwA/viewform?embedded=true',
+  googleSheetUrl: 'https://docs.google.com/spreadsheets/d/18yGM6XmENnoAPOFtfirwkfFWk5KnQ0uHYyLNeSf27Gk/edit?usp=sharing',
   about: {
     title: 'Baked with Love & Precision',
     paragraph1: 'At DAOS Cakes, every creation is a labor of love. We combine traditional pastry techniques with modern artistic design to deliver custom cakes that taste as incredible as they look.',
@@ -62,10 +64,10 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   },
   contact: {
     email: 'daosflorida@gmail.com',
-    phone: '(555) 234-5678',
+    phone: '0',
     instagram: '@daoscakes',
     location: 'Central Florida Area (Pickup & Local Delivery)',
-    hours: 'Mon - Sat: 9:00 AM - 6:00 PM'
+    hours: '0'
   },
   orderNotice: {
     badge: 'Direct Google Form Link',
@@ -81,7 +83,9 @@ interface SiteContextType {
   isAdminMode: boolean;
   setIsAdminMode: (mode: boolean) => void;
   isAdminEditorOpen: boolean;
-  openAdminEditor: () => void;
+  adminModalTab: string;
+  setAdminModalTab: (tab: string) => void;
+  openAdminEditor: (initialTab?: string) => void;
   closeAdminEditor: () => void;
 }
 
@@ -94,6 +98,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [content, setContent] = useState<SiteContent>(DEFAULT_SITE_CONTENT);
   const [isAdminMode, setIsAdminModeState] = useState<boolean>(false);
   const [isAdminEditorOpen, setIsAdminEditorOpen] = useState<boolean>(false);
+  const [adminModalTab, setAdminModalTab] = useState<string>('orders');
 
   // Sync site content with Firebase Firestore in real-time
   useEffect(() => {
@@ -168,7 +173,12 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem(ADMIN_MODE_KEY, mode ? 'true' : 'false');
   };
 
-  const openAdminEditor = () => setIsAdminEditorOpen(true);
+  const openAdminEditor = (initialTab?: string) => {
+    if (initialTab) {
+      setAdminModalTab(initialTab);
+    }
+    setIsAdminEditorOpen(true);
+  };
   const closeAdminEditor = () => setIsAdminEditorOpen(false);
 
   return (
@@ -180,6 +190,8 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdminMode,
         setIsAdminMode,
         isAdminEditorOpen,
+        adminModalTab,
+        setAdminModalTab,
         openAdminEditor,
         closeAdminEditor
       }}

@@ -24,7 +24,11 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && request.auth.token.email == 'daosflorida@gmail.com';
+      return isSignedIn() && (
+        request.auth.token.email in ['daosflorida@gmail.com', 'shashank.dhak27@gmail.com', 'ojeswidhakshna@gmail.com'] ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
     }
 
     // Validation for UserProfile

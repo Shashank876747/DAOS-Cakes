@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { useSite } from '../context/SiteContext';
+import { useAuth, isAdminEmail } from '../context/AuthContext';
 import {
   Calendar,
   Sparkles,
@@ -14,7 +16,8 @@ import {
   CheckCircle2,
   AlertCircle,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  FileSpreadsheet
 } from 'lucide-react';
 
 export interface PublicCakeOrder {
@@ -31,6 +34,10 @@ interface PublicOrderScheduleProps {
 }
 
 export default function PublicOrderSchedule({ onOpenAppsScriptGuide }: PublicOrderScheduleProps) {
+  const { content } = useSite();
+  const { user } = useAuth();
+  const isUserAdmin = isAdminEmail(user?.email);
+
   const [orders, setOrders] = useState<PublicCakeOrder[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -233,8 +240,8 @@ export default function PublicOrderSchedule({ onOpenAppsScriptGuide }: PublicOrd
               </div>
             </div>
 
-            {/* Actions: Refresh & Apps Script Code Modal */}
-            <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+            {/* Actions: Refresh, Google Sheet (Admin) & Apps Script Code Modal */}
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
               <button
                 onClick={() => fetchOrders(customDataUrl || undefined)}
                 disabled={loading}
@@ -245,13 +252,27 @@ export default function PublicOrderSchedule({ onOpenAppsScriptGuide }: PublicOrd
                 <span>Refresh Feed</span>
               </button>
 
+              {content.googleSheetUrl && (
+                <a
+                  href={content.googleSheetUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                  title="Open Google Sheet Order Response Database"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Google Sheet Responses</span>
+                  <ExternalLink className="w-3 h-3 text-emerald-200" />
+                </a>
+              )}
+
               {onOpenAppsScriptGuide && (
                 <button
                   onClick={onOpenAppsScriptGuide}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
                 >
                   <Code className="w-4 h-4" />
-                  <span>Google Apps Script Code</span>
+                  <span>Apps Script Sync</span>
                 </button>
               )}
             </div>

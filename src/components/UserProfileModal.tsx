@@ -1,6 +1,6 @@
-import React from 'react';
-import { X, User, LogOut, Calendar, ShieldCheck, Mail, Sparkles, Cake, Sliders, Check, Crown } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from 'react';
+import { X, User, LogOut, Calendar, ShieldCheck, Mail, Sparkles, Cake, Sliders, Check, Crown, KeyRound, CheckCircle2, Lock, AlertCircle } from 'lucide-react';
+import { useAuth, isAdminEmail } from '../context/AuthContext';
 import { useSite } from '../context/SiteContext';
 
 interface UserProfileModalProps {
@@ -9,10 +9,44 @@ interface UserProfileModalProps {
 }
 
 export default function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
-  const { user, signOut, updateUserRole } = useAuth();
+  const { user, signOut, changeUserPassword } = useAuth();
   const { isAdminMode, setIsAdminMode, openAdminEditor } = useSite();
 
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordStatus, setPasswordStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
   if (!isOpen || !user) return null;
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordStatus(null);
+
+    if (newPassword.length < 6) {
+      setPasswordStatus({ type: 'error', message: 'Password must be at least 6 characters long.' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordStatus({ type: 'error', message: 'Passwords do not match. Please try again.' });
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      await changeUserPassword(newPassword);
+      setPasswordStatus({ type: 'success', message: 'Password updated successfully!' });
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => setShowPasswordChange(false), 2000);
+    } catch (err: any) {
+      setPasswordStatus({ type: 'error', message: err?.message || 'Failed to update password. Please try again.' });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const handleSignOut = () => {
     signOut();
@@ -110,7 +144,7 @@ export default function UserProfileModal({ isOpen, onClose }: UserProfileModalPr
           </div>
 
           {/* Admin Controls Box */}
-          {user.email.toLowerCase() === 'daosflorida@gmail.com' ? (
+          {isAdminEmail(user.email) ? (
             <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -146,13 +180,97 @@ export default function UserProfileModal({ isOpen, onClose }: UserProfileModalPr
             <div className="bg-stone-50 border border-stone-200 rounded-2xl p-3.5 text-center">
               <div className="flex items-center justify-center gap-1.5 text-amber-900 font-bold mb-1">
                 <ShieldCheck className="w-4 h-4 text-amber-800" />
-                <span>Sole Site Administrator Protection</span>
+                <span>Site Administrator Protection</span>
               </div>
               <p className="text-[11px] text-stone-500 leading-relaxed">
-                Site editing privileges and live content modifications are restricted exclusively to verified owner <strong className="text-stone-800">daosflorida@gmail.com</strong>.
+                Site editing privileges and live content modifications are restricted exclusively to verified administrators.
               </p>
             </div>
           )}
+
+          {/* Change Password Toggle & Form */}
+          <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3">
+            <button
+              type="button"
+              onClick={() => {
+                setShowPasswordChange(!showPasswordChange);
+                setPasswordStatus(null);
+              }}
+              className="w-full flex items-center justify-between text-xs font-bold text-stone-800 hover:text-amber-800 transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                <KeyRound className="w-4 h-4 text-amber-800" />
+                Change Account Password
+              </span>
+              <span className="text-amber-800 text-[11px] font-semibold">
+                {showPasswordChange ? 'Cancel' : 'Update'}
+              </span>
+            </button>
+
+            {showPasswordChange && (
+              <form onSubmit={handlePasswordChange} className="pt-2 border-t border-stone-200/80 space-y-3 animate-fade-in">
+                {passwordStatus && (
+                  <div className={`p-2.5 rounded-xl text-[11px] font-medium flex items-center gap-2 ${
+                    passwordStatus.type === 'success'
+                      ? 'bg-emerald-50 border border-emerald-200 text-emerald-900'
+                      : 'bg-red-50 border border-red-200 text-red-900'
+                  }`}>
+                    {passwordStatus.type === 'success' ? (
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-3.5 h-3.5 text-red-600 flex-shrink-0" />
+                    )}
+                    <span>{passwordStatus.message}</span>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-3" />
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-stone-200 focus:border-amber-800 text-xs text-stone-900 bg-white outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    Confirm New Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-3" />
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-stone-200 focus:border-amber-800 text-xs text-stone-900 bg-white outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="w-full py-2.5 px-3 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 shadow-2xs"
+                >
+                  <KeyRound className="w-3.5 h-3.5 text-amber-300" />
+                  <span>{isUpdating ? 'Updating Password...' : 'Save New Password'}</span>
+                </button>
+              </form>
+            )}
+          </div>
 
           {/* Sign Out Button */}
           <button
