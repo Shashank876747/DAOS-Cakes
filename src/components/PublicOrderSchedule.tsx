@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import {
   Calendar,
   Sparkles,
@@ -146,6 +148,38 @@ export default function PublicOrderSchedule({ onOpenAppsScriptGuide }: PublicOrd
 
   useEffect(() => {
     fetchOrders();
+
+    // Subscribe to real-time updates from Firebase Firestore /orders collection
+    const unsubscribe = onSnapshot(
+      collection(db, 'orders'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const firestoreOrders: PublicCakeOrder[] = snapshot.docs.map((docSnap) => {
+            const d = docSnap.data();
+            return {
+              id: d.id || docSnap.id,
+              flavor: d.flavor || d.orderType || 'Custom Cake Creation',
+              design: d.designNotes || 'Custom Artisanal Bakery Order',
+              size: d.cakeSize || 'Standard Celebration Tier',
+              pickupDate: d.eventDate || new Date().toISOString().split('T')[0],
+              status: d.status || 'Scheduled'
+            };
+          });
+
+          setOrders((prev) => {
+            const fsIds = new Set(firestoreOrders.map((o) => o.id));
+            const filteredPrev = prev.filter((o) => !fsIds.has(o.id));
+            return [...firestoreOrders, ...filteredPrev];
+          });
+          setActiveSource('Firebase Firestore (Live Real-Time Database)');
+        }
+      },
+      (err) => {
+        console.warn('Firestore orders live subscription error:', err);
+      }
+    );
+
+    return () => unsubscribe();
   }, []);
 
   // Filter orders based on expire logic

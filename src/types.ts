@@ -33,3 +33,14 @@ export interface OrderConfirmation {
   submittedAt: string;
   details: OrderFormData;
 }
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  provider: 'email' | 'google' | 'microsoft' | 'apple';
+  role: 'admin' | 'customer';
+  createdAt: string;
+}
+
