@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { Cake, Menu as MenuIcon, X, User, LogIn, UserPlus, Sliders, ShieldCheck, Sparkles, Bell } from 'lucide-react';
-import { useAuth, isAdminEmail } from '../context/AuthContext';
+import { Cake, Menu as MenuIcon, X, User, Bell } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { useSite } from '../context/SiteContext';
 import UserProfileModal from './UserProfileModal';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userModalOpen, setUserModalOpen] = useState(false);
-  const { user, openAuthModal } = useAuth();
-  const { content, isAdminMode, setIsAdminMode, openAdminEditor } = useSite();
-
-  const isUserAdmin = isAdminEmail(user?.email);
+  const { user } = useAuth();
+  const { content } = useSite();
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
@@ -27,14 +25,6 @@ export default function Header() {
         <div className="bg-stone-900 text-amber-100 py-2 px-4 text-center text-xs font-medium border-b border-stone-800 flex items-center justify-center gap-2 relative">
           <Bell className="w-3.5 h-3.5 text-amber-400 shrink-0" />
           <span>{content.announcement.text}</span>
-          {isAdminMode && (
-            <button
-              onClick={openAdminEditor}
-              className="ml-2 px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase hover:bg-amber-500/30 transition-colors cursor-pointer"
-            >
-              Edit Banner
-            </button>
-          )}
         </div>
       )}
 
@@ -85,32 +75,9 @@ export default function Header() {
             </button>
           </nav>
 
-          {/* Action Buttons & Admin Controls */}
+          {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            
-            {/* Admin Quick Switch Toggle */}
-            <button
-              onClick={() => {
-                if (isUserAdmin) {
-                  setIsAdminMode(true);
-                  openAdminEditor();
-                } else {
-                  openAuthModal('signin');
-                }
-              }}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border ${
-                isAdminMode && isUserAdmin
-                  ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200 shadow-2xs'
-                  : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border-stone-200'
-              }`}
-              title="Admin Site Content Editor"
-              id="header-admin-editor-btn"
-            >
-              <Sliders className="w-3.5 h-3.5 text-amber-800" />
-              <span>{isAdminMode && isUserAdmin ? 'Site Editor' : 'Admin Mode'}</span>
-            </button>
-
-            {user ? (
+            {user && (
               <button
                 onClick={() => setUserModalOpen(true)}
                 className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-stone-300 bg-white hover:bg-stone-50 text-stone-900 text-xs font-semibold shadow-2xs transition-all cursor-pointer"
@@ -125,26 +92,6 @@ export default function Header() {
                 </div>
                 <span>{user.name.split(' ')[0]}</span>
               </button>
-            ) : (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => openAuthModal('signin')}
-                  className="px-3.5 py-2 rounded-full text-stone-700 hover:text-amber-900 hover:bg-stone-100 font-semibold text-xs transition-colors cursor-pointer flex items-center gap-1.5"
-                  id="header-signin-btn"
-                >
-                  <LogIn className="w-3.5 h-3.5 text-amber-800" />
-                  <span>Sign In</span>
-                </button>
-
-                <button
-                  onClick={() => openAuthModal('signup')}
-                  className="px-4 py-2 rounded-full bg-stone-900 hover:bg-stone-800 text-amber-50 font-semibold text-xs transition-colors shadow-2xs cursor-pointer flex items-center gap-1.5"
-                  id="header-signup-btn"
-                >
-                  <UserPlus className="w-3.5 h-3.5 text-amber-300" />
-                  <span>Sign Up</span>
-                </button>
-              </div>
             )}
 
             <button
@@ -158,18 +105,6 @@ export default function Header() {
 
           {/* Mobile menu toggle */}
           <div className="md:hidden flex items-center gap-2">
-            {isUserAdmin && (
-              <button
-                onClick={() => {
-                  setIsAdminMode(!isAdminMode);
-                  if (!isAdminMode) openAdminEditor();
-                }}
-                className="p-2 rounded-lg bg-amber-100/80 text-amber-900 text-xs font-bold"
-              >
-                <Sliders className="w-4 h-4" />
-              </button>
-            )}
-
             {user && (
               <button
                 onClick={() => setUserModalOpen(true)}
@@ -218,43 +153,6 @@ export default function Header() {
             >
               Contact
             </button>
-
-            {isUserAdmin && (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsAdminMode(true);
-                  openAdminEditor();
-                }}
-                className="w-full py-2.5 px-3 rounded-xl bg-amber-100 text-amber-900 text-xs font-bold flex items-center justify-center gap-2"
-              >
-                <Sliders className="w-4 h-4 text-amber-800" />
-                <span>Open Admin Site Editor</span>
-              </button>
-            )}
-
-            {!user && (
-              <div className="pt-2 grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    openAuthModal('signin');
-                  }}
-                  className="w-full py-2.5 rounded-xl border border-stone-300 bg-white text-stone-800 text-xs font-semibold text-center"
-                >
-                  Sign In
-                </button>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    openAuthModal('signup');
-                  }}
-                  className="w-full py-2.5 rounded-xl bg-stone-900 text-amber-50 text-xs font-semibold text-center"
-                >
-                  Sign Up
-                </button>
-              </div>
-            )}
 
             <div className="pt-2">
               <button

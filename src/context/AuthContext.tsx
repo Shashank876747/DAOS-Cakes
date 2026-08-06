@@ -17,10 +17,6 @@ import { UserProfile } from '../types';
 
 interface AuthContextType {
   user: UserProfile | null;
-  isAuthModalOpen: boolean;
-  authModalMode: 'signup' | 'signin';
-  openAuthModal: (mode?: 'signup' | 'signin') => void;
-  closeAuthModal: () => void;
   signUpWithEmail: (name: string, email: string, password?: string) => Promise<void>;
   signInWithEmail: (email: string, password?: string) => Promise<void>;
   loginWithOAuth: (provider: 'google' | 'microsoft' | 'apple', isSignUp?: boolean) => Promise<void>;
@@ -66,8 +62,6 @@ const withTimeout = <T,>(promise: Promise<T>, ms = 2000): Promise<T> => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'signup' | 'signin'>('signin');
 
   // Sync with Firebase Auth state
   useEffect(() => {
@@ -130,15 +124,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userProfile));
   };
 
-  const openAuthModal = (mode: 'signup' | 'signin' = 'signin') => {
-    setAuthModalMode(mode);
-    setIsAuthModalOpen(true);
-  };
-
-  const closeAuthModal = () => {
-    setIsAuthModalOpen(false);
-  };
-
   const signUpWithEmail = async (name: string, email: string, password?: string) => {
     const cleanEmail = email.toLowerCase().trim();
     const pass = password || 'daos_cakes_secure_pass_123';
@@ -167,7 +152,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     saveUserSession(newUser);
-    closeAuthModal();
   };
 
   const signInWithEmail = async (email: string, password?: string) => {
@@ -207,7 +191,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     saveUserSession(existingUser);
-    closeAuthModal();
   };
 
   const loginWithOAuth = async (
@@ -239,7 +222,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       saveUserSession(customUser);
-      closeAuthModal();
       return;
     }
 
@@ -275,7 +257,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       saveUserSession(oauthUser);
-      closeAuthModal();
       return;
     } catch (err: any) {
       console.warn(`${providerName} Popup Auth failed or blocked:`, err?.code || err?.message || err);
@@ -334,10 +315,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
-        isAuthModalOpen,
-        authModalMode,
-        openAuthModal,
-        closeAuthModal,
         signUpWithEmail,
         signInWithEmail,
         loginWithOAuth,

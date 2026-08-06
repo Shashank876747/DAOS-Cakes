@@ -80,38 +80,17 @@ interface SiteContextType {
   content: SiteContent;
   updateContent: (updated: Partial<SiteContent>) => Promise<void>;
   resetToDefaults: () => Promise<void>;
-  isAdminMode: boolean;
-  setIsAdminMode: (mode: boolean) => void;
-  isAdminEditorOpen: boolean;
-  adminModalTab: string;
-  setAdminModalTab: (tab: string) => void;
-  openAdminEditor: (initialTab?: string) => void;
-  closeAdminEditor: () => void;
 }
 
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_KEY = 'daos_cakes_site_content';
-const ADMIN_MODE_KEY = 'daos_cakes_admin_mode';
 
 export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [content, setContent] = useState<SiteContent>(DEFAULT_SITE_CONTENT);
-  const [isAdminMode, setIsAdminModeState] = useState<boolean>(false);
-  const [isAdminEditorOpen, setIsAdminEditorOpen] = useState<boolean>(false);
-  const [adminModalTab, setAdminModalTab] = useState<string>('orders');
 
   // Sync site content with Firebase Firestore in real-time
   useEffect(() => {
-    // Check localStorage fallback first
-    try {
-      const savedAdminMode = localStorage.getItem(ADMIN_MODE_KEY);
-      if (savedAdminMode === 'true') {
-        setIsAdminModeState(true);
-      }
-    } catch (e) {
-      console.error('Failed to load local admin mode setting', e);
-    }
-
     const docRef = doc(db, 'site_settings', 'main');
     const unsubscribe = onSnapshot(
       docRef,
@@ -168,32 +147,12 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const setIsAdminMode = (mode: boolean) => {
-    setIsAdminModeState(mode);
-    localStorage.setItem(ADMIN_MODE_KEY, mode ? 'true' : 'false');
-  };
-
-  const openAdminEditor = (initialTab?: string) => {
-    if (initialTab) {
-      setAdminModalTab(initialTab);
-    }
-    setIsAdminEditorOpen(true);
-  };
-  const closeAdminEditor = () => setIsAdminEditorOpen(false);
-
   return (
     <SiteContext.Provider
       value={{
         content,
         updateContent,
-        resetToDefaults,
-        isAdminMode,
-        setIsAdminMode,
-        isAdminEditorOpen,
-        adminModalTab,
-        setAdminModalTab,
-        openAdminEditor,
-        closeAdminEditor
+        resetToDefaults
       }}
     >
       {children}

@@ -17,21 +17,17 @@ import {
   Menu as MenuIcon,
   X,
   ArrowUp,
-  CheckCircle2,
-  Sliders
+  CheckCircle2
 } from 'lucide-react';
 import heroImage from './assets/images/daos_hero_cake_1785892806355.jpg';
 import treatsImage from './assets/images/daos_baker_treats_1785892816667.jpg';
 import PublicOrderSchedule from './components/PublicOrderSchedule';
 import AppsScriptGuideModal from './components/AppsScriptGuideModal';
-import AuthModal from './components/AuthModal';
 import Header from './components/Header';
-import AdminEditorModal from './components/AdminEditorModal';
-import AdminToolbar from './components/AdminToolbar';
 import { useSite } from './context/SiteContext';
 
 export default function App() {
-  const { content, isAdminMode, openAdminEditor } = useSite();
+  const { content } = useSite();
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [isAppsScriptModalOpen, setIsAppsScriptModalOpen] = useState(false);
 
@@ -72,20 +68,6 @@ export default function App() {
           <div className="absolute bottom-0 left-10 w-80 h-80 bg-orange-100/30 rounded-full blur-3xl -z-10 pointer-events-none" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            
-            {/* In-context Admin Edit Badge */}
-            {isAdminMode && (
-              <div className="mb-4 flex items-center justify-start">
-                <button
-                  onClick={openAdminEditor}
-                  className="px-3 py-1 rounded-full bg-amber-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:bg-amber-900 transition-colors cursor-pointer"
-                >
-                  <Sliders className="w-3.5 h-3.5" />
-                  <span>Edit Hero Section</span>
-                </button>
-              </div>
-            )}
-
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               
               {/* Copy & CTA */}
@@ -174,18 +156,6 @@ export default function App() {
             
             {/* Friendly Instruction Header */}
             <div className="text-center space-y-4 mb-10 relative">
-              {isAdminMode && (
-                <div className="mb-2 flex items-center justify-center">
-                  <button
-                    onClick={openAdminEditor}
-                    className="px-3 py-1 rounded-full bg-amber-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:bg-amber-900 transition-colors cursor-pointer"
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    <span>Edit Order Form Section & URL</span>
-                  </button>
-                </div>
-              )}
-
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold uppercase tracking-wider">
                 <FileSpreadsheet className="w-3.5 h-3.5 text-amber-800" />
                 <span>{content.orderNotice.badge}</span>
@@ -211,13 +181,6 @@ export default function App() {
                     Backend Connection: <strong className="text-emerald-300">Google Sheets Sync Ready</strong>
                   </span>
                 </div>
-                <button
-                  onClick={openAdminEditor}
-                  className="text-xs text-amber-300 hover:text-white underline cursor-pointer font-mono flex items-center gap-1"
-                >
-                  <Sliders className="w-3.5 h-3.5" />
-                  <span>Admin: Edit Google Form Link</span>
-                </button>
               </div>
 
               {/* iframe Display Container */}
@@ -245,18 +208,8 @@ export default function App() {
                         Google Form Ready for Link
                       </h3>
                       <p className="text-stone-600 text-sm leading-relaxed max-w-md mx-auto">
-                        This clean responsive iframe section is configured to seamlessly display your Google Form as soon as your URL is added in the Admin Editor.
+                        This clean responsive iframe section is configured to seamlessly display your Google Form as soon as your URL is added.
                       </p>
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        onClick={openAdminEditor}
-                        className="inline-flex items-center gap-2 bg-amber-800 hover:bg-amber-900 text-amber-50 px-6 py-3 rounded-full text-xs font-semibold shadow-xs transition-colors cursor-pointer"
-                      >
-                        <Sliders className="w-4 h-4" />
-                        <span>Configure Form URL in Admin Editor</span>
-                      </button>
                     </div>
                   </div>
                 )}
@@ -270,19 +223,6 @@ export default function App() {
         {/* 6. About Section */}
         <section id="about" className="py-16 md:py-24 bg-white border-b border-stone-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            {isAdminMode && (
-              <div className="mb-6 flex items-center justify-start">
-                <button
-                  onClick={openAdminEditor}
-                  className="px-3 py-1 rounded-full bg-amber-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:bg-amber-900 transition-colors cursor-pointer"
-                >
-                  <Sliders className="w-3.5 h-3.5" />
-                  <span>Edit About Section</span>
-                </button>
-              </div>
-            )}
-
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               
               {/* Image */}
@@ -397,15 +337,6 @@ export default function App() {
                 <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
                   Contact & Details
                 </h4>
-                {isAdminMode && (
-                  <button
-                    onClick={openAdminEditor}
-                    className="text-[10px] text-amber-400 hover:underline flex items-center gap-1 font-mono"
-                  >
-                    <Sliders className="w-3 h-3" />
-                    <span>Edit Contact</span>
-                  </button>
-                )}
               </div>
               
               <div className="space-y-3 text-sm">
@@ -454,15 +385,6 @@ export default function App() {
                     Contact Info
                   </button>
                 </li>
-                <li>
-                  <button
-                    onClick={openAdminEditor}
-                    className="text-amber-400 hover:text-amber-300 transition-colors cursor-pointer font-medium text-xs flex items-center gap-1 pt-1"
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    <span>Admin Site Editor</span>
-                  </button>
-                </li>
               </ul>
             </div>
 
@@ -492,15 +414,6 @@ export default function App() {
         isOpen={isAppsScriptModalOpen}
         onClose={() => setIsAppsScriptModalOpen(false)}
       />
-
-      {/* User Authentication Modal */}
-      <AuthModal />
-
-      {/* Admin Site Editor Modal */}
-      <AdminEditorModal onOpenAppsScriptGuide={() => setIsAppsScriptModalOpen(true)} />
-
-      {/* Floating Admin Toolbar */}
-      <AdminToolbar />
 
     </div>
   );

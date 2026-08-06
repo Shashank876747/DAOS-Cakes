@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useSite } from '../context/SiteContext';
-import { useAuth, isAdminEmail } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import {
   Calendar,
   Sparkles,
@@ -36,7 +36,6 @@ interface PublicOrderScheduleProps {
 export default function PublicOrderSchedule({ onOpenAppsScriptGuide }: PublicOrderScheduleProps) {
   const { content } = useSite();
   const { user } = useAuth();
-  const isUserAdmin = isAdminEmail(user?.email);
 
   const [orders, setOrders] = useState<PublicCakeOrder[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

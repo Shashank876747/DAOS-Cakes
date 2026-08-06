@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { X, User, LogOut, Calendar, ShieldCheck, Mail, Sparkles, Cake, Sliders, Check, Crown, KeyRound, CheckCircle2, Lock, AlertCircle } from 'lucide-react';
-import { useAuth, isAdminEmail } from '../context/AuthContext';
-import { useSite } from '../context/SiteContext';
+import { X, User, LogOut, Calendar, KeyRound, CheckCircle2, Lock, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -10,7 +9,6 @@ interface UserProfileModalProps {
 
 export default function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
   const { user, signOut, changeUserPassword } = useAuth();
-  const { isAdminMode, setIsAdminMode, openAdminEditor } = useSite();
 
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -86,8 +84,6 @@ export default function UserProfileModal({ isOpen, onClose }: UserProfileModalPr
     }
   };
 
-  const isUserAdmin = user.role === 'admin';
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/80 backdrop-blur-sm animate-fade-in">
       <div className="bg-white rounded-3xl border border-stone-200 shadow-2xl w-full max-w-sm overflow-hidden my-auto relative">
@@ -129,64 +125,7 @@ export default function UserProfileModal({ isOpen, onClose }: UserProfileModalPr
               </span>
               <span className="font-semibold text-stone-900">{user.createdAt}</span>
             </div>
-
-            <div className="flex items-center justify-between text-stone-700 pt-2 border-t border-stone-200/80">
-              <span className="flex items-center gap-2 font-medium">
-                <Crown className="w-4 h-4 text-amber-800" />
-                Account Role
-              </span>
-              <span className={`font-bold px-2.5 py-0.5 rounded-md ${
-                isUserAdmin ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-stone-200 text-stone-800'
-              }`}>
-                {isUserAdmin ? 'Administrator' : 'Customer'}
-              </span>
-            </div>
           </div>
-
-          {/* Admin Controls Box */}
-          {isAdminEmail(user.email) ? (
-            <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-amber-800" />
-                  <span className="font-bold text-amber-900">Live Site Admin Mode</span>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isAdminMode}
-                    onChange={(e) => {
-                      setIsAdminMode(e.target.checked);
-                    }}
-                    className="sr-only peer"
-                  />
-                  <div className="w-9 h-5 bg-stone-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-800"></div>
-                </label>
-              </div>
-
-              <button
-                onClick={() => {
-                  onClose();
-                  setIsAdminMode(true);
-                  openAdminEditor();
-                }}
-                className="w-full py-2.5 px-3 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
-              >
-                <Sliders className="w-3.5 h-3.5" />
-                <span>Launch Site Content Editor</span>
-              </button>
-            </div>
-          ) : (
-            <div className="bg-stone-50 border border-stone-200 rounded-2xl p-3.5 text-center">
-              <div className="flex items-center justify-center gap-1.5 text-amber-900 font-bold mb-1">
-                <ShieldCheck className="w-4 h-4 text-amber-800" />
-                <span>Site Administrator Protection</span>
-              </div>
-              <p className="text-[11px] text-stone-500 leading-relaxed">
-                Site editing privileges and live content modifications are restricted exclusively to verified administrators.
-              </p>
-            </div>
-          )}
 
           {/* Change Password Toggle & Form */}
           <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3">
