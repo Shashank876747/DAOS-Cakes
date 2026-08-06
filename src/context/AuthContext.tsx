@@ -17,9 +17,9 @@ interface AuthContextType {
   authModalMode: 'signup' | 'signin';
   openAuthModal: (mode?: 'signup' | 'signin') => void;
   closeAuthModal: () => void;
-  signUpWithEmail: (name: string, email: string, role?: 'admin' | 'customer') => Promise<void>;
-  signInWithEmail: (email: string, role?: 'admin' | 'customer') => Promise<void>;
-  loginWithOAuth: (provider: 'google' | 'microsoft' | 'apple', isSignUp?: boolean, role?: 'admin' | 'customer') => Promise<void>;
+  signUpWithEmail: (name: string, email: string, password?: string) => Promise<void>;
+  signInWithEmail: (email: string, password?: string) => Promise<void>;
+  loginWithOAuth: (provider: 'google' | 'microsoft' | 'apple', isSignUp?: boolean) => Promise<void>;
   updateUserRole: (role: 'admin' | 'customer') => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -107,16 +107,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthModalOpen(false);
   };
 
-  const signUpWithEmail = async (name: string, email: string, role: 'admin' | 'customer' = 'admin') => {
+  const signUpWithEmail = async (name: string, email: string, password?: string) => {
     try {
-      // Try Firebase Auth email creation (password handled in form or mock password)
-      const mockPassword = 'daos_cakes_secure_pass_123';
+      const pass = password || 'daos_cakes_secure_pass_123';
       let uid = 'usr_' + Math.random().toString(36).substring(2, 9);
       try {
-        const cred = await createUserWithEmailAndPassword(auth, email, mockPassword);
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
         uid = cred.user.uid;
       } catch (authErr) {
-        // Fallback if password or email exists or local simulation
         console.warn('Firebase Auth createUser fallback:', authErr);
       }
 
@@ -145,11 +143,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signInWithEmail = async (email: string, role: 'admin' | 'customer' = 'admin') => {
-    const mockPassword = 'daos_cakes_secure_pass_123';
+  const signInWithEmail = async (email: string, password?: string) => {
+    const pass = password || 'daos_cakes_secure_pass_123';
     let uid = 'usr_' + Math.random().toString(36).substring(2, 9);
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, mockPassword);
+      const cred = await signInWithEmailAndPassword(auth, email, pass);
       uid = cred.user.uid;
     } catch (authErr) {
       console.warn('Firebase Auth signIn fallback:', authErr);

@@ -5,13 +5,9 @@ import {
   Lock,
   User,
   ArrowRight,
-  Sparkles,
-  CheckCircle2,
   ShieldCheck,
-  Crown,
   UserCheck,
-  AlertCircle,
-  Sliders
+  AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSite } from '../context/SiteContext';
@@ -29,7 +25,6 @@ export default function AuthModal() {
 
   const { setIsAdminMode } = useSite();
 
-  const [selectedRole, setSelectedRole] = useState<'admin' | 'customer'>('admin');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -95,9 +90,9 @@ export default function AuthModal() {
     setLoading(true);
     try {
       if (isSignUp) {
-        await signUpWithEmail(name.trim(), email, selectedRole);
+        await signUpWithEmail(name.trim(), email, password);
       } else {
-        await signInWithEmail(email, selectedRole);
+        await signInWithEmail(email, password);
       }
 
       // Activate Admin Mode only if logging in as verified owner
@@ -122,7 +117,7 @@ export default function AuthModal() {
     setError(null);
     setOauthLoading(provider);
     try {
-      await loginWithOAuth(provider, isSignUp, selectedRole);
+      await loginWithOAuth(provider, isSignUp);
     } catch (err: any) {
       setError(`Failed to sign ${isSignUp ? 'up' : 'in'} with ${provider}.`);
     } finally {
@@ -146,37 +141,23 @@ export default function AuthModal() {
 
           <div className="flex items-center gap-2 mb-2">
             <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-bold uppercase tracking-wider border border-amber-500/30">
-              DAOS Cakes Authentication
+              DAOS Cakes
             </span>
           </div>
 
           <h3 className="font-serif text-2xl font-bold text-white tracking-tight">
-            {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
+            {isSignUp ? 'Create Your Account' : 'Welcome Back'}
           </h3>
           <p className="text-stone-300 text-xs mt-1">
             {isSignUp
-              ? 'Register as an Admin or Customer to manage site content & custom orders.'
-              : 'Access your account privileges, site admin tools, and order preferences.'}
+              ? 'Sign up to easily submit custom cake requests and view order schedules.'
+              : 'Sign in to access your DAOS Cakes account and manage orders.'}
           </p>
 
           {/* Sign In vs Sign Up Tabs */}
           <div className="flex bg-stone-900/90 p-1 rounded-xl mt-5 border border-stone-700/80">
             <button
-              onClick={() => {
-                setError(null);
-                openAuthModal('signup');
-              }}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                isSignUp
-                  ? 'bg-amber-800 text-white shadow-xs'
-                  : 'text-stone-400 hover:text-stone-200'
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5 text-amber-300" />
-              <span>Sign Up (Register)</span>
-            </button>
-
-            <button
+              type="button"
               onClick={() => {
                 setError(null);
                 openAuthModal('signin');
@@ -190,65 +171,27 @@ export default function AuthModal() {
               <Lock className="w-3.5 h-3.5 text-amber-300" />
               <span>Sign In</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setError(null);
+                openAuthModal('signup');
+              }}
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                isSignUp
+                  ? 'bg-amber-800 text-white shadow-xs'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <UserCheck className="w-3.5 h-3.5 text-amber-300" />
+              <span>Sign Up (Register)</span>
+            </button>
           </div>
         </div>
 
         {/* Modal Content Body */}
         <div className="p-6 sm:p-7 space-y-5 max-h-[75vh] overflow-y-auto">
-          
-          {/* Account Role Choice */}
-          <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-3.5 space-y-2">
-            <label className="block text-xs font-bold text-amber-950 uppercase tracking-wider">
-              1. Choose Account Role
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setSelectedRole('admin')}
-                className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                  selectedRole === 'admin'
-                    ? 'bg-white border-amber-800 ring-2 ring-amber-800/20 text-stone-900 shadow-2xs'
-                    : 'bg-stone-50/80 border-stone-200 text-stone-600 hover:bg-white'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-xs text-amber-900 flex items-center gap-1">
-                    <Crown className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
-                    Administrator
-                  </span>
-                  {selectedRole === 'admin' && (
-                    <span className="w-2 h-2 rounded-full bg-amber-800" />
-                  )}
-                </div>
-                <p className="text-[11px] text-stone-500 leading-snug">
-                  Restricted to verified owner (daosflorida@gmail.com)
-                </p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedRole('customer')}
-                className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                  selectedRole === 'customer'
-                    ? 'bg-white border-stone-800 ring-2 ring-stone-800/20 text-stone-900 shadow-2xs'
-                    : 'bg-stone-50/80 border-stone-200 text-stone-600 hover:bg-white'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-xs text-stone-800 flex items-center gap-1">
-                    <User className="w-3.5 h-3.5 text-stone-500" />
-                    Customer
-                  </span>
-                  {selectedRole === 'customer' && (
-                    <span className="w-2 h-2 rounded-full bg-stone-800" />
-                  )}
-                </div>
-                <p className="text-[11px] text-stone-500 leading-snug">
-                  Save order details & custom cake requests
-                </p>
-              </button>
-            </div>
-          </div>
 
           {error && (
             <div className="p-3.5 rounded-2xl bg-amber-100/80 border border-amber-300 text-xs text-amber-950 font-medium flex items-center gap-2 shadow-2xs">
@@ -257,10 +200,10 @@ export default function AuthModal() {
             </div>
           )}
 
-          {/* Social Auth Options (4 Providers Supported) */}
+          {/* Quick OAuth Providers */}
           <div className="space-y-2.5">
             <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">
-              2. {isSignUp ? 'Sign-Up Options' : 'Sign-In Options'}
+              {isSignUp ? 'Quick Sign-Up With' : 'Quick Sign-In With'}
             </label>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -436,10 +379,10 @@ export default function AuthModal() {
             >
               <span>
                 {loading
-                  ? 'Processing Request...'
+                  ? 'Processing...'
                   : isSignUp
-                  ? `Sign Up as ${selectedRole === 'admin' ? 'Administrator' : 'Customer'}`
-                  : `Sign In as ${selectedRole === 'admin' ? 'Administrator' : 'Customer'}`}
+                  ? 'Create Account'
+                  : 'Sign In'}
               </span>
               <ArrowRight className="w-4 h-4" />
             </button>
