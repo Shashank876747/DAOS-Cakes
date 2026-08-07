@@ -1,0 +1,16 @@
+{
+  "name": "DAOS Cakes | Custom Artisanal Bakery",
+  "short_name": "DAOS Cakes",
+  "description": "Custom handcrafted artisanal cakes, cupcakes, and baked treats.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d97706",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
