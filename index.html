@@ -18,16 +18,13 @@
     <meta name="google-site-verification" content="ovF1I-jw6LzzSm5zvcubjLjlKVnPC9RE4Lp-jHBOrow" />
     <meta name="google-site-verification" content="google5c5e19fcfc00da92" />
 
-    <!-- Google Analytics (gtag.js) - Replace G-XXXXXXXXXX with your actual GA4 Measurement ID -->
+    <!-- Google Analytics & Google Tag Manager (Optional) -->
     <!--
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-XXXXXXXXXX');
-    </script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
     -->
     
     <!-- Bing / Yahoo / DuckDuckGo Search Verification Meta Tag (Optional) -->
@@ -74,6 +71,11 @@
     </script>
   </head>
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <!--
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
