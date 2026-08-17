@@ -1,4 +1,4 @@
-# DAOS Cakes - Custom Cakes 
+# DAOS Cakes - Custom Artisanal Cakes & Bakery
 
 DAOS Cakes is a web application designed for a custom artisanal cake bakery. It provides customers with information about handcrafted cake offerings, cottage food safety compliance, contact details, and an embedded order form integrated with Google Forms and Google Sheets.
 
