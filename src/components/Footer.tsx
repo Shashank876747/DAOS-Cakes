@@ -1,18 +1,27 @@
 import React from 'react';
-import { Mail, Instagram, Cake, ArrowUp } from 'lucide-react';
+import { Mail, Instagram, Cake, ArrowUp, Link2 } from 'lucide-react';
 import { trackUserClick } from '../utils/analytics';
 
-export default function Footer() {
-  const scrollToTop = () => {
-    trackUserClick('back_to_top', 'navigation');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+interface FooterProps {
+  activeSectionId?: string;
+  onNavigate?: (sectionId: string) => void;
+}
+
+export default function Footer({ activeSectionId = 'contact', onNavigate }: FooterProps) {
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    if (onNavigate) {
+      onNavigate(sectionId);
+    }
   };
 
-  const scrollToSection = (id: string) => {
-    trackUserClick(`footer_nav_${id}`, 'navigation');
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+  const handleScrollToTop = (e: React.MouseEvent) => {
+    e.preventDefault();
+    trackUserClick('back_to_top', 'navigation');
+    if (onNavigate) {
+      onNavigate('home');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -24,14 +33,18 @@ export default function Footer() {
           
           {/* Brand & Tagline Column */}
           <div className="md:col-span-5 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-amber-800 text-amber-100 flex items-center justify-center font-bold">
+            <a
+              href="/"
+              onClick={(e) => handleLinkClick(e, 'home')}
+              className="flex items-center gap-3 group inline-flex"
+            >
+              <div className="w-10 h-10 rounded-full bg-amber-800 text-amber-100 flex items-center justify-center font-bold group-hover:bg-amber-700 transition-colors">
                 <Cake className="w-6 h-6" />
               </div>
-              <span className="font-serif text-2xl font-bold tracking-tight text-white">
+              <span className="font-serif text-2xl font-bold tracking-tight text-white group-hover:text-amber-400 transition-colors">
                 DAOS Cakes
               </span>
-            </div>
+            </a>
 
             {/* Warm closing tagline */}
             <p className="text-stone-400 text-base font-serif italic max-w-sm">
@@ -50,7 +63,7 @@ export default function Footer() {
             </h4>
             
             <div className="space-y-3 text-sm">
-              {/* Email Placeholder */}
+              {/* Email */}
               <a
                 href="mailto:daoscakes2@gmail.com"
                 onClick={() => trackUserClick('footer_email_link', 'contact')}
@@ -63,7 +76,7 @@ export default function Footer() {
                 <span>Email: <strong className="font-medium text-white">daoscakes2@gmail.com</strong></span>
               </a>
 
-              {/* Instagram Placeholder */}
+              {/* Instagram */}
               <a
                 href="https://www.instagram.com/daoscakes/?hl=en"
                 target="_blank"
@@ -83,19 +96,57 @@ export default function Footer() {
           {/* Quick Links & Navigation */}
           <div className="md:col-span-3 space-y-4">
             <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
-              Quick Navigation
+              Direct Section Links
             </h4>
             
-            <ul className="space-y-2 text-sm text-stone-400">
+            <ul className="space-y-2.5 text-sm text-stone-400">
               <li>
-                <button onClick={() => scrollToSection('order-form')} className="hover:text-amber-400 transition-colors cursor-pointer">
-                  Order Form
-                </button>
+                <a
+                  href="/"
+                  onClick={(e) => handleLinkClick(e, 'home')}
+                  className={`hover:text-amber-400 transition-colors flex items-center justify-between ${
+                    activeSectionId === 'home' ? 'text-amber-400 font-semibold' : ''
+                  }`}
+                >
+                  <span>Home Page</span>
+                  <span className="text-[11px] font-mono text-stone-500">/</span>
+                </a>
               </li>
               <li>
-                <button onClick={() => scrollToSection('about')} className="hover:text-amber-400 transition-colors cursor-pointer">
-                  About the Baker
-                </button>
+                <a
+                  href="/order"
+                  onClick={(e) => handleLinkClick(e, 'order-form')}
+                  className={`hover:text-amber-400 transition-colors flex items-center justify-between ${
+                    activeSectionId === 'order-form' ? 'text-amber-400 font-semibold' : ''
+                  }`}
+                >
+                  <span>Cake Order Form</span>
+                  <span className="text-[11px] font-mono text-stone-500">/order</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/about"
+                  onClick={(e) => handleLinkClick(e, 'about')}
+                  className={`hover:text-amber-400 transition-colors flex items-center justify-between ${
+                    activeSectionId === 'about' ? 'text-amber-400 font-semibold' : ''
+                  }`}
+                >
+                  <span>About the Baker</span>
+                  <span className="text-[11px] font-mono text-stone-500">/about</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/contact"
+                  onClick={(e) => handleLinkClick(e, 'contact')}
+                  className={`hover:text-amber-400 transition-colors flex items-center justify-between ${
+                    activeSectionId === 'contact' ? 'text-amber-400 font-semibold' : ''
+                  }`}
+                >
+                  <span>Contact & Location</span>
+                  <span className="text-[11px] font-mono text-stone-500">/contact</span>
+                </a>
               </li>
             </ul>
           </div>
@@ -109,11 +160,11 @@ export default function Footer() {
           </p>
           
           <button
-            onClick={scrollToTop}
+            onClick={handleScrollToTop}
             className="flex items-center gap-2 text-amber-400 hover:text-amber-300 transition-colors cursor-pointer font-medium"
             id="back-to-top-btn"
           >
-            <span>Back to Top</span>
+            <span>Back to Top (/)</span>
             <ArrowUp className="w-4 h-4" />
           </button>
         </div>

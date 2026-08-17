@@ -1,6 +1,6 @@
 {
   "name": "DAOS Cakes",
-  "description": "Warm, professional single-page home bakery website featuring custom cakes, menu pricing, 3-step ordering process, embedded order form, cottage food compliance, and contact details.",
+  "description": "Warm, professional home bakery website with dedicated URLs for each section (Home, Order Form, About Us, Contact), smooth deep-linking, scroll-spy URL synchronization, embedded Google Form ordering, and cottage food compliance.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

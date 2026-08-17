@@ -5,20 +5,19 @@ import {
   Heart,
   ShieldCheck,
   ArrowDown,
-  Instagram,
-  Mail,
-  Cake,
-  ArrowUp,
-  CheckCircle2,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  CheckCircle2,
+  Link2,
+  Check
 } from 'lucide-react';
 import heroImage from './assets/images/daos_hero_cake_1785892806355.jpg';
 import treatsImage from './assets/images/daos_baker_treats_1785892816667.jpg';
-import PublicOrderSchedule from './components/PublicOrderSchedule';
 import AppsScriptGuideModal from './components/AppsScriptGuideModal';
 import Header from './components/Header';
-import { initGA, trackPageView, trackUserClick } from './utils/analytics';
+import Footer from './components/Footer';
+import { initGA } from './utils/analytics';
+import { useSectionRouter } from './hooks/useSectionRouter';
 
 const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdQ7d5odCaliDzgkufvsD_hfwdhbi1meCHUyO_zMdgoLJVMwA/viewform?usp=header';
 
@@ -28,9 +27,15 @@ export default function App() {
   const [refreshKey, setRefreshKey] = useState<number>(Date.now());
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
+  const {
+    activeSectionId,
+    navigateTo,
+    copySectionUrl,
+    copiedUrlSection
+  } = useSectionRouter();
+
   useEffect(() => {
     initGA();
-    trackPageView(window.location.pathname, 'DAOS Cakes - Home');
   }, []);
 
   // Helper to format Google Form links for embedded iframe rendering with dynamic cache refresh
@@ -55,24 +60,21 @@ export default function App() {
     }, 600);
   };
 
-  const scrollToSection = (id: string) => {
-    trackUserClick(`scroll_to_${id}`, 'navigation');
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-amber-200 selection:text-amber-900 flex flex-col">
       
-      {/* Header Navigation */}
-      <Header siteName="DAOS Cakes" tagline="Handcrafted Artisanal Bakery" />
+      {/* Header Navigation with active URL support */}
+      <Header
+        siteName="DAOS Cakes"
+        tagline="Handcrafted Artisanal Bakery"
+        activeSectionId={activeSectionId}
+        onNavigate={navigateTo}
+      />
 
       <main className="grow">
         
-        {/* 1. Hero Section */}
-        <section className="relative overflow-hidden bg-stone-50 py-12 md:py-20 lg:py-24 border-b border-amber-100/60">
+        {/* 1. Hero Section -> URL: / or /#home */}
+        <section id="home" className="relative overflow-hidden bg-stone-50 py-12 md:py-20 lg:py-24 border-b border-amber-100/60 scroll-mt-20">
           <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-100/40 rounded-full blur-3xl -z-10 pointer-events-none" />
           <div className="absolute bottom-0 left-10 w-80 h-80 bg-orange-100/30 rounded-full blur-3xl -z-10 pointer-events-none" />
 
@@ -81,9 +83,11 @@ export default function App() {
               
               {/* Copy & CTA */}
               <div className="lg:col-span-7 space-y-6 text-left">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/80 border border-amber-200 text-amber-900 text-xs font-semibold tracking-wide uppercase">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Handcrafted Home Bakery</span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/80 border border-amber-200 text-amber-900 text-xs font-semibold tracking-wide uppercase">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Handcrafted Home Bakery</span>
+                  </div>
                 </div>
 
                 <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight leading-[1.15]">
@@ -118,14 +122,31 @@ export default function App() {
 
                 {/* CTA Buttons */}
                 <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                  <button
-                    onClick={() => scrollToSection('order-form')}
+                  <a
+                    href="/order"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigateTo('order-form');
+                    }}
                     className="bg-amber-800 hover:bg-amber-900 text-amber-50 px-8 py-4 rounded-full font-semibold text-base shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-3 cursor-pointer group"
                     id="hero-order-now-btn"
+                    title="Go to Order Form (/order)"
                   >
                     <span>Order Now</span>
                     <ArrowDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
-                  </button>
+                  </a>
+
+                  <a
+                    href="/about"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigateTo('about');
+                    }}
+                    className="px-6 py-4 rounded-full text-stone-700 hover:text-amber-900 hover:bg-amber-100/50 font-medium text-base text-center transition-colors border border-stone-300 hover:border-amber-300"
+                    id="hero-about-btn"
+                  >
+                    About the Baker
+                  </a>
                 </div>
               </div>
 
@@ -159,10 +180,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* 2. Embedded Form Section */}
-
-        {/* 3. Embedded Form Section */}
-        <section id="order-form" className="py-16 md:py-24 bg-gradient-to-b from-stone-50 via-amber-50/20 to-stone-100 border-b border-stone-200">
+        {/* 2. Embedded Form Section -> URL: /order or /order-form */}
+        <section id="order-form" className="py-16 md:py-24 bg-gradient-to-b from-stone-50 via-amber-50/20 to-stone-100 border-b border-stone-200 scroll-mt-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             
             {/* Friendly Instruction Header */}
@@ -170,6 +189,7 @@ export default function App() {
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold uppercase tracking-wider">
                 <FileSpreadsheet className="w-3.5 h-3.5 text-amber-800" />
                 <span>Order Form</span>
+                <span className="text-amber-700/60 font-mono text-[11px]">/order</span>
               </div>
 
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight">
@@ -179,6 +199,27 @@ export default function App() {
               <p className="text-stone-700 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-normal">
                 Select your event date, custom cake sizes, flavors, and design notes below.
               </p>
+
+              {/* Share Direct Link Button */}
+              <div className="flex justify-center pt-1">
+                <button
+                  onClick={() => copySectionUrl('order-form')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 hover:bg-white border border-stone-200 text-stone-600 hover:text-amber-800 text-xs transition-colors shadow-2xs cursor-pointer"
+                  title="Copy direct URL to Order Form (/order)"
+                >
+                  {copiedUrlSection === 'order-form' ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700 font-medium">Copied direct link (/order)</span>
+                    </>
+                  ) : (
+                    <>
+                      <Link2 className="w-3.5 h-3.5 text-stone-400" />
+                      <span>Direct URL: <code className="text-amber-800 font-mono">/order</code></span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Seamless Responsive iframe Card */}
@@ -257,8 +298,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* 4. About Section */}
-        <section id="about" className="py-16 md:py-24 bg-white border-b border-stone-200">
+        {/* 3. About Section -> URL: /about */}
+        <section id="about" className="py-16 md:py-24 bg-white border-b border-stone-200 scroll-mt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               
@@ -290,9 +331,29 @@ export default function App() {
 
               {/* Narrative & Cottage Food Compliance Note */}
               <div className="lg:col-span-7 space-y-6 order-1 lg:order-2 text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold uppercase tracking-wider">
-                  <Heart className="w-3.5 h-3.5 text-amber-800 fill-amber-800" />
-                  <span>Passionate Home Baker</span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold uppercase tracking-wider">
+                    <Heart className="w-3.5 h-3.5 text-amber-800 fill-amber-800" />
+                    <span>Passionate Home Baker</span>
+                  </div>
+
+                  <button
+                    onClick={() => copySectionUrl('about')}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-600 hover:text-amber-900 text-xs transition-colors cursor-pointer"
+                    title="Copy direct URL to About Section (/about)"
+                  >
+                    {copiedUrlSection === 'about' ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        <span className="text-emerald-700 font-medium">Link Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Link2 className="w-3 h-3 text-stone-400" />
+                        <span>Direct URL: <code className="text-amber-800 font-mono">/about</code></span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 <h2 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight leading-snug">
@@ -342,115 +403,11 @@ export default function App() {
 
       </main>
 
-      {/* 5. Footer */}
-      <footer id="contact" className="bg-stone-900 text-stone-300 pt-16 pb-12 border-t border-stone-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-stone-800">
-            
-            {/* Brand */}
-            <div className="md:col-span-5 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-amber-800 text-amber-100 flex items-center justify-center font-bold">
-                  <Cake className="w-6 h-6" />
-                </div>
-                <span className="font-serif text-2xl font-bold tracking-tight text-white">
-                  DAOS Cakes
-                </span>
-              </div>
-
-              <p className="text-stone-400 text-base font-serif italic max-w-sm">
-                "Baking life a little sweeter, one custom cake at a time."
-              </p>
-
-              <p className="text-xs text-stone-400 leading-relaxed max-w-sm">
-                Freshly baked artisanal cakes, gourmet cupcakes, and handcrafted desserts for birthdays, showers, and memorable gatherings.
-              </p>
-            </div>
-
-            {/* Social & Email */}
-            <div className="md:col-span-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
-                  Contact & Details
-                </h4>
-              </div>
-              
-              <div className="space-y-3 text-sm">
-                <a
-                  href="mailto:daoscakes2@gmail.com"
-                  onClick={() => trackUserClick('email_link', 'contact')}
-                  className="flex items-center gap-3 text-stone-300 hover:text-amber-400 transition-colors group"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 group-hover:bg-amber-800 group-hover:text-white transition-colors">
-                    <Mail className="w-4 h-4" />
-                  </div>
-                  <span>Email: <strong className="font-medium text-white">daoscakes2@gmail.com</strong></span>
-                </a>
-
-                <a
-                  href="https://www.instagram.com/daoscakes/?hl=en"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackUserClick('instagram_link', 'social')}
-                  className="flex items-center gap-3 text-stone-300 hover:text-amber-400 transition-colors group"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 group-hover:bg-amber-800 group-hover:text-white transition-colors">
-                    <Instagram className="w-4 h-4" />
-                  </div>
-                  <span>Instagram: <strong className="font-medium text-white">@daoscakes</strong></span>
-                </a>
-
-
-              </div>
-            </div>
-
-            {/* Navigation */}
-            <div className="md:col-span-3 space-y-4">
-              <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
-                Quick Navigation
-              </h4>
-              
-              <ul className="space-y-2 text-sm text-stone-400">
-                <li>
-                  <button onClick={() => scrollToSection('order-form')} className="hover:text-amber-400 transition-colors cursor-pointer">
-                    Order Form
-                  </button>
-                </li>
-
-                <li>
-                  <button onClick={() => scrollToSection('about')} className="hover:text-amber-400 transition-colors cursor-pointer">
-                    About
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => scrollToSection('contact')} className="hover:text-amber-400 transition-colors cursor-pointer">
-                    Contact Info
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-          </div>
-
-          {/* Copyright Bar */}
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400">
-            <p>
-              © {new Date().getFullYear()} DAOS Cakes. All rights reserved. Handcrafted with love.
-            </p>
-            
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="flex items-center gap-2 text-amber-400 hover:text-amber-300 transition-colors cursor-pointer font-medium"
-              id="back-to-top-btn"
-            >
-              <span>Back to Top</span>
-              <ArrowUp className="w-4 h-4" />
-            </button>
-          </div>
-
-        </div>
-      </footer>
+      {/* 4. Footer -> URL: /contact */}
+      <Footer
+        activeSectionId={activeSectionId}
+        onNavigate={navigateTo}
+      />
 
       {/* Google Apps Script Integration Guide Modal */}
       <AppsScriptGuideModal
@@ -461,4 +418,3 @@ export default function App() {
     </div>
   );
 }
-
