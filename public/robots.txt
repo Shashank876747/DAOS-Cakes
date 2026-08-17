@@ -1,11 +1,14 @@
 # Robots.txt for DAOS Cakes
-# Allows all search engines (Google, Bing, Yahoo, DuckDuckGo, Safari/Applebot, Yandex, Brave, etc.)
+# Allows all search engine crawlers (Googlebot, Bingbot, Applebot, DuckDuckBot, YandexBot, etc.)
 
 User-agent: *
 Allow: /
 
 # Search Engine Specific Bot Access
 User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
 Allow: /
 
 User-agent: Bingbot
@@ -17,8 +20,6 @@ Allow: /
 User-agent: DuckDuckBot
 Allow: /
 
-User-agent: YandexBot
-Allow: /
-
-# Sitemap Location
+# Sitemaps
+Sitemap: https://daoscakes.netlify.app/sitemap.xml
 Sitemap: https://daoscakes.pages.dev/sitemap.xml
