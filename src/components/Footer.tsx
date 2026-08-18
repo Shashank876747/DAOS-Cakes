@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Instagram, Cake, ArrowUp, Link2 } from 'lucide-react';
+import { Mail, Instagram, Cake, ArrowUp, Phone } from 'lucide-react';
 import { trackUserClick } from '../utils/analytics';
 
 interface FooterProps {
@@ -7,7 +7,7 @@ interface FooterProps {
   onNavigate?: (sectionId: string) => void;
 }
 
-export default function Footer({ activeSectionId = 'contact', onNavigate }: FooterProps) {
+export default function Footer({ onNavigate }: FooterProps) {
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
     if (onNavigate) {
@@ -29,10 +29,10 @@ export default function Footer({ activeSectionId = 'contact', onNavigate }: Foot
     <footer id="contact" className="bg-stone-900 text-stone-300 pt-16 pb-12 border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-stone-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pb-12 border-b border-stone-800">
           
           {/* Brand & Tagline Column */}
-          <div className="md:col-span-5 space-y-4">
+          <div className="space-y-4">
             <a
               href="/"
               onClick={(e) => handleLinkClick(e, 'home')}
@@ -47,22 +47,49 @@ export default function Footer({ activeSectionId = 'contact', onNavigate }: Foot
             </a>
 
             {/* Warm closing tagline */}
-            <p className="text-stone-400 text-base font-serif italic max-w-sm">
+            <p className="text-stone-400 text-base font-serif italic max-w-md">
               "Baking life a little sweeter, one custom cake at a time."
             </p>
 
-            <p className="text-xs text-stone-400 leading-relaxed max-w-sm">
+            <p className="text-xs text-stone-400 leading-relaxed max-w-md">
               Freshly baked artisanal cakes, gourmet cupcakes, and handcrafted desserts for birthdays, showers, and memorable gatherings.
             </p>
           </div>
 
-          {/* Contact Placeholders Column */}
-          <div className="md:col-span-4 space-y-4">
+          {/* Contact & Socials Column */}
+          <div className="space-y-4 md:pl-6">
             <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
               Contact & Socials
             </h4>
             
             <div className="space-y-3 text-sm">
+              {/* Phone Numbers */}
+              <div className="flex items-start gap-3 text-stone-300">
+                <div className="w-8 h-8 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-stone-400 block font-medium">Phone Numbers:</span>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-white font-medium">
+                    <a
+                      href="tel:4704761631"
+                      onClick={() => trackUserClick('footer_phone_1', 'contact')}
+                      className="hover:text-amber-400 transition-colors underline decoration-stone-700 hover:decoration-amber-400"
+                    >
+                      (470) 476-1631
+                    </a>
+                    <span className="text-stone-500 font-normal">and</span>
+                    <a
+                      href="tel:6782358462"
+                      onClick={() => trackUserClick('footer_phone_2', 'contact')}
+                      className="hover:text-amber-400 transition-colors underline decoration-stone-700 hover:decoration-amber-400"
+                    >
+                      (678) 235-8462
+                    </a>
+                  </div>
+                </div>
+              </div>
+
               {/* Email */}
               <a
                 href="mailto:daoscakes2@gmail.com"
@@ -70,7 +97,7 @@ export default function Footer({ activeSectionId = 'contact', onNavigate }: Foot
                 className="flex items-center gap-3 text-stone-300 hover:text-amber-400 transition-colors group"
                 id="footer-email-link"
               >
-                <div className="w-8 h-8 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 group-hover:bg-amber-800 group-hover:text-white transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 group-hover:bg-amber-800 group-hover:text-white transition-colors shrink-0">
                   <Mail className="w-4 h-4" />
                 </div>
                 <span>Email: <strong className="font-medium text-white">daoscakes2@gmail.com</strong></span>
@@ -85,70 +112,12 @@ export default function Footer({ activeSectionId = 'contact', onNavigate }: Foot
                 className="flex items-center gap-3 text-stone-300 hover:text-amber-400 transition-colors group"
                 id="footer-instagram-link"
               >
-                <div className="w-8 h-8 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 group-hover:bg-amber-800 group-hover:text-white transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 group-hover:bg-amber-800 group-hover:text-white transition-colors shrink-0">
                   <Instagram className="w-4 h-4" />
                 </div>
                 <span>Instagram: <strong className="font-medium text-white">@daoscakes</strong></span>
               </a>
             </div>
-          </div>
-
-          {/* Quick Links & Navigation */}
-          <div className="md:col-span-3 space-y-4">
-            <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
-              Direct Section Links
-            </h4>
-            
-            <ul className="space-y-2.5 text-sm text-stone-400">
-              <li>
-                <a
-                  href="/"
-                  onClick={(e) => handleLinkClick(e, 'home')}
-                  className={`hover:text-amber-400 transition-colors flex items-center justify-between ${
-                    activeSectionId === 'home' ? 'text-amber-400 font-semibold' : ''
-                  }`}
-                >
-                  <span>Home Page</span>
-                  <span className="text-[11px] font-mono text-stone-500">/</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/order"
-                  onClick={(e) => handleLinkClick(e, 'order-form')}
-                  className={`hover:text-amber-400 transition-colors flex items-center justify-between ${
-                    activeSectionId === 'order-form' ? 'text-amber-400 font-semibold' : ''
-                  }`}
-                >
-                  <span>Cake Order Form</span>
-                  <span className="text-[11px] font-mono text-stone-500">/order</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/about"
-                  onClick={(e) => handleLinkClick(e, 'about')}
-                  className={`hover:text-amber-400 transition-colors flex items-center justify-between ${
-                    activeSectionId === 'about' ? 'text-amber-400 font-semibold' : ''
-                  }`}
-                >
-                  <span>About the Baker</span>
-                  <span className="text-[11px] font-mono text-stone-500">/about</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/contact"
-                  onClick={(e) => handleLinkClick(e, 'contact')}
-                  className={`hover:text-amber-400 transition-colors flex items-center justify-between ${
-                    activeSectionId === 'contact' ? 'text-amber-400 font-semibold' : ''
-                  }`}
-                >
-                  <span>Contact & Location</span>
-                  <span className="text-[11px] font-mono text-stone-500">/contact</span>
-                </a>
-              </li>
-            </ul>
           </div>
 
         </div>

@@ -17,18 +17,18 @@ export const SECTIONS: SectionConfig[] = [
     navLabel: 'Home'
   },
   {
+    id: 'how-it-works',
+    path: '/how-it-works',
+    aliases: ['#how-it-works', '/process', '#process'],
+    title: 'How Ordering Works | DAOS Cakes',
+    navLabel: 'How It Works'
+  },
+  {
     id: 'order-form',
     path: '/order',
     aliases: ['/order-form', '#order-form', '#order', '/order'],
     title: 'Order Form | DAOS Cakes',
     navLabel: 'Order Form'
-  },
-  {
-    id: 'about',
-    path: '/about',
-    aliases: ['/about-us', '#about', '#about-us', '/about'],
-    title: 'About the Baker | DAOS Cakes',
-    navLabel: 'About Us'
   },
   {
     id: 'contact',
