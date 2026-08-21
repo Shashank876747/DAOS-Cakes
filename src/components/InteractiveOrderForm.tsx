@@ -303,6 +303,96 @@ export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrder
             </p>
           </div>
 
+          {/* Google Calendar Event Cards (Matching Email Format) */}
+          <div className="max-w-2xl mx-auto space-y-4 text-left">
+            <h4 className="text-xs font-mono font-bold uppercase text-stone-500 tracking-wider">
+              Scheduled Calendar Events
+            </h4>
+
+            {/* Event 1: Pickup Card (Google Calendar Card Style) */}
+            {formData.pickupDate && (
+              <div className="bg-sky-50/80 border border-sky-200 rounded-2xl p-5 shadow-xs transition-all hover:border-sky-300">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="text-xs font-bold text-sky-950 uppercase tracking-wide">
+                      {formData.pickupDate} • {formData.pickupTime || '2:00 PM'}
+                    </div>
+                    <div className="text-lg font-bold text-sky-950">
+                      DAOS Cakes - Cake Pickup
+                    </div>
+                    <div className="flex items-start gap-2 pt-1 text-xs text-stone-600">
+                      <MapPin className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-semibold text-stone-900">{formData.location}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="w-11 h-11 rounded-xl bg-white border border-sky-200 flex items-center justify-center shrink-0 shadow-xs">
+                    <Calendar className="w-6 h-6 text-sky-600" />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5 pt-4 mt-2 border-t border-sky-100">
+                  <a
+                    href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('DAOS Cakes - Cake Pickup (' + (formData.cakeType === 'Other' ? formData.cakeTypeOther : formData.cakeType) + ')')}&details=${encodeURIComponent('Cake Pickup at ' + formData.location + '. Size: ' + formData.cakeSize + '. Payment: Cash on pickup. Contact: (470) 676-1631')}&location=${encodeURIComponent(formData.location)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold shadow-xs transition-colors"
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Add to Calendar</span>
+                  </a>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(formData.location)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-sky-200 hover:bg-sky-300 text-sky-950 text-xs font-bold transition-colors"
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>Directions</span>
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {/* Event 2: Order Call Card (Google Calendar Card Style) */}
+            {formData.callDate && (
+              <div className="bg-stone-50 border border-stone-200 rounded-2xl p-5 shadow-xs transition-all hover:border-stone-300">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="text-xs font-bold text-stone-600 uppercase tracking-wide">
+                      {formData.callDate} • {formData.callTime || '11:00 AM'}
+                    </div>
+                    <div className="text-lg font-bold text-stone-900">
+                      DAOS Cakes - Order Consultation Call
+                    </div>
+                    <div className="flex items-center gap-2 pt-1 text-xs text-stone-600">
+                      <PhoneCall className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>We will call you at <strong className="text-stone-900">{formData.phoneNumber}</strong></span>
+                    </div>
+                  </div>
+
+                  <div className="w-11 h-11 rounded-xl bg-white border border-stone-200 flex items-center justify-center shrink-0 shadow-xs">
+                    <Phone className="w-5 h-5 text-amber-800" />
+                  </div>
+                </div>
+
+                <div className="pt-4 mt-2 border-t border-stone-200">
+                  <a
+                    href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('DAOS Cakes - Order Call')}&details=${encodeURIComponent('Consultation call for custom cake order with DAOS Cakes. Phone: (470) 676-1631')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-stone-800 hover:bg-stone-900 text-white text-xs font-bold shadow-xs transition-colors"
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Add Call to Calendar</span>
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Summary Box */}
           <div className="max-w-2xl mx-auto bg-stone-50 rounded-2xl p-6 border border-stone-200 text-left space-y-4 text-xs sm:text-sm">
             <h4 className="font-serif font-bold text-stone-900 text-base border-b border-stone-200 pb-2">
