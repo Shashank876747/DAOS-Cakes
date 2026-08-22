@@ -104,7 +104,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
           </h2>
 
           <p className="text-stone-700 text-base sm:text-lg leading-relaxed font-normal">
-            Configure your celebration size, tier dimensions, and artisanal decor finishes for an instant price breakdown before submitting your inquiry.
+            Configure your celebration size, tier dimensions, and artisanal decor finishes for an instant estimated quote before submitting your inquiry.
           </p>
         </div>
 
@@ -279,41 +279,36 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
               </div>
             </div>
 
-            {/* Itemized Breakdown */}
+            {/* Selected Configuration Summary */}
             <div className="space-y-3 text-xs text-stone-300">
               <div className="flex justify-between items-start pb-2 border-b border-stone-800/60">
                 <div>
                   <p className="font-semibold text-white">{currentTier.name}</p>
                   <p className="text-[11px] text-stone-400">{currentTier.servings}</p>
                 </div>
-                <span className="font-bold text-white">${currentTier.basePrice}</span>
               </div>
 
               <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                <span className="text-stone-300">{currentArt.name}</span>
-                <span className="font-semibold text-white">
-                  {currentArt.price === 0 ? '$0' : `+$${currentArt.price}`}
-                </span>
+                <span className="text-stone-400">Design Finish</span>
+                <span className="font-semibold text-white">{currentArt.name}</span>
               </div>
 
               <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                <span className="text-stone-300">{currentFilling.name}</span>
-                <span className="font-semibold text-white">
-                  {currentFilling.price === 0 ? '$0' : `+$${currentFilling.price}`}
-                </span>
+                <span className="text-stone-400">Filling Option</span>
+                <span className="font-semibold text-white">{currentFilling.name}</span>
               </div>
 
               {addCupcakes && (
                 <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                  <span className="text-stone-300">1 Dozen Custom Cupcakes</span>
-                  <span className="font-semibold text-white">+$36</span>
+                  <span className="text-stone-400">Add-on</span>
+                  <span className="font-semibold text-white">1 Dozen Custom Cupcakes</span>
                 </div>
               )}
 
               {addMacarons && (
                 <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                  <span className="text-stone-300">French Macaron Box (12)</span>
-                  <span className="font-semibold text-white">+$28</span>
+                  <span className="text-stone-400">Add-on</span>
+                  <span className="font-semibold text-white">French Macaron Box (12)</span>
                 </div>
               )}
             </div>

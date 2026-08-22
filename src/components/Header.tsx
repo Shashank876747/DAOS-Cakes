@@ -46,12 +46,9 @@ export default function Header({
           <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 group-hover:bg-amber-200 transition-colors shadow-2xs">
             <Cake className="w-6 h-6" />
           </div>
-          <div>
-            <span className="font-serif text-2xl font-bold tracking-tight text-stone-900 group-hover:text-amber-800 transition-colors block leading-tight">
+          <div className="flex items-center">
+            <span className="font-serif text-2xl font-bold tracking-tight text-stone-900 group-hover:text-amber-800 transition-colors leading-tight">
               {siteName}
-            </span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-amber-800/80 block">
-              Handcrafted Artisanal Bakery
             </span>
           </div>
         </a>

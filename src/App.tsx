@@ -53,7 +53,6 @@ export default function App() {
       {/* Header Navigation with active URL support */}
       <Header
         siteName="DAOS Cakes"
-        tagline="Handcrafted Artisanal Bakery"
         activeSectionId={activeSectionId}
         onNavigate={navigateTo}
       />

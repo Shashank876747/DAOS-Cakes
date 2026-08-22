@@ -13,7 +13,7 @@ export const SECTIONS: SectionConfig[] = [
     id: 'home',
     path: '/',
     aliases: ['/home', '#home'],
-    title: 'DAOS Cakes | Handcrafted Artisanal Bakery',
+    title: 'DAOS Cakes',
     navLabel: 'Home'
   },
   {
