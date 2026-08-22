@@ -492,7 +492,7 @@ function sendRichEventConfirmationEmail(order) {
                       </tr>
                       <tr>
                         <td style="color: #78716c; font-weight: 500;">Payment Terms:</td>
-                        <td style="font-weight: 700; color: #15803d;">Cash on Pickup (CashApp, PayPal, Venmo, Zelle also accepted)</td>
+                        <td style="font-weight: 700; color: #15803d;">Cash on Pickup (In-Person • Cash Only)</td>
                       </tr>
                     </table>
                   </td>
