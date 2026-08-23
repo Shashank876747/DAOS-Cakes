@@ -1,27 +1,40 @@
 name: Deploy to Firebase Hosting
+
 on:
   push:
     branches:
       - main
       - master
   workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci || npm install
+
       - name: Build site
         run: npm run build
+
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DAOS_CAKES_1234 }}'
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DAOS_CAKES }}
           channelId: live
-          projectId: daos-cakes-1234
+          projectId: daos--cakes
