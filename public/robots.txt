@@ -22,4 +22,5 @@ Allow: /
 
 # Sitemap Location
 Sitemap: https://daoscakes.com/sitemap.xml
+Sitemap: https://daos---cakes.firebaseapp.com/sitemap.xml
 Sitemap: https://daos---cakes.web.app/sitemap.xml
