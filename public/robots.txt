@@ -21,6 +21,8 @@ User-agent: YandexBot
 Allow: /
 
 # Sitemap Location
-Sitemap: https://daoscakes.com/sitemap.xml
+Sitemap: https://daoscakes.pages.dev/sitemaps/pages/sitemap.xml
+Sitemap: https://daoscakes.pages.dev/sitemap.xml
 Sitemap: https://daos---cakes.firebaseapp.com/sitemap.xml
-Sitemap: https://daos---cakes.web.app/sitemap.xml
+Sitemap: https://daoscakes.netlify.app/sitemap.xml
+Sitemap: https://daoscakes.com/sitemap.xml
