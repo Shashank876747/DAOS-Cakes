@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Instagram, Cake, ArrowUp, Phone } from 'lucide-react';
+import { Mail, Cake, ArrowUp, Phone, Camera } from 'lucide-react';
 import { trackUserClick } from '../utils/analytics';
 
 interface FooterProps {
@@ -113,7 +113,7 @@ export default function Footer({ onNavigate }: FooterProps) {
                 id="footer-instagram-link"
               >
                 <div className="w-8 h-8 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 group-hover:bg-amber-800 group-hover:text-white transition-colors shrink-0">
-                  <Instagram className="w-4 h-4" />
+                  <Camera className="w-4 h-4" />
                 </div>
                 <span>Instagram: <strong className="font-medium text-white">@daoscakes</strong></span>
               </a>
