@@ -55,25 +55,34 @@
     <!-- <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" /> -->
 
     <!-- Essential Search Engine Meta Tags -->
-    <meta name="description" content="DAOS Cakes - Custom celebration cakes and specialty orders. No online payment through website. Payment is strictly in person upon pickup (Cash Only). Phone: (470) 676-1631 or (678) 235-0482." />
-    <meta name="keywords" content="DAOS Cakes, DAOS, custom cakes, birthday cakes, wedding cakes, specialty desserts, South Florida bakery" />
+    <meta name="description" content="DAOS Cakes - Custom celebration cakes and specialty orders in Smyrna, GA. No online payment through website. Payment is strictly in person upon pickup (Cash Only). Phone: (470) 476-1631 or (678) 235-8462." />
+    <meta name="keywords" content="DAOS Cakes, DAOS, custom cakes, birthday cakes, wedding cakes, specialty desserts, Smyrna GA bakery, Cobb County custom cakes, Atlanta cakes" />
     <meta name="author" content="DAOS Cakes" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://daoscakes.pages.dev/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link id="canonical-url" rel="canonical" href="" />
+    <script>
+      (function() {
+        try {
+          var origin = window.location.origin || (window.location.protocol + '//' + window.location.host);
+          var canonical = document.getElementById('canonical-url');
+          if (canonical) {
+            canonical.setAttribute('href', origin + '/');
+          }
+        } catch(e) {}
+      })();
+    </script>
 
     <!-- Open Graph / Facebook / WhatsApp Meta Tags -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://daoscakes.pages.dev/" />
-    <meta property="og:title" content="DAOS Cakes" />
-    <meta property="og:description" content="DAOS Cakes - Custom celebration cakes and specialty orders. Payment is strictly in person upon pickup (Cash Only)." />
-    <meta property="og:image" content="https://daoscakes.pages.dev/og-image.jpg" />
+    <meta property="og:title" content="DAOS Cakes - Handcrafted Celebration Cakes in Smyrna, GA" />
+    <meta property="og:description" content="DAOS Cakes - Custom celebration cakes and specialty orders. In-person pickup in Smyrna, Georgia (Cash Only)." />
+    <meta property="og:image" content="/assets/images/daos_hero_cake_1785892806355.jpg" />
     <meta property="og:site_name" content="DAOS Cakes" />
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://daoscakes.pages.dev/" />
-    <meta name="twitter:title" content="DAOS Cakes" />
-    <meta name="twitter:description" content="DAOS Cakes - Custom celebration cakes and specialty orders. Payment is strictly in person upon pickup (Cash Only)." />
+    <meta name="twitter:title" content="DAOS Cakes - Handcrafted Celebration Cakes in Smyrna, GA" />
+    <meta name="twitter:description" content="DAOS Cakes - Custom celebration cakes and specialty orders in Smyrna, GA. Payment is strictly in person upon pickup (Cash Only)." />
 
     <!-- Schema.org JSON-LD Structured Data for Google Search -->
     <script type="application/ld+json">
@@ -81,14 +90,15 @@
         "@context": "https://schema.org",
         "@type": "Bakery",
         "name": "DAOS Cakes",
-        "url": "https://daoscakes.pages.dev/",
-        "description": "Custom cakes and treats for special events. In-person pickup (Cash Only).",
+        "description": "Custom cakes and treats for special events in Smyrna, Georgia. In-person pickup (Cash Only).",
         "servesCuisine": "Bakery",
         "priceRange": "$$",
         "paymentAccepted": "Cash",
+        "telephone": "+14704761631",
         "address": {
           "@type": "PostalAddress",
-          "addressRegion": "FL",
+          "addressLocality": "Smyrna",
+          "addressRegion": "GA",
           "addressCountry": "US"
         }
       }

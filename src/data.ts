@@ -106,15 +106,15 @@ export const FLAVOR_GUIDE: FlavorGuideItem[] = [
       'Madagascar Vanilla Bean',
       'Decadent Belgian Chocolate Fudge',
       'Velvety Southern Red Velvet',
-      'Zesty Florida Lemon & Poppyseed',
-      'Spiced Spiced Carrot with Pecans',
+      'Zesty Lemon & Poppyseed',
+      'Spiced Carrot with Pecans',
       'Funfetti Celebration Sprinkles',
       'Rich Caramelized Brown Sugar'
     ],
     fillings: [
       'Housemade Fresh Strawberry Compote',
       'Flaked Sea Salt & Caramel Drizzle',
-      'Tart Florida Lemon Curd',
+      'Tart Lemon Curd',
       'Belgian Dark Chocolate Ganache',
       'Wild Raspberry Preserve',
       'Silky Vanilla Bean Custard Cream',
@@ -183,13 +183,13 @@ export const FAQS: FaqItem[] = [
   {
     id: 'faq-4',
     question: 'Where and when do I pick up my cake?',
-    answer: 'Pickup is coordinated from our Florida home kitchen in a sanitized, temperature-controlled environment. We provide specific pickup time windows. We recommend transporting cakes on the flat floorboard of an air-conditioned vehicle rather than on a car seat.',
+    answer: 'Pickup is coordinated from our Smyrna, Georgia home kitchen in a sanitized, temperature-controlled environment. We provide specific pickup time windows. We recommend transporting cakes on the flat floorboard of an air-conditioned vehicle rather than on a car seat.',
     category: 'pickup'
   },
   {
     id: 'faq-5',
-    question: 'What is Florida Cottage Food compliance?',
-    answer: 'DAOS Cakes operates under Florida’s Cottage Food Law (§ 500.80 F.S.). We adhere strictly to sanitary standards, food safety protocols, and proper packaging and labeling for all homemade baked delicacies.',
+    question: 'What is Georgia Cottage Food compliance?',
+    answer: 'DAOS Cakes operates in compliance with Georgia Cottage Food regulations (Georgia Department of Agriculture). We adhere strictly to sanitary standards, food safety protocols, and proper packaging and labeling for all homemade baked delicacies.',
     category: 'compliance'
   }
 ];
