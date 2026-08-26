@@ -1,5 +1,7 @@
-/sitemap.xml       /sitemap.xml       200
-/robots.txt        /robots.txt        200
-/ads.txt           /ads.txt           200
-/BingSiteAuth.xml  /BingSiteAuth.xml  200
-/*                 /index.html        200
+/privacy-policy.html /privacy-policy.html 200
+/terms.html          /terms.html          200
+/sitemap.xml         /sitemap.xml         200
+/robots.txt          /robots.txt          200
+/ads.txt             /ads.txt             200
+/BingSiteAuth.xml    /BingSiteAuth.xml    200
+/*                   /index.html          200

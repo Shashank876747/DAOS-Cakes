@@ -1,13 +1,15 @@
 import React from 'react';
-import { Mail, Cake, ArrowUp, Phone, Camera } from 'lucide-react';
+import { Mail, Cake, ArrowUp, Phone, Camera, Shield, FileText } from 'lucide-react';
 import { trackUserClick } from '../utils/analytics';
 
 interface FooterProps {
   activeSectionId?: string;
   onNavigate?: (sectionId: string) => void;
+  onOpenPrivacy?: () => void;
+  onOpenTerms?: () => void;
 }
 
-export default function Footer({ onNavigate }: FooterProps) {
+export default function Footer({ onNavigate, onOpenPrivacy, onOpenTerms }: FooterProps) {
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
     if (onNavigate) {
@@ -29,7 +31,7 @@ export default function Footer({ onNavigate }: FooterProps) {
     <footer id="contact" className="bg-stone-900 text-stone-300 pt-16 pb-12 border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pb-12 border-b border-stone-800">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12 border-b border-stone-800">
           
           {/* Brand & Tagline Column */}
           <div className="space-y-4">
@@ -52,12 +54,12 @@ export default function Footer({ onNavigate }: FooterProps) {
             </p>
 
             <p className="text-xs text-stone-400 leading-relaxed max-w-md">
-              Freshly baked artisanal cakes, gourmet cupcakes, and handcrafted desserts for birthdays, showers, and memorable gatherings.
+              Freshly baked artisanal cakes, gourmet cupcakes, and handcrafted desserts in Smyrna, Georgia (serving Greater Atlanta and Cobb County).
             </p>
           </div>
 
           {/* Contact & Socials Column */}
-          <div className="space-y-4 md:pl-6">
+          <div className="space-y-4">
             <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
               Contact & Socials
             </h4>
@@ -120,13 +122,84 @@ export default function Footer({ onNavigate }: FooterProps) {
             </div>
           </div>
 
+          {/* Legal & Policy Column (Required by Google AdSense & Search Console) */}
+          <div className="space-y-4">
+            <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
+              Legal & Privacy
+            </h4>
+            
+            <p className="text-xs text-stone-400 leading-relaxed">
+              We respect your privacy and adhere strictly to Google AdSense publishing guidelines, CCPA, and GDPR disclosures.
+            </p>
+
+            <div className="space-y-2 pt-1">
+              <a
+                href="/privacy-policy.html"
+                onClick={(e) => {
+                  if (onOpenPrivacy) {
+                    e.preventDefault();
+                    onOpenPrivacy();
+                  }
+                }}
+                className="flex items-center gap-2.5 text-stone-300 hover:text-amber-400 transition-colors text-sm font-medium group"
+                id="footer-privacy-policy-link"
+                title="View Privacy Policy"
+              >
+                <Shield className="w-4 h-4 text-amber-400" />
+                <span className="underline decoration-stone-700 group-hover:decoration-amber-400">Privacy Policy</span>
+              </a>
+
+              <a
+                href="/terms.html"
+                onClick={(e) => {
+                  if (onOpenTerms) {
+                    e.preventDefault();
+                    onOpenTerms();
+                  }
+                }}
+                className="flex items-center gap-2.5 text-stone-300 hover:text-amber-400 transition-colors text-sm font-medium group"
+                id="footer-terms-link"
+                title="View Terms of Service"
+              >
+                <FileText className="w-4 h-4 text-amber-400" />
+                <span className="underline decoration-stone-700 group-hover:decoration-amber-400">Terms of Service</span>
+              </a>
+            </div>
+          </div>
+
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400">
-          <p>
-            © {new Date().getFullYear()} DAOS Cakes. All rights reserved. Handcrafted with love.
-          </p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-center sm:text-left">
+            <span>© {new Date().getFullYear()} DAOS Cakes. All rights reserved.</span>
+            <span className="hidden sm:inline text-stone-700">•</span>
+            <a
+              href="/privacy-policy.html"
+              onClick={(e) => {
+                if (onOpenPrivacy) {
+                  e.preventDefault();
+                  onOpenPrivacy();
+                }
+              }}
+              className="hover:text-amber-400 transition-colors underline decoration-stone-700"
+            >
+              Privacy Policy
+            </a>
+            <span className="hidden sm:inline text-stone-700">•</span>
+            <a
+              href="/terms.html"
+              onClick={(e) => {
+                if (onOpenTerms) {
+                  e.preventDefault();
+                  onOpenTerms();
+                }
+              }}
+              className="hover:text-amber-400 transition-colors underline decoration-stone-700"
+            >
+              Terms of Service
+            </a>
+          </div>
           
           <button
             onClick={handleScrollToTop}

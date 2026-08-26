@@ -14,6 +14,7 @@ import Footer from './components/Footer';
 import ProcessSection from './components/ProcessSection';
 import { initGA } from './utils/analytics';
 import { useSectionRouter } from './hooks/useSectionRouter';
+import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 
 const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdQ7d5odCaliDzgkufvsD_hfwdhbi1meCHUyO_zMdgoLJVMwA/viewform?usp=header';
 
@@ -21,6 +22,7 @@ export default function App() {
   const [googleFormUrl] = useState<string>(GOOGLE_FORM_URL);
   const [refreshKey, setRefreshKey] = useState<number>(Date.now());
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [privacyModalOpen, setPrivacyModalOpen] = useState<boolean>(false);
 
   const {
     activeSectionId,
@@ -29,6 +31,13 @@ export default function App() {
 
   useEffect(() => {
     initGA();
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      if (path.includes('privacy') || hash.includes('privacy')) {
+        setPrivacyModalOpen(true);
+      }
+    }
   }, []);
 
   const getEmbeddableUrl = (url: string, key: number) => {
@@ -240,6 +249,18 @@ export default function App() {
       <Footer
         activeSectionId={activeSectionId}
         onNavigate={navigateTo}
+        onOpenPrivacy={() => setPrivacyModalOpen(true)}
+        onOpenTerms={() => {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/terms.html';
+          }
+        }}
+      />
+
+      {/* Privacy Policy Interactive Modal */}
+      <PrivacyPolicyModal
+        isOpen={privacyModalOpen}
+        onClose={() => setPrivacyModalOpen(false)}
       />
 
     </div>
