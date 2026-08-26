@@ -1,28 +1,32 @@
 # DAOS Cakes - Custom Artisanal Cakes & Bakery
 
-DAOS Cakes is a web application designed for a custom artisanal cake bakery. It provides customers with information about handcrafted cake offerings, cottage food safety compliance, contact details, and an embedded order form integrated with Google Forms and Google Sheets.
+[![CI Verification](https://github.com/Shashank876747/DAOS-Cakes/actions/workflows/ci.yml/badge.svg)](https://github.com/Shashank876747/DAOS-Cakes/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Shashank876747/DAOS-Cakes/actions/workflows/codeql.yml/badge.svg)](https://github.com/Shashank876747/DAOS-Cakes/actions/workflows/codeql.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-amber.svg)](https://opensource.org/licenses/MIT)
+
+DAOS Cakes is a responsive, modern web application for a custom artisanal bakery in Smyrna, Georgia (serving Greater Atlanta & Cobb County). It features interactive cake sizing and pricing calculators, menu showcases, direct order inquiry workflows, public booking schedules, and search engine optimization.
 
 ---
 
 ## 🎂 Key Features
 
-- **Hero Showcase**: Highlighting custom cake offerings, fresh baking practices, and cottage food permitted status.
-- **Embedded Order Form**: A responsive iframe integration embedding a custom Google Form for cake quote and order requests synced with Google Sheets.
-- **Google Apps Script Guide**: Built-in modal guide providing step-by-step instructions and code for syncing form submissions to Google Sheets.
-- **About & Cottage Food Compliance**: Information regarding home kitchen food safety standards and local permitted cottage food operations.
-- **Header Navigation & Mobile Drawer**: Sticky navigation header with smooth scrolling, announcement bar, and mobile responsive menu.
-- **Contact & Social Details**: Email, Instagram handles, operating hours, and location information.
-- **Analytics & Site Verification**: Configured with Google Tag Manager and Google Analytics (`gtag.js`).
+- **Interactive Menu & Flavor Catalog**: Browse cake bases, fillings, frostings, and signature tiered combinations.
+- **Dynamic Price Estimator**: Real-time cake budget calculations based on servings, tiers, cake complexity, and custom design additions.
+- **Embedded Order Inquiries**: Seamlessly connected order quote workflow.
+- **Public Availability Schedule**: Transparent view of upcoming pickup slots and baker capacity.
+- **Cottage Food Permitted & Food Safety Info**: Clear Georgia Cottage Food regulatory details, kitchen safety procedures, and transport tips.
+- **Multi-Cloud Deployment & SEO Ready**: Configured for Cloudflare Pages, Firebase Hosting, and Netlify with automated XML sitemaps, structured JSON-LD schemas, and Google Search Console verification.
+- **Google AdSense Monetization**: Clean auto ads integration and verified `ads.txt`.
 
 ---
 
 ## 🛠️ Tech Stack
 
 - **Frontend**: [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/)
-- **Build System**: [Vite 6](https://vitejs.dev/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Database / Auth**: [Firebase SDK](https://firebase.google.com/)
+- **Animations**: [Motion](https://motion.dev/)
 
 ---
 
@@ -55,52 +59,53 @@ Ensure you have [Node.js](https://nodejs.org/) (v18 or higher) and `npm` install
 
 ## 📦 Available Scripts
 
-- `npm run dev`: Launches the development server on port 3000.
-- `npm run build`: Compiles the application into production static assets in `/dist`.
+- `npm run dev`: Launches the local development server on port 3000.
+- `npm run build`: Compiles optimized production assets into `/dist`.
 - `npm run preview`: Previews the production build locally.
-- `npm run lint`: Runs TypeScript type validation without emitting code.
+- `npm run lint`: Performs TypeScript type checks without emitting code.
 
 ---
 
-## 📂 Directory Structure
+## 📂 Repository Structure
 
 ```
-├── public/                 # Static assets and site manifest
+.
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.yml       # Structured bug report template
+│   │   └── feature_request.yml  # Structured feature request template
+│   ├── workflows/
+│   │   ├── ci.yml               # Automated TypeScript checks & build CI
+│   │   ├── codeql.yml           # Automated GitHub CodeQL SAST scanning
+│   │   └── firebase-hosting.yml # Firebase deployment pipeline
+│   ├── dependabot.yml           # Weekly automated dependency maintenance
+│   └── pull_request_template.md # Standard PR review checklist
+├── public/                      # Static assets, sitemaps, ads.txt, robots.txt
 ├── src/
-│   ├── assets/             # Brand images and photos
-│   ├── components/         # Modular React UI components
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   ├── AppsScriptGuideModal.tsx
-│   │   ├── PublicOrderSchedule.tsx
-│   │   └── UserProfileModal.tsx
-│   ├── context/            # Site and Auth state management
-│   │   ├── AuthContext.tsx
-│   │   └── SiteContext.tsx
-│   ├── data/               # Integration guide scripts
-│   ├── lib/                # Firebase initialization
-│   ├── App.tsx             # Main page layout
-│   ├── index.css           # Global CSS and Tailwind setup
-│   └── main.tsx            # Application entry point
-├── firebase-applet-config.json # Firebase configuration
-├── firestore.rules         # Firestore security rules
-├── index.html              # HTML entry point with analytics tags
-├── package.json            # Project dependencies and build scripts
-└── vite.config.ts          # Vite configuration
+│   ├── assets/                  # High-resolution gallery and cake imagery
+│   ├── components/              # Modular UI components (Navbar, Footer, Modals)
+│   ├── data/                    # Bakery data, pricing, menus, FAQs
+│   ├── types.ts                 # Global TypeScript models & interfaces
+│   ├── App.tsx                  # Primary single-page layout
+│   └── main.tsx                 # Client application mounting
+├── .gitignore                   # Production-grade Git exclusions
+├── CONTRIBUTING.md              # Contributor guidelines and workflow
+├── LICENSE                      # MIT Open-Source License
+├── package.json                 # Project dependencies and script manifest
+├── tsconfig.json                # Strict TypeScript configuration
+└── vite.config.ts               # Vite configuration & Tailwind plugin
 ```
 
 ---
 
-## 🔒 Security & Quality
+## 🔒 Security & Quality Assurance
 
-This project implements GitHub Advanced Security tools:
-- **CodeQL Analysis**: Automated SAST workflow located in `.github/workflows/codeql.yml`.
-- **Dependabot**: Automated dependency and action updates defined in `.github/dependabot.yml`.
-- **Security Policy**: Detailed vulnerability reporting policy in `SECURITY.md`.
-- **Secret Scanning & Private Vulnerability Reporting**: Enabled for repository security.
+- **CodeQL Security Analysis**: Automated CodeQL static code analysis on every push and weekly cron schedule.
+- **Dependabot**: Automated updates for npm packages and GitHub Actions dependencies.
+- **Security Policy**: Detailed vulnerability reporting protocol outlined in [`SECURITY.md`](./SECURITY.md).
 
 ---
 
 ## 📄 License
 
-This repository is maintained for DAOS Cakes. All rights reserved.
+This project is licensed under the [MIT License](./LICENSE).

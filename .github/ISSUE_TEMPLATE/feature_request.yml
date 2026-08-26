@@ -1,0 +1,28 @@
+name: Feature Request
+description: Suggest an idea or enhancement for DAOS Cakes
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting improvements to DAOS Cakes!
+  - type: input
+    id: feature-title
+    attributes:
+      label: Feature Title
+      description: Brief summary of the proposed feature.
+    validations:
+      required: true
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Detailed Description
+      description: Explain the problem this feature solves and the desired behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Any alternative solutions or features you have considered.

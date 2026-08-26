@@ -1,8 +1,45 @@
+# Dependencies
 node_modules/
-build/
+.pnp
+.pnp.js
+
+# Build and distribution outputs
 dist/
-coverage/
-.DS_Store
-*.log
-.env*
+build/
+out/
+.next/
+dist-ssr/
+*.local
+
+# Environment variables and secrets
+.env
+.env*.local
+.firebase/
+
+# Keep the example environment file tracked
 !.env.example
+
+# Logs and debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Editor and OS system files
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Coverage reports
+coverage/
+*.lcov
