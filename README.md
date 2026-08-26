@@ -77,7 +77,8 @@ Ensure you have [Node.js](https://nodejs.org/) (v18 or higher) and `npm` install
 │   ├── workflows/
 │   │   ├── ci.yml               # Automated TypeScript checks & build CI
 │   │   ├── codeql.yml           # Automated GitHub CodeQL SAST scanning
-│   │   └── firebase-hosting.yml # Firebase deployment pipeline
+│   │   ├── firebase-hosting.yml # Firebase deployment pipeline
+│   │   └── netlify.yml          # Automated Netlify continuous deployment
 │   ├── dependabot.yml           # Weekly automated dependency maintenance
 │   └── pull_request_template.md # Standard PR review checklist
 ├── public/                      # Static assets, sitemaps, ads.txt, robots.txt
@@ -91,10 +92,23 @@ Ensure you have [Node.js](https://nodejs.org/) (v18 or higher) and `npm` install
 ├── .gitignore                   # Production-grade Git exclusions
 ├── CONTRIBUTING.md              # Contributor guidelines and workflow
 ├── LICENSE                      # MIT Open-Source License
+├── netlify.toml                 # Netlify routing and build configuration
 ├── package.json                 # Project dependencies and script manifest
 ├── tsconfig.json                # Strict TypeScript configuration
 └── vite.config.ts               # Vite configuration & Tailwind plugin
 ```
+
+---
+
+## 🌐 Continuous Deployment & Secrets
+
+To enable automated deployments via GitHub Actions, add these repository secrets in **GitHub Repo > Settings > Secrets and variables > Actions**:
+
+| Secret Name | Description |
+| :--- | :--- |
+| `NETLIFY_AUTH_TOKEN` | Personal access token from [Netlify User Settings](https://app.netlify.com/user/applications#personal-access-tokens) |
+| `NETLIFY_SITE_ID` | API ID found under **Site configuration > General > Site details** on Netlify |
+| `FIREBASE_SERVICE_ACCOUNT_DAOS_CAKES` | Service account JSON key for Firebase Hosting deployment |
 
 ---
 
