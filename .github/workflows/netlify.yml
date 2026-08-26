@@ -41,11 +41,16 @@ jobs:
         run: npm run build
 
       - name: Deploy to Netlify Production
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ] || [ -z "$NETLIFY_SITE_ID" ]; then
+            echo "⚠️ [SKIPPED] Netlify secrets (NETLIFY_AUTH_TOKEN or NETLIFY_SITE_ID) are not configured in GitHub Secrets."
+            echo "👉 To enable automatic publishing, please add NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID under GitHub Repo > Settings > Secrets and variables > Actions."
+            exit 0
+          fi
           npx netlify-cli deploy --dir=dist --prod --auth="$NETLIFY_AUTH_TOKEN" --site="$NETLIFY_SITE_ID" --message="Production Release ${{ github.sha }}"
 
       - name: Deploy Preview to Netlify
@@ -54,4 +59,8 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ] || [ -z "$NETLIFY_SITE_ID" ]; then
+            echo "⚠️ [SKIPPED] Netlify secrets are not configured. Skipping PR preview deployment."
+            exit 0
+          fi
           npx netlify-cli deploy --dir=dist --auth="$NETLIFY_AUTH_TOKEN" --site="$NETLIFY_SITE_ID" --message="PR Preview: #${{ github.event.number }} ${{ github.event.pull_request.title }}"
