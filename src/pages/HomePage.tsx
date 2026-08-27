@@ -6,13 +6,9 @@ import {
   CheckCircle2,
   Heart,
   Calendar,
-  ChefHat,
-  MessageSquareQuote,
-  HelpCircle,
-  PhoneCall
+  ChefHat
 } from 'lucide-react';
 import heroImage from '../assets/images/daos_hero_cake_1785892806355.jpg';
-import ProcessSection from '../components/ProcessSection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import FaqSection from '../components/FaqSection';
 
@@ -130,7 +126,7 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="mt-4 flex items-center gap-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
-                <span>View Process</span>
+                <span>View 4-Step Process</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
@@ -181,10 +177,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Ordering Process Section */}
-      <ProcessSection />
-
-      {/* 4. Client Testimonials */}
+      {/* 3. Client Testimonials */}
       <TestimonialsSection />
 
       {/* 5. FAQs */}
