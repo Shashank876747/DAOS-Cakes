@@ -1,43 +1,30 @@
 import React, { useState } from 'react';
-import { Cake, Menu as MenuIcon, X, ArrowDown } from 'lucide-react';
+import { NavLink, Link, useLocation } from 'react-router-dom';
+import { Cake, Menu as MenuIcon, X, ArrowRight } from 'lucide-react';
 
 interface HeaderProps {
   siteName?: string;
-  activeSectionId?: string;
-  onNavigate?: (sectionId: string) => void;
 }
 
-export default function Header({
-  siteName = 'DAOS Cakes',
-  activeSectionId = 'home',
-  onNavigate
-}: HeaderProps) {
+export default function Header({ siteName = 'DAOS Cakes' }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    e.preventDefault();
-    setMobileMenuOpen(false);
-    if (onNavigate) {
-      onNavigate(sectionId);
-    }
-  };
+  const location = useLocation();
 
   const navItems = [
-    { id: 'home', label: 'Home', path: '/' },
-    { id: 'how-it-works', label: 'How It Works', path: '/how-it-works' },
-    { id: 'about', label: 'About', path: '/about' },
-    { id: 'faq', label: 'FAQs', path: '/faq' },
-    { id: 'contact', label: 'Contact', path: '/contact' }
+    { label: 'Home', path: '/' },
+    { label: 'How It Works', path: '/how-it-works' },
+    { label: 'About', path: '/about' },
+    { label: 'FAQs', path: '/faq' },
+    { label: 'Contact', path: '/contact' }
   ];
 
   return (
     <header className="sticky top-0 z-40 bg-stone-50/95 backdrop-blur-md border-b border-amber-100 shadow-2xs transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         
-        {/* Logo with link to / */}
-        <a 
-          href="/"
-          onClick={(e) => handleLinkClick(e, 'home')}
+        {/* Brand Logo Link */}
+        <Link
+          to="/"
           className="flex items-center gap-3 cursor-pointer group select-none text-stone-900 shrink-0"
           id="header-logo"
           title="DAOS Cakes - Home"
@@ -50,42 +37,41 @@ export default function Header({
               {siteName}
             </span>
           </div>
-        </a>
+        </Link>
 
-        {/* Desktop Nav */}
+        {/* Desktop Nav using React Router NavLink */}
         <nav className="hidden md:flex items-center gap-1 font-medium text-stone-700 bg-stone-100/90 p-1.5 rounded-full border border-stone-200/70 shadow-2xs">
           {navItems.map((item) => {
-            const isActive = activeSectionId === item.id;
+            const isExactActive = location.pathname === item.path;
             return (
-              <a
-                key={item.id}
-                href={item.path}
-                onClick={(e) => handleLinkClick(e, item.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                  isActive
-                    ? 'bg-amber-800 text-amber-50 shadow-xs'
-                    : 'text-stone-700 hover:text-amber-900 hover:bg-stone-200/70'
-                }`}
-                id={`nav-${item.id}`}
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                    isActive
+                      ? 'bg-amber-800 text-amber-50 shadow-xs'
+                      : 'text-stone-700 hover:text-amber-900 hover:bg-stone-200/70'
+                  }`
+                }
                 title={`Navigate to ${item.label}`}
               >
                 {item.label}
-              </a>
+              </NavLink>
             );
           })}
         </nav>
 
-        {/* Header Right CTA */}
+        {/* Header Right CTA using React Router Link */}
         <div className="hidden sm:flex items-center gap-3 shrink-0">
-          <a
-            href="/order"
-            onClick={(e) => handleLinkClick(e, 'order-form')}
-            className="bg-amber-800 hover:bg-amber-900 text-amber-50 px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
+          <Link
+            to="/order"
+            className="bg-amber-800 hover:bg-amber-900 text-amber-50 px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all flex items-center gap-2 group"
             id="header-order-btn"
           >
             <span>Order Form</span>
-            <ArrowDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
-          </a>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </div>
 
         {/* Mobile menu toggle */}
@@ -104,35 +90,33 @@ export default function Header({
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-stone-50 border-b border-amber-100 px-4 pt-2 pb-6 space-y-1.5 shadow-lg animate-in slide-in-from-top-2 duration-200">
-          {navItems.map((item) => {
-            const isActive = activeSectionId === item.id;
-            return (
-              <a
-                key={item.id}
-                href={item.path}
-                onClick={(e) => handleLinkClick(e, item.id)}
-                className={`flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   isActive
                     ? 'bg-amber-100 text-amber-900 font-semibold'
                     : 'text-stone-700 hover:bg-amber-50 hover:text-amber-800'
-                }`}
-                id={`mobile-nav-${item.id}`}
-              >
-                <span>{item.label}</span>
-                <span className="text-xs font-mono text-stone-400">{item.path}</span>
-              </a>
-            );
-          })}
+                }`
+              }
+            >
+              <span>{item.label}</span>
+              <span className="text-xs font-mono text-stone-400">{item.path}</span>
+            </NavLink>
+          ))}
 
           <div className="pt-3">
-            <a
-              href="/order"
-              onClick={(e) => handleLinkClick(e, 'order-form')}
-              className="block w-full bg-amber-800 hover:bg-amber-900 text-amber-50 py-3 rounded-xl font-bold text-center shadow-xs text-sm cursor-pointer"
+            <Link
+              to="/order"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full bg-amber-800 hover:bg-amber-900 text-amber-50 py-3 rounded-xl font-bold text-center shadow-xs text-sm"
               id="mobile-header-order-btn"
             >
               Open Order Form (/order)
-            </a>
+            </Link>
           </div>
         </div>
       )}

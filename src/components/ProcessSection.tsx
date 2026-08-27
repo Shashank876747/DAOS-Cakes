@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FileText, PhoneCall, CalendarCheck, MapPin, ShieldCheck, ArrowRight, Clock } from 'lucide-react';
 
 interface ProcessSectionProps {
@@ -6,6 +7,8 @@ interface ProcessSectionProps {
 }
 
 export default function ProcessSection({ onStartOrder }: ProcessSectionProps) {
+  const navigate = useNavigate();
+
   const steps = [
     {
       number: '01',
@@ -29,9 +32,17 @@ export default function ProcessSection({ onStartOrder }: ProcessSectionProps) {
       number: '04',
       icon: MapPin,
       title: 'Local Pickup',
-      description: 'Collect your scratch-baked, custom cake from one of our designated community pickup points.'
+      description: 'Collect your scratch-baked, custom cake from our Smyrna, GA pickup location.'
     }
   ];
+
+  const handleClick = () => {
+    if (onStartOrder) {
+      onStartOrder();
+    } else {
+      navigate('/order');
+    }
+  };
 
   return (
     <section className="py-16 md:py-24 bg-white border-b border-stone-200">
@@ -55,7 +66,7 @@ export default function ProcessSection({ onStartOrder }: ProcessSectionProps) {
 
         {/* Step Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-          {steps.map((step, idx) => {
+          {steps.map((step) => {
             const Icon = step.icon;
             return (
               <div
@@ -102,13 +113,13 @@ export default function ProcessSection({ onStartOrder }: ProcessSectionProps) {
                 Ready to reserve your celebration date?
               </p>
               <p className="text-xs text-stone-400">
-                Dates fill up quickly on weekends. We suggest inquiring 2-3 weeks in advance.
+                Dates fill up quickly on weekends. We suggest inquiring 1–2 weeks in advance.
               </p>
             </div>
           </div>
 
           <button
-            onClick={onStartOrder}
+            onClick={handleClick}
             className="px-6 py-3 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs sm:text-sm transition-all whitespace-nowrap shadow-sm cursor-pointer"
           >
             Start Order Form
