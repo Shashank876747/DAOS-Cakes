@@ -13,8 +13,22 @@ export const SECTIONS: SectionConfig[] = [
     id: 'home',
     path: '/',
     aliases: ['/home', '#home'],
-    title: 'DAOS Cakes',
+    title: 'DAOS Cakes - Custom Artisanal Celebration Cakes in Smyrna, GA',
     navLabel: 'Home'
+  },
+  {
+    id: 'menu',
+    path: '/menu',
+    aliases: ['#menu', '/menu', '#flavors', '/flavors'],
+    title: 'Signature Menu & Flavor Guide | DAOS Cakes',
+    navLabel: 'Menu & Flavors'
+  },
+  {
+    id: 'estimator',
+    path: '/estimator',
+    aliases: ['#estimator', '/pricing', '#pricing', '/pricing-estimator'],
+    title: 'Price & Size Estimator | DAOS Cakes',
+    navLabel: 'Price Estimator'
   },
   {
     id: 'how-it-works',
@@ -29,6 +43,20 @@ export const SECTIONS: SectionConfig[] = [
     aliases: ['/order-form', '#order-form', '#order', '/order'],
     title: 'Order Form | DAOS Cakes',
     navLabel: 'Order Form'
+  },
+  {
+    id: 'about',
+    path: '/about',
+    aliases: ['#about', '/about'],
+    title: 'About the Baker | DAOS Cakes',
+    navLabel: 'About'
+  },
+  {
+    id: 'faq',
+    path: '/faq',
+    aliases: ['#faq', '/faq'],
+    title: 'Frequently Asked Questions | DAOS Cakes',
+    navLabel: 'FAQs'
   },
   {
     id: 'contact',

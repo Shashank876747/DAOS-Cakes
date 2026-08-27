@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Cake, Menu as MenuIcon, X, Sparkles, ArrowDown } from 'lucide-react';
+import { Cake, Menu as MenuIcon, X, ArrowDown } from 'lucide-react';
 
 interface HeaderProps {
   siteName?: string;
-  tagline?: string;
-  announcementText?: string;
   activeSectionId?: string;
   onNavigate?: (sectionId: string) => void;
 }
@@ -26,8 +24,11 @@ export default function Header({
 
   const navItems = [
     { id: 'home', label: 'Home', path: '/' },
+    { id: 'menu', label: 'Menu & Flavors', path: '/menu' },
+    { id: 'estimator', label: 'Price Estimator', path: '/estimator' },
     { id: 'how-it-works', label: 'How It Works', path: '/how-it-works' },
-    { id: 'order-form', label: 'Order Form', path: '/order' },
+    { id: 'about', label: 'About', path: '/about' },
+    { id: 'faq', label: 'FAQs', path: '/faq' },
     { id: 'contact', label: 'Contact', path: '/contact' }
   ];
 
@@ -41,7 +42,7 @@ export default function Header({
           onClick={(e) => handleLinkClick(e, 'home')}
           className="flex items-center gap-3 cursor-pointer group select-none text-stone-900 shrink-0"
           id="header-logo"
-          title="DAOS Cakes - Home (/)"
+          title="DAOS Cakes - Home"
         >
           <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 group-hover:bg-amber-200 transition-colors shadow-2xs">
             <Cake className="w-6 h-6" />
@@ -54,7 +55,7 @@ export default function Header({
         </a>
 
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-1 font-medium text-stone-700 bg-stone-100/90 p-1.5 rounded-full border border-stone-200/70 shadow-2xs">
+        <nav className="hidden xl:flex items-center gap-1 font-medium text-stone-700 bg-stone-100/90 p-1.5 rounded-full border border-stone-200/70 shadow-2xs">
           {navItems.map((item) => {
             const isActive = activeSectionId === item.id;
             return (
@@ -62,13 +63,13 @@ export default function Header({
                 key={item.id}
                 href={item.path}
                 onClick={(e) => handleLinkClick(e, item.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   isActive
                     ? 'bg-amber-800 text-amber-50 shadow-xs'
                     : 'text-stone-700 hover:text-amber-900 hover:bg-stone-200/70'
                 }`}
                 id={`nav-${item.id}`}
-                title={`Navigate to ${item.label} (${item.path})`}
+                title={`Navigate to ${item.label}`}
               >
                 {item.label}
               </a>
@@ -90,10 +91,10 @@ export default function Header({
         </div>
 
         {/* Mobile menu toggle */}
-        <div className="lg:hidden flex items-center">
+        <div className="xl:hidden flex items-center">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl text-stone-700 hover:text-amber-800 hover:bg-stone-100 focus:outline-hidden"
+            className="p-2 rounded-xl text-stone-700 hover:text-amber-800 hover:bg-stone-100 focus:outline-hidden cursor-pointer"
             id="mobile-menu-toggle"
             aria-label="Toggle navigation"
           >
@@ -104,7 +105,7 @@ export default function Header({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-stone-50 border-b border-amber-100 px-4 pt-2 pb-6 space-y-2 shadow-lg animate-in slide-in-from-top-2 duration-200">
+        <div className="xl:hidden bg-stone-50 border-b border-amber-100 px-4 pt-2 pb-6 space-y-1.5 shadow-lg animate-in slide-in-from-top-2 duration-200">
           {navItems.map((item) => {
             const isActive = activeSectionId === item.id;
             return (

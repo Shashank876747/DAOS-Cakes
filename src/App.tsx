@@ -6,15 +6,22 @@ import {
   RefreshCw,
   ExternalLink,
   PhoneCall,
-  CheckCircle2
+  CheckCircle2,
+  Sparkles
 } from 'lucide-react';
 import heroImage from './assets/images/daos_hero_cake_1785892806355.jpg';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import MenuSection from './components/MenuSection';
+import CakeEstimatorSection from './components/CakeEstimatorSection';
 import ProcessSection from './components/ProcessSection';
+import AboutSection from './components/AboutSection';
+import TestimonialsSection from './components/TestimonialsSection';
+import FaqSection from './components/FaqSection';
+import CookieConsentBanner from './components/CookieConsentBanner';
+import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 import { initGA } from './utils/analytics';
 import { useSectionRouter } from './hooks/useSectionRouter';
-import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 
 const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdQ7d5odCaliDzgkufvsD_hfwdhbi1meCHUyO_zMdgoLJVMwA/viewform?usp=header';
 
@@ -56,10 +63,18 @@ export default function App() {
     }, 500);
   };
 
+  const handleSelectMenuItem = (itemTitle: string) => {
+    navigateTo('order-form');
+  };
+
+  const handleApplyEstimate = (estimateDetails: string) => {
+    navigateTo('order-form');
+  };
+
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-amber-200 selection:text-amber-900 flex flex-col">
       
-      {/* Header Navigation with active URL support */}
+      {/* Header Navigation with Active URL Support */}
       <Header
         siteName="DAOS Cakes"
         activeSectionId={activeSectionId}
@@ -78,6 +93,11 @@ export default function App() {
               
               {/* Copy & CTA */}
               <div className="lg:col-span-7 space-y-6 text-left">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold uppercase tracking-wider border border-amber-200">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-800" />
+                  <span>Artisanal Bakery • Smyrna &amp; Greater Atlanta, GA</span>
+                </div>
+
                 <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight leading-[1.12]">
                   Handcrafted Celebration Cakes Baked Fresh to Order.
                 </h1>
@@ -113,6 +133,14 @@ export default function App() {
                     <span>Order Form</span>
                     <ArrowDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
                   </button>
+
+                  <button
+                    onClick={() => navigateTo('menu')}
+                    className="bg-stone-100 hover:bg-stone-200 text-stone-800 px-6 py-4 rounded-full font-semibold text-base border border-stone-300 transition-all flex items-center justify-center cursor-pointer"
+                    id="hero-explore-menu-btn"
+                  >
+                    <span>Explore Menu &amp; Flavors</span>
+                  </button>
                 </div>
               </div>
 
@@ -146,12 +174,22 @@ export default function App() {
           </div>
         </section>
 
-        {/* 2. How Ordering Works (4 Steps) */}
+        {/* 2. Signature Menu & Flavor Explorer */}
+        <section id="menu">
+          <MenuSection onSelectForOrder={handleSelectMenuItem} />
+        </section>
+
+        {/* 3. Interactive Cake Price & Size Estimator */}
+        <section id="estimator">
+          <CakeEstimatorSection onApplyToOrder={handleApplyEstimate} />
+        </section>
+
+        {/* 4. How Ordering Works (4 Steps) */}
         <section id="how-it-works">
           <ProcessSection onStartOrder={() => navigateTo('order-form')} />
         </section>
 
-        {/* 3. Direct Embedded Google Form Section -> URL: /order or /order-form */}
+        {/* 5. Direct Embedded Google Form Section -> URL: /order or /order-form */}
         <section id="order-form" className="py-16 md:py-24 bg-gradient-to-b from-stone-50 via-amber-50/20 to-stone-100 border-b border-stone-200 scroll-mt-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             
@@ -233,7 +271,7 @@ export default function App() {
                 </div>
 
                 <div className="text-right sm:border-l sm:border-stone-800 sm:pl-4">
-                  <span className="text-amber-300 font-semibold block">Pickup: Atlanta & Smyrna, GA</span>
+                  <span className="text-amber-300 font-semibold block">Pickup: Smyrna, GA</span>
                   <span className="text-stone-400">Payment: Cash on Pickup</span>
                 </div>
               </div>
@@ -241,6 +279,19 @@ export default function App() {
             </div>
 
           </div>
+        </section>
+
+        {/* 6. About the Baker */}
+        <section id="about">
+          <AboutSection />
+        </section>
+
+        {/* 7. Client Testimonials */}
+        <TestimonialsSection />
+
+        {/* 8. Frequently Asked Questions */}
+        <section id="faq">
+          <FaqSection />
         </section>
 
       </main>
@@ -255,6 +306,11 @@ export default function App() {
             window.location.href = '/terms.html';
           }
         }}
+      />
+
+      {/* Cookie & Advertising Consent Banner for Google AdSense Policy Compliance */}
+      <CookieConsentBanner
+        onOpenPrivacy={() => setPrivacyModalOpen(true)}
       />
 
       {/* Privacy Policy Interactive Modal */}
