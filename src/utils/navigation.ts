@@ -17,20 +17,6 @@ export const SECTIONS: SectionConfig[] = [
     navLabel: 'Home'
   },
   {
-    id: 'menu',
-    path: '/menu',
-    aliases: ['#menu', '/menu', '#flavors', '/flavors'],
-    title: 'Signature Menu & Flavor Guide | DAOS Cakes',
-    navLabel: 'Menu & Flavors'
-  },
-  {
-    id: 'estimator',
-    path: '/estimator',
-    aliases: ['#estimator', '/pricing', '#pricing', '/pricing-estimator'],
-    title: 'Price & Size Estimator | DAOS Cakes',
-    navLabel: 'Price Estimator'
-  },
-  {
     id: 'how-it-works',
     path: '/how-it-works',
     aliases: ['#how-it-works', '/process', '#process'],

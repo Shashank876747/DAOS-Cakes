@@ -24,8 +24,6 @@ export default function Header({
 
   const navItems = [
     { id: 'home', label: 'Home', path: '/' },
-    { id: 'menu', label: 'Menu & Flavors', path: '/menu' },
-    { id: 'estimator', label: 'Price Estimator', path: '/estimator' },
     { id: 'how-it-works', label: 'How It Works', path: '/how-it-works' },
     { id: 'about', label: 'About', path: '/about' },
     { id: 'faq', label: 'FAQs', path: '/faq' },
@@ -55,7 +53,7 @@ export default function Header({
         </a>
 
         {/* Desktop Nav */}
-        <nav className="hidden xl:flex items-center gap-1 font-medium text-stone-700 bg-stone-100/90 p-1.5 rounded-full border border-stone-200/70 shadow-2xs">
+        <nav className="hidden md:flex items-center gap-1 font-medium text-stone-700 bg-stone-100/90 p-1.5 rounded-full border border-stone-200/70 shadow-2xs">
           {navItems.map((item) => {
             const isActive = activeSectionId === item.id;
             return (
@@ -63,7 +61,7 @@ export default function Header({
                 key={item.id}
                 href={item.path}
                 onClick={(e) => handleLinkClick(e, item.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
                   isActive
                     ? 'bg-amber-800 text-amber-50 shadow-xs'
                     : 'text-stone-700 hover:text-amber-900 hover:bg-stone-200/70'
@@ -91,7 +89,7 @@ export default function Header({
         </div>
 
         {/* Mobile menu toggle */}
-        <div className="xl:hidden flex items-center">
+        <div className="md:hidden flex items-center">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-xl text-stone-700 hover:text-amber-800 hover:bg-stone-100 focus:outline-hidden cursor-pointer"
@@ -105,7 +103,7 @@ export default function Header({
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-stone-50 border-b border-amber-100 px-4 pt-2 pb-6 space-y-1.5 shadow-lg animate-in slide-in-from-top-2 duration-200">
+        <div className="md:hidden bg-stone-50 border-b border-amber-100 px-4 pt-2 pb-6 space-y-1.5 shadow-lg animate-in slide-in-from-top-2 duration-200">
           {navItems.map((item) => {
             const isActive = activeSectionId === item.id;
             return (

@@ -12,8 +12,6 @@ import {
 import heroImage from './assets/images/daos_hero_cake_1785892806355.jpg';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import MenuSection from './components/MenuSection';
-import CakeEstimatorSection from './components/CakeEstimatorSection';
 import ProcessSection from './components/ProcessSection';
 import AboutSection from './components/AboutSection';
 import TestimonialsSection from './components/TestimonialsSection';
@@ -61,14 +59,6 @@ export default function App() {
     setTimeout(() => {
       setIsRefreshing(false);
     }, 500);
-  };
-
-  const handleSelectMenuItem = (itemTitle: string) => {
-    navigateTo('order-form');
-  };
-
-  const handleApplyEstimate = (estimateDetails: string) => {
-    navigateTo('order-form');
   };
 
   return (
@@ -130,16 +120,16 @@ export default function App() {
                     id="hero-order-now-btn"
                     title="Go to Order Form (/order)"
                   >
-                    <span>Order Form</span>
+                    <span>Open Order Form</span>
                     <ArrowDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
                   </button>
 
                   <button
-                    onClick={() => navigateTo('menu')}
+                    onClick={() => navigateTo('how-it-works')}
                     className="bg-stone-100 hover:bg-stone-200 text-stone-800 px-6 py-4 rounded-full font-semibold text-base border border-stone-300 transition-all flex items-center justify-center cursor-pointer"
-                    id="hero-explore-menu-btn"
+                    id="hero-how-it-works-btn"
                   >
-                    <span>Explore Menu &amp; Flavors</span>
+                    <span>How Ordering Works</span>
                   </button>
                 </div>
               </div>
@@ -163,7 +153,7 @@ export default function App() {
                       </div>
                       <div>
                         <h4 className="font-serif font-bold text-white text-sm">Bespoke Celebration Art</h4>
-                        <p className="text-xs text-stone-300">Custom orders tailored to your unique flavor and event palette.</p>
+                        <p className="text-xs text-stone-300">Custom orders tailored to your unique event palette.</p>
                       </div>
                     </div>
                   </div>
@@ -174,22 +164,12 @@ export default function App() {
           </div>
         </section>
 
-        {/* 2. Signature Menu & Flavor Explorer */}
-        <section id="menu">
-          <MenuSection onSelectForOrder={handleSelectMenuItem} />
-        </section>
-
-        {/* 3. Interactive Cake Price & Size Estimator */}
-        <section id="estimator">
-          <CakeEstimatorSection onApplyToOrder={handleApplyEstimate} />
-        </section>
-
-        {/* 4. How Ordering Works (4 Steps) */}
+        {/* 2. How Ordering Works (4 Steps) */}
         <section id="how-it-works">
           <ProcessSection onStartOrder={() => navigateTo('order-form')} />
         </section>
 
-        {/* 5. Direct Embedded Google Form Section -> URL: /order or /order-form */}
+        {/* 3. Direct Embedded Google Form Section -> URL: /order or /order-form */}
         <section id="order-form" className="py-16 md:py-24 bg-gradient-to-b from-stone-50 via-amber-50/20 to-stone-100 border-b border-stone-200 scroll-mt-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             
@@ -281,15 +261,15 @@ export default function App() {
           </div>
         </section>
 
-        {/* 6. About the Baker */}
+        {/* 4. About the Baker */}
         <section id="about">
           <AboutSection />
         </section>
 
-        {/* 7. Client Testimonials */}
+        {/* 5. Client Testimonials */}
         <TestimonialsSection />
 
-        {/* 8. Frequently Asked Questions */}
+        {/* 6. Frequently Asked Questions */}
         <section id="faq">
           <FaqSection />
         </section>
