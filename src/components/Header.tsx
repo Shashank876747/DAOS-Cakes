@@ -12,6 +12,7 @@ export default function Header({ siteName = 'DAOS Cakes' }: HeaderProps) {
 
   const navItems = [
     { label: 'Home', path: '/' },
+    { label: 'Pricing Estimator', path: '/pricing-estimator' },
     { label: 'How It Works', path: '/how-it-works' },
     { label: 'About', path: '/about' },
     { label: 'FAQs', path: '/faq' },

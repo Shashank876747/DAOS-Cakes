@@ -73,15 +73,20 @@ const CAKE_TYPES = [
   'Rich Chocolate',
   'Red Velvet',
   'Carrot Cake',
+  'Marble Sponge',
+  'Strawberry Infusion',
+  'Lemon Poppyseed',
   'Other'
 ];
 
 const CAKE_SIZES = [
-  { size: '4 INCH', servings: '2-4 Servings (Mini Celebration)' },
+  { size: '4 INCH', servings: '2-4 Servings (Mini / Smash Cake)' },
   { size: '6 INCH', servings: '6-10 Servings (Intimate Gathering)' },
-  { size: '8 INCH', servings: '12-16 Servings (Popular Party Size)' },
+  { size: '8 INCH', servings: '12-16 Servings (Most Popular Party Size)' },
   { size: '10 INCH', servings: '20-28 Servings (Large Celebration)' },
-  { size: '12 INCH', servings: '30-40 Servings (Event / Grand Party)' }
+  { size: '12 INCH', servings: '30-40 Servings (Event / Grand Banquet)' },
+  { size: '2-Tier (6" + 8")', servings: '35-40 Servings (Baby/Bridal Shower)' },
+  { size: '3-Tier (6" + 8" + 10")', servings: '65-75 Servings (Luxury Wedding / Gala)' }
 ];
 
 const ICING_TYPES = [
@@ -91,17 +96,19 @@ const ICING_TYPES = [
   'Chocolate Ganache',
   'Fondant Finish',
   'Whipped Cream Frosting',
+  'Naked / Semi-Naked',
   'Other'
 ];
 
 const OCCASIONS = [
-  'Anniversary',
   'Birthday',
+  'Wedding',
+  'Anniversary',
+  'Baby Shower',
   'Breakfast Event',
   "Mother's Day Special",
   'Party',
   'Staff Party',
-  'Wedding',
   'Other'
 ];
 
@@ -130,21 +137,160 @@ interface InteractiveOrderFormProps {
   googleFormUrl: string;
 }
 
+// Pricing lookup tables for real-time calculation in order form
+const SIZE_PRICES: { [key: string]: { base: number; servings: number } } = {
+  '4 INCH': { base: 45, servings: 4 },
+  '6 INCH': { base: 65, servings: 10 },
+  '8 INCH': { base: 85, servings: 16 },
+  '10 INCH': { base: 115, servings: 28 },
+  '12 INCH': { base: 155, servings: 40 },
+  '2-Tier (6" + 8")': { base: 145, servings: 40 },
+  '3-Tier (6" + 8" + 10")': { base: 245, servings: 75 }
+};
+
+const FLAVOR_PREMIUMS: { [key: string]: number } = {
+  'Vanilla Sponge': 0,
+  'Rich Chocolate': 5,
+  'Red Velvet': 5,
+  'Carrot Cake': 8,
+  'Marble Sponge': 5,
+  'Strawberry Infusion': 6,
+  'Lemon Poppyseed': 5,
+  'Other': 8
+};
+
+const ICING_PRICES: { [key: string]: number } = {
+  'American Buttercream': 0,
+  'Swiss Meringue Buttercream': 10,
+  'Cream Cheese Frosting': 10,
+  'Chocolate Ganache': 15,
+  'Fondant Finish': 25,
+  'Whipped Cream Frosting': 5,
+  'Naked / Semi-Naked': 0,
+  'Other': 12
+};
+
+const OCCASION_PRICES: { [key: string]: number } = {
+  'Birthday': 0,
+  'Wedding': 30,
+  'Anniversary': 10,
+  'Baby Shower': 10,
+  'Breakfast Event': 0,
+  "Mother's Day Special": 0,
+  'Party': 0,
+  'Staff Party': 0,
+  'Other': 5
+};
+
 export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrderFormProps) {
   const [currentSection, setCurrentSection] = useState<number>(1);
   const [formData, setFormData] = useState<OrderFormData>(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [submissionId, setSubmissionId] = useState<string>('');
+  const [estimatorSyncNotice, setEstimatorSyncNotice] = useState<string | null>(null);
+  const [lastAutoSyncTime, setLastAutoSyncTime] = useState<string>('Live');
+
+  // Compute live synchronized estimated quote from current form selections
+  const currentSizeData = SIZE_PRICES[formData.cakeSize] || SIZE_PRICES['8 INCH'];
+  const baseSizePrice = currentSizeData.base;
+  const flavorPremium = FLAVOR_PREMIUMS[formData.cakeType] ?? 0;
+  const icingPrice = ICING_PRICES[formData.icingType] ?? 0;
+  const occasionPrice = OCCASION_PRICES[formData.occasion] ?? 0;
+
+  const currentEstimatedTotal = baseSizePrice + flavorPremium + icingPrice + occasionPrice;
+  const currentDeposit = Math.round(currentEstimatedTotal / 2);
+  const currentPerGuest = (currentEstimatedTotal / (currentSizeData.servings || 16)).toFixed(2);
+
+  // Auto-sync on mount and listen to live changes from Price Estimator Section
+  React.useEffect(() => {
+    const applyEstimatorData = (parsed: any) => {
+      setFormData((prev) => ({
+        ...prev,
+        cakeType: parsed.cakeType || prev.cakeType,
+        cakeTypeOther: parsed.cakeTypeOther !== undefined ? parsed.cakeTypeOther : prev.cakeTypeOther,
+        cakeSize: parsed.cakeSize || prev.cakeSize,
+        icingType: parsed.icingType || prev.icingType,
+        icingTypeOther: parsed.icingTypeOther !== undefined ? parsed.icingTypeOther : prev.icingTypeOther,
+        occasion: parsed.occasion || prev.occasion,
+        occasionOther: parsed.occasionOther !== undefined ? parsed.occasionOther : prev.occasionOther,
+        colors: parsed.colors !== undefined ? parsed.colors : prev.colors,
+        wordsOnCake: parsed.wordsOnCake !== undefined ? parsed.wordsOnCake : prev.wordsOnCake,
+      }));
+
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setLastAutoSyncTime(timeStr);
+      if (parsed.estimatedTotal) {
+        setEstimatorSyncNotice(`Auto-Synced with Pricing Estimator: $${parsed.estimatedTotal} Estimated Market Quote`);
+      }
+    };
+
+    try {
+      const saved = localStorage.getItem('daos_estimated_order');
+      if (saved) {
+        applyEstimatorData(JSON.parse(saved));
+      }
+    } catch {
+      // Ignore
+    }
+
+    // Real-time custom event listener from CakeEstimatorSection
+    const handleEstimatorSync = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) {
+        applyEstimatorData(customEvent.detail);
+      }
+    };
+
+    window.addEventListener('daos_estimator_sync', handleEstimatorSync);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'daos_estimated_order' && e.newValue) {
+        try {
+          applyEstimatorData(JSON.parse(e.newValue));
+        } catch {
+          // Ignore
+        }
+      }
+    });
+
+    return () => {
+      window.removeEventListener('daos_estimator_sync', handleEstimatorSync);
+    };
+  }, []);
 
   const handleChange = (field: keyof OrderFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    const updated = { ...formData, [field]: value };
+    setFormData(updated);
+
     if (errors[field]) {
       setErrors((prev) => {
         const next = { ...prev };
         delete next[field];
         return next;
       });
+    }
+
+    // If changing Section 2 fields, auto-broadcast and save to sync with the Price Estimator
+    if (['cakeType', 'cakeTypeOther', 'cakeSize', 'icingType', 'icingTypeOther', 'occasion', 'occasionOther', 'colors', 'wordsOnCake'].includes(field)) {
+      try {
+        const syncPayload = {
+          cakeType: updated.cakeType,
+          cakeTypeOther: updated.cakeTypeOther,
+          cakeSize: updated.cakeSize,
+          icingType: updated.icingType,
+          icingTypeOther: updated.icingTypeOther,
+          occasion: updated.occasion,
+          occasionOther: updated.occasionOther,
+          colors: updated.colors,
+          wordsOnCake: updated.wordsOnCake,
+          estimatedTotal: currentEstimatedTotal,
+          lastSyncedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        localStorage.setItem('daos_estimated_order', JSON.stringify(syncPayload));
+        window.dispatchEvent(new CustomEvent('daos_form_sync', { detail: syncPayload }));
+      } catch {
+        // Ignore
+      }
     }
   };
 
@@ -242,12 +388,12 @@ export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrder
         </div>
 
         {/* Stepper Progress Bar */}
-        <div className="grid grid-cols-4 gap-2 sm:gap-4 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-6">
           {[
-            { num: 1, label: 'Contact Details' },
-            { num: 2, label: 'Order Details' },
-            { num: 3, label: 'Schedule a Call' },
-            { num: 4, label: 'Pickup & Verification' }
+            { num: 1, label: '1. Contact Details' },
+            { num: 2, label: '2. Order Details' },
+            { num: 3, label: '3. Schedule a Call' },
+            { num: 4, label: '4. Pickup & Review' }
           ].map((s) => {
             const isCompleted = currentSection > s.num;
             const isCurrent = currentSection === s.num;
@@ -255,16 +401,13 @@ export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrder
               <button
                 key={s.num}
                 type="button"
-                onClick={() => {
-                  if (s.num < currentSection) setCurrentSection(s.num);
-                }}
-                disabled={s.num > currentSection}
-                className={`text-left p-2.5 sm:p-3 rounded-2xl border transition-all ${
+                onClick={() => setCurrentSection(s.num)}
+                className={`text-left p-2.5 sm:p-3 rounded-2xl border transition-all cursor-pointer ${
                   isCurrent
-                    ? 'bg-amber-500/20 border-amber-400 text-white shadow-xs'
+                    ? 'bg-amber-500/20 border-amber-400 text-white shadow-xs ring-2 ring-amber-400/40'
                     : isCompleted
-                    ? 'bg-stone-800/80 border-stone-700 text-stone-300 hover:bg-stone-800 cursor-pointer'
-                    : 'bg-stone-900/50 border-stone-800 text-stone-500 opacity-60 cursor-not-allowed'
+                    ? 'bg-stone-800/80 border-stone-700 text-stone-300 hover:bg-stone-800'
+                    : 'bg-stone-900/70 border-stone-800 text-stone-400 hover:bg-stone-800 hover:text-stone-200'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
@@ -280,6 +423,35 @@ export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrder
             );
           })}
         </div>
+
+        {/* Persistent Imported from Price Estimator Banner */}
+        {estimatorSyncNotice && (
+          <div className="mt-4 p-3.5 sm:p-4 rounded-2xl bg-amber-950/60 border border-amber-500/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse mt-1 sm:mt-0 shrink-0" />
+              <div>
+                <div className="font-bold text-amber-200 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Estimator Details Imported &amp; Synced:</span>
+                </div>
+                <div className="text-stone-300 text-[11px] mt-0.5">
+                  <strong>{formData.cakeSize}</strong> • <strong>{formData.cakeType === 'Other' ? (formData.cakeTypeOther || 'Custom') : formData.cakeType}</strong> • <strong>{formData.icingType}</strong> • Colors: <em>"{formData.colors || 'Custom'}"</em> • Words: <em>"{formData.wordsOnCake || 'Custom'}"</em>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="font-serif text-lg font-bold text-amber-300">${currentEstimatedTotal}</span>
+              <button
+                type="button"
+                onClick={() => setCurrentSection(2)}
+                className="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs transition-colors cursor-pointer"
+              >
+                View Section 2 Details
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Confirmation State */}
@@ -567,13 +739,72 @@ export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrder
           {currentSection === 2 && (
             <div className="space-y-8 animate-in fade-in">
               <div className="border-b border-stone-200 pb-4">
-                <h4 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 flex items-center gap-2">
-                  <Cake className="w-5 h-5 text-amber-800" />
-                  <span>Section 2: Order Details</span>
-                </h4>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <h4 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 flex items-center gap-2">
+                    <Cake className="w-5 h-5 text-amber-800" />
+                    <span>Section 2: Order Details</span>
+                  </h4>
+                  {estimatorSyncNotice && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 text-xs font-bold border border-emerald-300">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>{estimatorSyncNotice}</span>
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs sm:text-sm text-stone-600 mt-1">
                   Customize the sponge flavor, size, frosting finish, occasion, and custom writing.
                 </p>
+              </div>
+
+              {/* Real-time Synced Live Pricing Estimator Card */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-stone-900 text-white border border-stone-800 shadow-md">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                      </span>
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400">
+                        Auto-Synced Market Pricing
+                      </span>
+                      <span className="text-[11px] text-stone-400">({lastAutoSyncTime})</span>
+                    </div>
+                    <div className="flex items-baseline gap-3">
+                      <span className="font-serif text-3xl font-bold text-amber-300">
+                        ${currentEstimatedTotal}
+                      </span>
+                      <span className="text-xs text-stone-300">
+                        (~${currentPerGuest} / serving • 50% Deposit: <strong className="text-emerald-400">${currentDeposit}</strong>)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <a
+                      href="#estimator"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const el = document.getElementById('estimator');
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                          window.location.href = '/pricing-estimator';
+                        }
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Customize in Full Estimator</span>
+                    </a>
+                  </div>
+                </div>
+                <div className="mt-3 pt-2.5 border-t border-stone-800 text-[11px] text-stone-400 flex flex-wrap items-center justify-between gap-2">
+                  <span>
+                    Current Specs: <strong>{formData.cakeSize || '8 INCH'}</strong> • <strong>{formData.cakeType}</strong> • <strong>{formData.icingType}</strong>
+                  </span>
+                  <span className="text-stone-500">*Live synchronized across form &amp; estimator</span>
+                </div>
               </div>
 
               {/* 1. Cake Type */}

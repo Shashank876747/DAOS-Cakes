@@ -55,6 +55,11 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
                 </Link>
               </li>
               <li>
+                <Link to="/pricing-estimator" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Price &amp; Size Estimator (/pricing-estimator)
+                </Link>
+              </li>
+              <li>
                 <Link to="/how-it-works" className="text-stone-400 hover:text-amber-300 transition-colors">
                   How Ordering Works (/how-it-works)
                 </Link>

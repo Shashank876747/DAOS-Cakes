@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, ArrowRight, Cake, HelpCircle, FileSpreadsheet } from 'lucide-react';
+import { Home, ArrowRight, Cake, HelpCircle, FileSpreadsheet, Calculator } from 'lucide-react';
 
 export default function NotFoundPage() {
   return (
@@ -34,6 +34,17 @@ export default function NotFoundPage() {
               <span className="flex items-center gap-2">
                 <Home className="w-4 h-4 text-amber-800" />
                 <span>Home Page</span>
+              </span>
+              <ArrowRight className="w-4 h-4 text-stone-400" />
+            </Link>
+
+            <Link
+              to="/pricing-estimator"
+              className="flex items-center justify-between p-3 rounded-xl bg-stone-50 hover:bg-amber-50 text-stone-800 hover:text-amber-900 border border-stone-200 transition-colors text-sm font-medium"
+            >
+              <span className="flex items-center gap-2">
+                <Calculator className="w-4 h-4 text-amber-800" />
+                <span>Pricing &amp; Size Estimator</span>
               </span>
               <ArrowRight className="w-4 h-4 text-stone-400" />
             </Link>

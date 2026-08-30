@@ -1,18 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Sparkles,
   ArrowRight,
   CheckCircle2,
   Heart,
   Calendar,
-  ChefHat
+  ChefHat,
+  Cake,
+  Calculator
 } from 'lucide-react';
 import heroImage from '../assets/images/daos_hero_cake_1785892806355.jpg';
+import CakeEstimatorSection from '../components/CakeEstimatorSection';
 import TestimonialsSection from '../components/TestimonialsSection';
 import FaqSection from '../components/FaqSection';
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-0">
       {/* 1. Hero Section */}
@@ -108,35 +113,56 @@ export default function HomePage() {
       {/* 2. Quick Navigation Bento Cards */}
       <section className="py-12 bg-white border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <Link
-              to="/how-it-works"
+              to="/pricing-estimator"
               className="p-6 rounded-3xl bg-amber-50/60 hover:bg-amber-50 border border-amber-200/80 transition-all hover:shadow-md group flex flex-col justify-between"
             >
               <div className="space-y-3">
                 <div className="w-12 h-12 rounded-2xl bg-amber-800 text-amber-100 flex items-center justify-center shadow-xs">
-                  <Calendar className="w-6 h-6" />
+                  <Calculator className="w-6 h-6" />
                 </div>
                 <h3 className="font-serif text-xl font-bold text-stone-900 group-hover:text-amber-800 transition-colors">
-                  How Ordering Works
+                  Price Estimator
                 </h3>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  Understand our 4-step ordering process, required advance lead time, and Smyrna pickup steps.
+                  Interactive calculator for guest count, tiers, gourmet fillings, decor art, and estimated quote.
                 </p>
               </div>
               <div className="mt-4 flex items-center gap-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
-                <span>View 4-Step Process</span>
+                <span>Calculate Price</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+
+            <Link
+              to="/how-it-works"
+              className="p-6 rounded-3xl bg-stone-50 hover:bg-stone-100/80 border border-stone-200 transition-all hover:shadow-md group flex flex-col justify-between"
+            >
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-stone-800 text-amber-300 flex items-center justify-center shadow-xs">
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <h3 className="font-serif text-xl font-bold text-stone-900 group-hover:text-amber-800 transition-colors">
+                  How It Works
+                </h3>
+                <p className="text-sm text-stone-600 leading-relaxed">
+                  Understand our 4-step ordering process, advance notice lead time, and Smyrna pickup steps.
+                </p>
+              </div>
+              <div className="mt-4 flex items-center gap-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
+                <span>View Process</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
 
             <Link
               to="/about"
-              className="p-6 rounded-3xl bg-stone-50 hover:bg-stone-100/80 border border-stone-200 transition-all hover:shadow-md group flex flex-col justify-between"
+              className="p-6 rounded-3xl bg-amber-50/60 hover:bg-amber-50 border border-amber-200/80 transition-all hover:shadow-md group flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-stone-800 text-amber-300 flex items-center justify-center shadow-xs">
+                <div className="w-12 h-12 rounded-2xl bg-amber-800 text-amber-100 flex items-center justify-center shadow-xs">
                   <ChefHat className="w-6 h-6" />
                 </div>
                 <h3 className="font-serif text-xl font-bold text-stone-900 group-hover:text-amber-800 transition-colors">
@@ -164,7 +190,7 @@ export default function HomePage() {
                   Place an Order
                 </h3>
                 <p className="text-sm text-amber-100/90 leading-relaxed">
-                  Submit your custom cake specifications directly through our live synchronized order form.
+                  Submit your custom cake specifications directly through our live order form.
                 </p>
               </div>
               <div className="mt-4 flex items-center gap-1 text-xs font-bold text-amber-200 uppercase tracking-wider">
@@ -177,7 +203,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Client Testimonials */}
+      {/* 3. Interactive Cake Price & Size Estimator Section */}
+      <CakeEstimatorSection onApplyToOrder={() => navigate('/order')} />
+
+      {/* 4. Client Testimonials */}
       <TestimonialsSection />
 
       {/* 5. FAQs */}

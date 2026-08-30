@@ -14,7 +14,6 @@ import OrderPage from './pages/OrderPage';
 import AboutPage from './pages/AboutPage';
 import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
-import MenuPage from './pages/MenuPage';
 import EstimatorPage from './pages/EstimatorPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -56,9 +55,6 @@ export default function App() {
             <Route path="/contact" element={<ContactPage />} />
 
             {/* Additional Distinct Feature Routes */}
-            <Route path="/menu" element={<MenuPage />} />
-            <Route path="/flavors" element={<Navigate to="/menu" replace />} />
-            
             <Route path="/pricing-estimator" element={<EstimatorPage />} />
             <Route path="/estimator" element={<Navigate to="/pricing-estimator" replace />} />
             <Route path="/pricing" element={<Navigate to="/pricing-estimator" replace />} />

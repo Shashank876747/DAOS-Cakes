@@ -84,6 +84,91 @@ export default function AppsScriptGuideModal({ isOpen, onClose }: AppsScriptGuid
             </div>
           </div>
 
+          {/* Quick-Copy Options for Google Form Dropdowns */}
+          <div className="space-y-3 bg-amber-50/70 border border-amber-200 p-5 rounded-2xl">
+            <h4 className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-amber-800" />
+              <span>Google Form Option Quick-Copy Palettes</span>
+            </h4>
+            <p className="text-xs text-stone-600">
+              When editing your Google Form questions, click copy on each block below and paste into Option 1:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="p-3 bg-white rounded-xl border border-stone-200 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-stone-900">1. Sponge Flavors</strong>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`Vanilla Sponge\nRich Chocolate\nRed Velvet\nCarrot Cake\nMarble Sponge\nStrawberry Infusion\nLemon Poppyseed\nOther`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="text-[11px] font-bold text-amber-800 hover:text-amber-900 bg-amber-100 px-2 py-1 rounded-md cursor-pointer"
+                  >
+                    Copy List
+                  </button>
+                </div>
+                <p className="text-[11px] text-stone-500 font-mono">Vanilla Sponge, Rich Chocolate, Red Velvet, Carrot Cake...</p>
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-stone-200 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-stone-900">2. Cake Sizes</strong>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`4 INCH\n6 INCH\n8 INCH\n10 INCH\n12 INCH\n2-Tier (6" + 8")\n3-Tier (6" + 8" + 10")`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="text-[11px] font-bold text-amber-800 hover:text-amber-900 bg-amber-100 px-2 py-1 rounded-md cursor-pointer"
+                  >
+                    Copy List
+                  </button>
+                </div>
+                <p className="text-[11px] text-stone-500 font-mono">4 INCH, 6 INCH, 8 INCH, 10 INCH, 12 INCH, 2-Tier, 3-Tier</p>
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-stone-200 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-stone-900">3. Icing / Frosting Types</strong>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`American Buttercream\nSwiss Meringue Buttercream\nCream Cheese Frosting\nChocolate Ganache\nFondant Finish\nWhipped Cream Frosting\nNaked / Semi-Naked\nOther`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="text-[11px] font-bold text-amber-800 hover:text-amber-900 bg-amber-100 px-2 py-1 rounded-md cursor-pointer"
+                  >
+                    Copy List
+                  </button>
+                </div>
+                <p className="text-[11px] text-stone-500 font-mono">American Buttercream, Swiss Meringue, Cream Cheese...</p>
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-stone-200 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <strong className="text-xs text-stone-900">4. Occasions</strong>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`Birthday\nWedding\nAnniversary\nBaby Shower\nBreakfast Event\nMother's Day Special\nParty\nStaff Party\nOther`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="text-[11px] font-bold text-amber-800 hover:text-amber-900 bg-amber-100 px-2 py-1 rounded-md cursor-pointer"
+                  >
+                    Copy List
+                  </button>
+                </div>
+                <p className="text-[11px] text-stone-500 font-mono">Birthday, Wedding, Anniversary, Baby Shower, Staff Party...</p>
+              </div>
+            </div>
+          </div>
+
           {/* Apps Script Code Box */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
