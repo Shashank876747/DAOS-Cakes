@@ -288,8 +288,20 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
       lastSyncedAt: lastMarketSync
     };
 
+    // Persist only non-sensitive estimator fields to localStorage.
+    const storagePayload = {
+      cakeSize: currentSizeObj.id,
+      filling: filling,
+      addCupcakes: addCupcakes,
+      addMacarons: addMacarons,
+      estimatedTotal: estimatedTotal,
+      depositAmount: depositAmount,
+      pricePerServing: pricePerServing,
+      lastSyncedAt: lastMarketSync
+    };
+
     try {
-      localStorage.setItem('daos_estimated_order', JSON.stringify(payload));
+      localStorage.setItem('daos_estimated_order', JSON.stringify(storagePayload));
     } catch {
       // Ignore
     }
