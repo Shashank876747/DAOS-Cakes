@@ -15,7 +15,7 @@ DAOS Cakes is a responsive, modern web application for a custom artisanal bakery
 - **Embedded Order Inquiries**: Seamlessly connected order quote workflow.
 - **Public Availability Schedule**: Transparent view of upcoming pickup slots and baker capacity.
 - **Cottage Food Permitted & Food Safety Info**: Clear Georgia Cottage Food regulatory details, kitchen safety procedures, and transport tips.
-- **Multi-Cloud Deployment & SEO Ready**: Configured for Cloudflare Pages, Firebase Hosting, and Netlify with automated XML sitemaps, structured JSON-LD schemas, and Google Search Console verification.
+- **Multi-Cloud Deployment & SEO Ready**: Configured for Cloudflare Pages and Netlify with automated XML sitemaps, structured JSON-LD schemas, and Google Search Console verification.
 - **Google AdSense Monetization**: Clean auto ads integration and verified `ads.txt`.
 
 ---
@@ -77,7 +77,6 @@ Ensure you have [Node.js](https://nodejs.org/) (v18 or higher) and `npm` install
 │   ├── workflows/
 │   │   ├── ci.yml               # Automated TypeScript checks & build CI
 │   │   ├── codeql.yml           # Automated GitHub CodeQL SAST scanning
-│   │   ├── firebase-hosting.yml # Firebase deployment pipeline
 │   │   └── netlify.yml          # Automated Netlify continuous deployment
 │   ├── dependabot.yml           # Weekly automated dependency maintenance
 │   └── pull_request_template.md # Standard PR review checklist
@@ -108,7 +107,6 @@ To enable automated deployments via GitHub Actions, add these repository secrets
 | :--- | :--- |
 | `NETLIFY_AUTH_TOKEN` | Personal access token from [Netlify User Settings](https://app.netlify.com/user/applications#personal-access-tokens) |
 | `NETLIFY_SITE_ID` | API ID found under **Site configuration > General > Site details** on Netlify |
-| `FIREBASE_SERVICE_ACCOUNT_DAOS_CAKES` | Service account JSON key for Firebase Hosting deployment |
 
 ---
 
