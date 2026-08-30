@@ -27,6 +27,43 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { buildPrefilledGoogleFormUrl } from '../lib/googleFormService';
 
+const LOCAL_STORAGE_CRYPTO_SECRET =
+  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_LOCALSTORAGE_CRYPTO_KEY) ||
+  (typeof process !== 'undefined' && (process as any).env?.REACT_APP_LOCALSTORAGE_CRYPTO_KEY) ||
+  'replace-this-default-secret-in-env';
+
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+const toBase64 = (bytes: Uint8Array): string => {
+  let binary = '';
+  bytes.forEach((b) => {
+    binary += String.fromCharCode(b);
+  });
+  return btoa(binary);
+};
+
+const deriveAesKey = async (): Promise<CryptoKey> => {
+  const hash = await crypto.subtle.digest('SHA-256', textEncoder.encode(LOCAL_STORAGE_CRYPTO_SECRET));
+  return crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['encrypt']);
+};
+
+const encryptForLocalStorage = async (plainText: string): Promise<string> => {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveAesKey();
+  const encrypted = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    textEncoder.encode(plainText)
+  );
+
+  return JSON.stringify({
+    v: 1,
+    iv: toBase64(iv),
+    data: toBase64(new Uint8Array(encrypted))
+  });
+};
+
 interface CakeEstimatorProps {
   onApplyToOrder?: (estimateDetails: string) => void;
 }
@@ -355,29 +392,28 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
     setTimeout(() => setHasCopied(false), 2500);
   };
 
-  const handleApplyAndTransfer = () => {
+  const handleApplyAndTransfer = async () => {
     const finalCakeType = cakeType === 'Other' ? (cakeTypeOther || 'Custom') : cakeType;
     const finalIcing = icingType === 'Other' ? (icingTypeOther || 'Custom') : icingType;
     const finalOccasion = occasion === 'Other' ? (occasionOther || 'Event') : occasion;
 
     // Save to localStorage for instant synchronization with InteractiveOrderForm
     try {
-      localStorage.setItem(
-        'daos_estimated_order',
-        JSON.stringify({
-          cakeType: finalCakeType,
-          cakeTypeOther: cakeType === 'Other' ? cakeTypeOther : '',
-          cakeSize: currentSizeObj.id,
-          icingType: finalIcing,
-          icingTypeOther: icingType === 'Other' ? icingTypeOther : '',
-          occasion: finalOccasion,
-          occasionOther: occasion === 'Other' ? occasionOther : '',
-          colors: colors,
-          wordsOnCake: wordsOnCake,
-          estimatedTotal: estimatedTotal,
-          lastSyncedAt: lastMarketSync
-        })
-      );
+      const estimatePayload = JSON.stringify({
+        cakeType: finalCakeType,
+        cakeTypeOther: cakeType === 'Other' ? cakeTypeOther : '',
+        cakeSize: currentSizeObj.id,
+        icingType: finalIcing,
+        icingTypeOther: icingType === 'Other' ? icingTypeOther : '',
+        occasion: finalOccasion,
+        occasionOther: occasion === 'Other' ? occasionOther : '',
+        colors: colors,
+        wordsOnCake: wordsOnCake,
+        estimatedTotal: estimatedTotal,
+        lastSyncedAt: lastMarketSync
+      });
+      const encryptedPayload = await encryptForLocalStorage(estimatePayload);
+      localStorage.setItem('daos_estimated_order', encryptedPayload);
     } catch {
       // Ignore local storage error in restricted env
     }
