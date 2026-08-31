@@ -105,27 +105,6 @@ const decryptFromLocalStorage = async (stored: string): Promise<any> => {
   return JSON.parse(textDecoder.decode(plaintext));
 };
 
-const deriveAesKey = async (): Promise<CryptoKey> => {
-  const hash = await crypto.subtle.digest('SHA-256', textEncoder.encode(LOCAL_STORAGE_CRYPTO_SECRET));
-  return crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['encrypt']);
-};
-
-const encryptForLocalStorage = async (plainText: string): Promise<string> => {
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveAesKey();
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    textEncoder.encode(plainText)
-  );
-
-  return JSON.stringify({
-    v: 1,
-    iv: toBase64(iv),
-    data: toBase64(new Uint8Array(encrypted))
-  });
-};
-
 interface CakeEstimatorProps {
   onApplyToOrder?: (estimateDetails: string) => void;
 }
@@ -427,33 +406,6 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
     };
 
     loadSavedOrder();
-        const parsed = JSON.parse(saved);
-        if (parsed.cakeSize) setCakeSize(parsed.cakeSize);
-        if (parsed.cakeSizeOther !== undefined) setCakeSizeOther(parsed.cakeSizeOther);
-        if (parsed.cakeType) setCakeType(parsed.cakeType);
-        if (parsed.cakeTypeOther !== undefined) setCakeTypeOther(parsed.cakeTypeOther);
-        if (parsed.icingType) setIcingType(parsed.icingType);
-        if (parsed.icingTypeOther !== undefined) setIcingTypeOther(parsed.icingTypeOther);
-        if (parsed.occasion) setOccasion(parsed.occasion);
-        if (parsed.occasionOther !== undefined) setOccasionOther(parsed.occasionOther);
-        if (parsed.colors) setColors(parsed.colors);
-        if (parsed.wordsOnCake !== undefined) setWordsOnCake(parsed.wordsOnCake);
-        if (parsed.filling) setFilling(parsed.filling);
-        if (parsed.fillingOther !== undefined) setFillingOther(parsed.fillingOther);
-        if (parsed.pickupLocation) setPickupLocation(parsed.pickupLocation);
-        if (parsed.location) setPickupLocation(parsed.location);
-        if (parsed.deliveryAddress) setDeliveryAddress(parsed.deliveryAddress);
-        if (parsed.allergies) setAllergies(parsed.allergies);
-        if (parsed.cakeStyle) setCakeStyle(parsed.cakeStyle);
-        if (parsed.customDesignNotes) setCustomDesignNotes(parsed.customDesignNotes);
-        if (parsed.firstName) setFirstName(parsed.firstName);
-        if (parsed.lastName) setLastName(parsed.lastName);
-        if (parsed.email) setEmail(parsed.email);
-        if (parsed.phoneNumber) setPhoneNumber(parsed.phoneNumber);
-      }
-    } catch {
-      // Ignore
-    }
 
     const handleFormSync = (e: Event) => {
       const customEvent = e as CustomEvent;
