@@ -133,6 +133,14 @@ const CAKE_SIZES: CakeSizeOption[] = [
     guestCount: 75,
     marketBasePrice: 245,
     recommended: 'Weddings, luxury galas, grand milestones'
+  },
+  {
+    id: 'Other',
+    name: 'Other / Custom Size & Tiers',
+    servings: 'Custom Servings',
+    guestCount: 16,
+    marketBasePrice: 85,
+    recommended: 'Custom tiers, sculpted shapes, sheet cakes, or bespoke dimensions'
   }
 ];
 
@@ -144,7 +152,7 @@ const CAKE_TYPES = [
   { id: 'Marble Sponge', name: 'Marble Sponge', premium: 5, desc: 'Vanilla & chocolate swirl' },
   { id: 'Strawberry Infusion', name: 'Strawberry Infusion', premium: 6, desc: 'Real berry puree reduction' },
   { id: 'Lemon Poppyseed', name: 'Lemon Poppyseed', premium: 5, desc: 'Fresh Florida lemon zest' },
-  { id: 'Other', name: 'Custom Flavor', premium: 8, desc: 'Custom tailored recipe upon request' }
+  { id: 'Other', name: 'Other / Custom Flavor', premium: 8, desc: 'Custom tailored recipe upon request' }
 ];
 
 const ICING_TYPES = [
@@ -155,7 +163,7 @@ const ICING_TYPES = [
   { id: 'Fondant Finish', name: 'Fondant Finish', price: 25, desc: 'Sleek porcelain-smooth sculpted sugar layer' },
   { id: 'Whipped Cream Frosting', name: 'Whipped Cream Frosting', price: 5, desc: 'Light and airy dairy whipped topping' },
   { id: 'Naked / Semi-Naked', name: 'Naked / Semi-Naked', price: 0, desc: 'Exposed sponge edges with rustic scrape' },
-  { id: 'Other', name: 'Specialty Texture', price: 12, desc: 'Custom stenciling, textured palette knife, etc.' }
+  { id: 'Other', name: 'Other / Custom Frosting', price: 12, desc: 'Custom stenciling, textured palette knife, etc.' }
 ];
 
 const OCCASIONS = [
@@ -167,7 +175,7 @@ const OCCASIONS = [
   { id: "Mother's Day Special", name: "Mother's Day Special", structurePrice: 0 },
   { id: 'Party', name: 'General Party', structurePrice: 0 },
   { id: 'Staff Party', name: 'Staff / Corporate Party', structurePrice: 0 },
-  { id: 'Other', name: 'Other Event', structurePrice: 5 }
+  { id: 'Other', name: 'Other / Custom Event', structurePrice: 5 }
 ];
 
 const COLOR_PRESETS = [
@@ -177,7 +185,8 @@ const COLOR_PRESETS = [
   'Midnight Navy & Silver',
   'Warm Amber, Cream & Terracotta',
   'Pastel Floral Rainbow',
-  'Rustic Earth Tones'
+  'Rustic Earth Tones',
+  'Other / Custom Palette'
 ];
 
 const FILLING_UPGRADES = [
@@ -185,7 +194,8 @@ const FILLING_UPGRADES = [
   { id: 'strawberry', name: 'Fresh Strawberry Compote', price: 10, desc: 'Slow-simmered real berries' },
   { id: 'lemon-curd', name: 'Florida Lemon Curd & Cream', price: 12, desc: 'Tart citrus reduction' },
   { id: 'caramel-ganache', name: 'Salted Caramel & Belgian Ganache', price: 12, desc: 'Flaked sea salt with fudge' },
-  { id: 'raspberry', name: 'Wild Raspberry Reduction', price: 10, desc: 'Seedless berry puree' }
+  { id: 'raspberry', name: 'Wild Raspberry Reduction', price: 10, desc: 'Seedless berry puree' },
+  { id: 'other', name: 'Other / Custom Filling', price: 10, desc: 'Custom fruit compote, mousse, curd, or specialty filling' }
 ];
 
 export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorProps) {
@@ -193,6 +203,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
 
   // Section 2: Order Details State
   const [cakeSize, setCakeSize] = useState<string>('8 INCH');
+  const [cakeSizeOther, setCakeSizeOther] = useState<string>('');
   const [cakeType, setCakeType] = useState<string>('Vanilla Sponge');
   const [cakeTypeOther, setCakeTypeOther] = useState<string>('');
   const [icingType, setIcingType] = useState<string>('American Buttercream');
@@ -202,8 +213,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
   const [colors, setColors] = useState<string>('Sage Green & Gold Accents');
   const [wordsOnCake, setWordsOnCake] = useState<string>('Happy Birthday!');
   const [filling, setFilling] = useState<string>('strawberry');
-  const [addCupcakes, setAddCupcakes] = useState<boolean>(false);
-  const [addMacarons, setAddMacarons] = useState<boolean>(false);
+  const [fillingOther, setFillingOther] = useState<string>('');
 
   // Market Price Sync Engine State
   const [isSyncingMarket, setIsSyncingMarket] = useState<boolean>(false);
@@ -222,6 +232,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.cakeSize) setCakeSize(parsed.cakeSize);
+        if (parsed.cakeSizeOther !== undefined) setCakeSizeOther(parsed.cakeSizeOther);
         if (parsed.cakeType) setCakeType(parsed.cakeType);
         if (parsed.cakeTypeOther !== undefined) setCakeTypeOther(parsed.cakeTypeOther);
         if (parsed.icingType) setIcingType(parsed.icingType);
@@ -231,8 +242,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
         if (parsed.colors) setColors(parsed.colors);
         if (parsed.wordsOnCake !== undefined) setWordsOnCake(parsed.wordsOnCake);
         if (parsed.filling) setFilling(parsed.filling);
-        if (parsed.addCupcakes !== undefined) setAddCupcakes(parsed.addCupcakes);
-        if (parsed.addMacarons !== undefined) setAddMacarons(parsed.addMacarons);
+        if (parsed.fillingOther !== undefined) setFillingOther(parsed.fillingOther);
       }
     } catch {
       // Ignore
@@ -243,6 +253,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
       if (customEvent.detail) {
         const d = customEvent.detail;
         if (d.cakeSize) setCakeSize(d.cakeSize);
+        if (d.cakeSizeOther !== undefined) setCakeSizeOther(d.cakeSizeOther);
         if (d.cakeType) setCakeType(d.cakeType);
         if (d.cakeTypeOther !== undefined) setCakeTypeOther(d.cakeTypeOther);
         if (d.icingType) setIcingType(d.icingType);
@@ -283,18 +294,13 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
   const currentOccasionObj = OCCASIONS.find((o) => o.id === occasion) || OCCASIONS[0];
   const currentFillingObj = FILLING_UPGRADES.find((f) => f.id === filling) || FILLING_UPGRADES[0];
 
-  const cupcakesCost = addCupcakes ? 36 : 0;
-  const macaronsCost = addMacarons ? 28 : 0;
-
   // Real-time market synchronized formula calculation
   const rawSubtotal =
     currentSizeObj.marketBasePrice +
     currentTypeObj.premium +
     currentIcingObj.price +
     currentOccasionObj.structurePrice +
-    currentFillingObj.price +
-    cupcakesCost +
-    macaronsCost;
+    currentFillingObj.price;
 
   const estimatedTotal = Math.round(rawSubtotal * marketIndexRate);
   const pricePerServing = (estimatedTotal / currentSizeObj.guestCount).toFixed(2);
@@ -302,14 +308,18 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
 
   // Auto-sync state to localStorage and broadcast real-time sync event
   useEffect(() => {
+    const finalCakeSize = cakeSize === 'Other' ? (cakeSizeOther || 'Custom Size') : cakeSize;
     const finalCakeType = cakeType === 'Other' ? (cakeTypeOther || 'Custom') : cakeType;
     const finalIcing = icingType === 'Other' ? (icingTypeOther || 'Custom') : icingType;
     const finalOccasion = occasion === 'Other' ? (occasionOther || 'Event') : occasion;
+    const finalFilling = filling === 'other' ? (fillingOther || 'Custom Filling') : currentFillingObj.name;
 
     const payload = {
+      cakeSize: currentSizeObj.id,
+      cakeSizeOther: cakeSize === 'Other' ? cakeSizeOther : '',
+      finalCakeSize: finalCakeSize,
       cakeType: finalCakeType,
       cakeTypeOther: cakeType === 'Other' ? cakeTypeOther : '',
-      cakeSize: currentSizeObj.id,
       icingType: finalIcing,
       icingTypeOther: icingType === 'Other' ? icingTypeOther : '',
       occasion: finalOccasion,
@@ -317,8 +327,8 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
       colors: colors,
       wordsOnCake: wordsOnCake,
       filling: filling,
-      addCupcakes: addCupcakes,
-      addMacarons: addMacarons,
+      fillingOther: filling === 'other' ? fillingOther : '',
+      finalFilling: finalFilling,
       estimatedTotal: estimatedTotal,
       depositAmount: depositAmount,
       pricePerServing: pricePerServing,
@@ -328,9 +338,9 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
     // Persist only non-sensitive estimator fields to localStorage.
     const storagePayload = {
       cakeSize: currentSizeObj.id,
+      cakeSizeOther: cakeSize === 'Other' ? cakeSizeOther : '',
       filling: filling,
-      addCupcakes: addCupcakes,
-      addMacarons: addMacarons,
+      fillingOther: filling === 'other' ? fillingOther : '',
       estimatedTotal: estimatedTotal,
       depositAmount: depositAmount,
       pricePerServing: pricePerServing,
@@ -347,6 +357,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
     window.dispatchEvent(new CustomEvent('daos_estimator_sync', { detail: payload }));
   }, [
     cakeSize,
+    cakeSizeOther,
     cakeType,
     cakeTypeOther,
     icingType,
@@ -356,13 +367,13 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
     colors,
     wordsOnCake,
     filling,
-    addCupcakes,
-    addMacarons,
+    fillingOther,
     estimatedTotal,
     depositAmount,
     pricePerServing,
     lastMarketSync,
-    currentSizeObj.id
+    currentSizeObj.id,
+    currentFillingObj.name
   ]);
 
   // Market price sync handler
@@ -380,19 +391,20 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
 
   // Generate clean Order Details specification summary
   const getOrderDetailsSummary = () => {
+    const finalSize = cakeSize === 'Other' ? `Other / Custom Size (${cakeSizeOther || 'Custom Dimensions'})` : `${currentSizeObj.id} (${currentSizeObj.servings})`;
     const finalCakeType = cakeType === 'Other' ? `Custom (${cakeTypeOther || 'Special Request'})` : cakeType;
     const finalIcing = icingType === 'Other' ? `Custom (${icingTypeOther || 'Special Finish'})` : icingType;
     const finalOccasion = occasion === 'Other' ? `Other (${occasionOther || 'Event'})` : occasion;
+    const finalFilling = filling === 'other' ? `Custom Filling (${fillingOther || 'Special Request'})` : currentFillingObj.name;
 
     return `=== DAOS CAKES - ORDER DETAILS & ESTIMATE ===
-• Cake Size: ${currentSizeObj.id} (${currentSizeObj.servings})
+• Cake Size: ${finalSize}
 • Cake Flavor: ${finalCakeType}
 • Icing Finish: ${finalIcing}
 • Occasion: ${finalOccasion}
 • Color Palette: ${colors}
 • Inscription / Words: "${wordsOnCake}"
-• Gourmet Filling: ${currentFillingObj.name}
-${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons ? '• Add-on: French Macaron Box 12pcs ($28)\n' : ''}
+• Gourmet Filling: ${finalFilling}
 • Estimated Total: $${estimatedTotal}
 • 50% Deposit: $${depositAmount}
 • Market Status: Synced (${lastMarketSync})`;
@@ -405,6 +417,7 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
   };
 
   const handleApplyAndTransfer = async () => {
+    const finalSize = cakeSize === 'Other' ? (cakeSizeOther || 'Custom Size') : currentSizeObj.id;
     const finalCakeType = cakeType === 'Other' ? (cakeTypeOther || 'Custom') : cakeType;
     const finalIcing = icingType === 'Other' ? (icingTypeOther || 'Custom') : icingType;
     const finalOccasion = occasion === 'Other' ? (occasionOther || 'Event') : occasion;
@@ -415,12 +428,15 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
         cakeType: finalCakeType,
         cakeTypeOther: cakeType === 'Other' ? cakeTypeOther : '',
         cakeSize: currentSizeObj.id,
+        cakeSizeOther: cakeSize === 'Other' ? cakeSizeOther : '',
         icingType: finalIcing,
         icingTypeOther: icingType === 'Other' ? icingTypeOther : '',
         occasion: finalOccasion,
         occasionOther: occasion === 'Other' ? occasionOther : '',
         colors: colors,
         wordsOnCake: wordsOnCake,
+        filling: filling,
+        fillingOther: filling === 'other' ? fillingOther : '',
         estimatedTotal: estimatedTotal,
         lastSyncedAt: lastMarketSync
       });
@@ -430,7 +446,7 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
       // Ignore local storage error in restricted env
     }
 
-    const summaryText = `Custom Estimate: ${currentSizeObj.id} ${finalCakeType} Cake, ${finalIcing}, Colors: ${colors}, Words: "${wordsOnCake}". Est: $${estimatedTotal}`;
+    const summaryText = `Custom Estimate: ${finalSize} ${finalCakeType} Cake, ${finalIcing}, Colors: ${colors}, Words: "${wordsOnCake}". Est: $${estimatedTotal}`;
     
     if (onApplyToOrder) {
       onApplyToOrder(summaryText);
@@ -567,6 +583,18 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
                   );
                 })}
               </div>
+
+              {cakeSize === 'Other' && (
+                <div className="pt-1">
+                  <input
+                    type="text"
+                    placeholder="Specify custom size, tiers, or guest count (e.g., 14-inch round, 4-tier grand wedding, half sheet)..."
+                    value={cakeSizeOther}
+                    onChange={(e) => setCakeSizeOther(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
+                  />
+                </div>
+              )}
             </div>
 
             {/* 2. Cake Type (Flavor) */}
@@ -656,7 +684,7 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
                 <div className="pt-1">
                   <input
                     type="text"
-                    placeholder="Specify custom frosting finish..."
+                    placeholder="Specify custom frosting finish (e.g., textured palette knife, caramel drizzle, stenciled)..."
                     value={icingTypeOther}
                     onChange={(e) => setIcingTypeOther(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
@@ -693,13 +721,15 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
               </div>
 
               {occasion === 'Other' && (
-                <input
-                  type="text"
-                  placeholder="Specify event type..."
-                  value={occasionOther}
-                  onChange={(e) => setOccasionOther(e.target.value)}
-                  className="w-full px-4 py-2 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
-                />
+                <div className="pt-1">
+                  <input
+                    type="text"
+                    placeholder="Specify event type (e.g., Graduation, Retirement, Quinceañera, Housewarming)..."
+                    value={occasionOther}
+                    onChange={(e) => setOccasionOther(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
+                  />
+                </div>
               )}
             </div>
 
@@ -723,7 +753,7 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
                 {/* Quick Presets */}
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   <span className="text-[10px] text-stone-400 font-medium">Presets:</span>
-                  {COLOR_PRESETS.slice(0, 3).map((preset) => (
+                  {COLOR_PRESETS.slice(0, 4).map((preset) => (
                     <button
                       key={preset}
                       type="button"
@@ -769,7 +799,7 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
             {/* 6. Gourmet Filling Selection */}
             <div className="space-y-3 pt-2">
               <label className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold">5</span>
+                <span className="w-6 h-6 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold">6</span>
                 Select Gourmet Inner Layer Filling
               </label>
 
@@ -795,56 +825,18 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
                   </button>
                 ))}
               </div>
-            </div>
 
-            {/* 7. Dessert Add-ons */}
-            <div className="space-y-3 pt-2">
-              <label className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold">6</span>
-                Optional Dessert Table Add-Ons
-              </label>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label
-                  className={`p-3.5 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                    addCupcakes ? 'border-amber-800 bg-amber-50/80 shadow-2xs' : 'border-stone-200 bg-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={addCupcakes}
-                      onChange={(e) => setAddCupcakes(e.target.checked)}
-                      className="w-4 h-4 text-amber-800 rounded-sm focus:ring-amber-800 cursor-pointer"
-                    />
-                    <div>
-                      <p className="text-xs font-bold text-stone-900">1 Dozen Matching Cupcakes</p>
-                      <p className="text-[11px] text-stone-500">Decorated to complement your cake palette</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-amber-900 shrink-0">+$36</span>
-                </label>
-
-                <label
-                  className={`p-3.5 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                    addMacarons ? 'border-amber-800 bg-amber-50/80 shadow-2xs' : 'border-stone-200 bg-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={addMacarons}
-                      onChange={(e) => setAddMacarons(e.target.checked)}
-                      className="w-4 h-4 text-amber-800 rounded-sm focus:ring-amber-800 cursor-pointer"
-                    />
-                    <div>
-                      <p className="text-xs font-bold text-stone-900">French Macaron Box (12 pcs)</p>
-                      <p className="text-[11px] text-stone-500">Naturally gluten-free almond flour shells</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-amber-900 shrink-0">+$28</span>
-                </label>
-              </div>
+              {filling === 'other' && (
+                <div className="pt-1">
+                  <input
+                    type="text"
+                    placeholder="Specify custom filling (e.g., Passionfruit curd, Nutella hazelnut mousse, Guava cream)..."
+                    value={fillingOther}
+                    onChange={(e) => setFillingOther(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
+                  />
+                </div>
+              )}
             </div>
 
           </div>
@@ -866,7 +858,9 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
             <div className="space-y-2.5 text-xs text-stone-300">
               <div className="flex justify-between items-start pb-2 border-b border-stone-800/60">
                 <div>
-                  <p className="font-semibold text-white">{currentSizeObj.name}</p>
+                  <p className="font-semibold text-white">
+                    {cakeSize === 'Other' ? (cakeSizeOther ? `Other (${cakeSizeOther})` : 'Other / Custom Size') : currentSizeObj.name}
+                  </p>
                   <p className="text-[11px] text-stone-400">{currentSizeObj.servings}</p>
                 </div>
                 <span className="text-amber-400 font-bold">${currentSizeObj.marketBasePrice}</span>
@@ -883,7 +877,12 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
               </div>
 
               <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                <span className="text-stone-400">Filling: {currentFillingObj.name}</span>
+                <span className="text-stone-400">Occasion: {occasion === 'Other' ? (occasionOther || 'Custom Event') : occasion}</span>
+                <span className="font-semibold text-white">{currentOccasionObj.structurePrice > 0 ? `+$${currentOccasionObj.structurePrice}` : 'Included'}</span>
+              </div>
+
+              <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
+                <span className="text-stone-400">Filling: {filling === 'other' ? (fillingOther || 'Custom Filling') : currentFillingObj.name}</span>
                 <span className="font-semibold text-white">{currentFillingObj.price > 0 ? `+$${currentFillingObj.price}` : 'Included'}</span>
               </div>
 
@@ -896,20 +895,6 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
                 <span className="text-stone-400 truncate max-w-[170px]">Words: "{wordsOnCake}"</span>
                 <span className="text-emerald-400 font-medium">Included</span>
               </div>
-
-              {addCupcakes && (
-                <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                  <span className="text-stone-400">+ 1 Dozen Cupcakes</span>
-                  <span className="font-semibold text-white">+$36</span>
-                </div>
-              )}
-
-              {addMacarons && (
-                <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                  <span className="text-stone-400">+ Macaron Box (12)</span>
-                  <span className="font-semibold text-white">+$28</span>
-                </div>
-              )}
             </div>
 
             {/* Total Highlight */}
@@ -1022,7 +1007,9 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
               
               <div className="p-3.5 flex justify-between items-center">
                 <span className="text-stone-500 font-medium">1. Cake Size &amp; Guest Servings:</span>
-                <span className="font-bold text-stone-900">{currentSizeObj.name} ({currentSizeObj.servings})</span>
+                <span className="font-bold text-stone-900">
+                  {cakeSize === 'Other' ? (cakeSizeOther ? `Other / Custom (${cakeSizeOther})` : 'Other / Custom Size') : `${currentSizeObj.name} (${currentSizeObj.servings})`}
+                </span>
               </div>
 
               <div className="p-3.5 flex justify-between items-center">
@@ -1052,17 +1039,8 @@ ${addCupcakes ? '• Add-on: 1 Dozen Custom Cupcakes ($36)\n' : ''}${addMacarons
 
               <div className="p-3.5 flex justify-between items-center">
                 <span className="text-stone-500 font-medium">7. Gourmet Inner Layer Filling:</span>
-                <span className="font-bold text-stone-900">{currentFillingObj.name}</span>
+                <span className="font-bold text-stone-900">{filling === 'other' ? (fillingOther || 'Custom Filling') : currentFillingObj.name}</span>
               </div>
-
-              {(addCupcakes || addMacarons) && (
-                <div className="p-3.5 flex justify-between items-center">
-                  <span className="text-stone-500 font-medium">8. Dessert Add-ons:</span>
-                  <span className="font-bold text-stone-900">
-                    {[addCupcakes ? '1 Dozen Cupcakes' : null, addMacarons ? 'Macaron Box (12)' : null].filter(Boolean).join(', ')}
-                  </span>
-                </div>
-              )}
 
             </div>
 

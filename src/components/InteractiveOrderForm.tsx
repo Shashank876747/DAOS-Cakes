@@ -30,6 +30,7 @@ interface OrderFormData {
   cakeType: string;
   cakeTypeOther: string;
   cakeSize: string;
+  cakeSizeOther: string;
   icingType: string;
   icingTypeOther: string;
   occasion: string;
@@ -55,6 +56,7 @@ const INITIAL_FORM_DATA: OrderFormData = {
   cakeType: 'Vanilla Sponge',
   cakeTypeOther: '',
   cakeSize: '8 INCH',
+  cakeSizeOther: '',
   icingType: 'American Buttercream',
   icingTypeOther: '',
   occasion: 'Birthday',
@@ -86,7 +88,8 @@ const CAKE_SIZES = [
   { size: '10 INCH', servings: '20-28 Servings (Large Celebration)' },
   { size: '12 INCH', servings: '30-40 Servings (Event / Grand Banquet)' },
   { size: '2-Tier (6" + 8")', servings: '35-40 Servings (Baby/Bridal Shower)' },
-  { size: '3-Tier (6" + 8" + 10")', servings: '65-75 Servings (Luxury Wedding / Gala)' }
+  { size: '3-Tier (6" + 8" + 10")', servings: '65-75 Servings (Luxury Wedding / Gala)' },
+  { size: 'Other', servings: 'Custom Size / Bespoke Tiers' }
 ];
 
 const ICING_TYPES = [
@@ -145,7 +148,8 @@ const SIZE_PRICES: { [key: string]: { base: number; servings: number } } = {
   '10 INCH': { base: 115, servings: 28 },
   '12 INCH': { base: 155, servings: 40 },
   '2-Tier (6" + 8")': { base: 145, servings: 40 },
-  '3-Tier (6" + 8" + 10")': { base: 245, servings: 75 }
+  '3-Tier (6" + 8" + 10")': { base: 245, servings: 75 },
+  'Other': { base: 120, servings: 20 }
 };
 
 const FLAVOR_PREMIUMS: { [key: string]: number } = {
@@ -210,6 +214,7 @@ export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrder
         cakeType: parsed.cakeType || prev.cakeType,
         cakeTypeOther: parsed.cakeTypeOther !== undefined ? parsed.cakeTypeOther : prev.cakeTypeOther,
         cakeSize: parsed.cakeSize || prev.cakeSize,
+        cakeSizeOther: parsed.cakeSizeOther !== undefined ? parsed.cakeSizeOther : prev.cakeSizeOther,
         icingType: parsed.icingType || prev.icingType,
         icingTypeOther: parsed.icingTypeOther !== undefined ? parsed.icingTypeOther : prev.icingTypeOther,
         occasion: parsed.occasion || prev.occasion,
@@ -879,6 +884,15 @@ export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrder
                     );
                   })}
                 </div>
+                {formData.cakeSize === 'Other' && (
+                  <input
+                    type="text"
+                    placeholder="Please specify custom size / guest count..."
+                    value={formData.cakeSizeOther}
+                    onChange={(e) => handleChange('cakeSizeOther', e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
+                  />
+                )}
               </div>
 
               {/* 3. Icing Type */}
