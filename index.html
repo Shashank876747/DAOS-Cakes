@@ -59,13 +59,14 @@
     <meta name="keywords" content="DAOS Cakes, DAOS, custom cakes, birthday cakes, wedding cakes, specialty desserts, Smyrna GA bakery, Cobb County custom cakes, Atlanta cakes" />
     <meta name="author" content="DAOS Cakes" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link id="canonical-url" rel="canonical" href="" />
+    <link id="canonical-url" rel="canonical" href="https://daoscakes.pages.dev/" />
+    <meta property="og:url" content="https://daoscakes.pages.dev/" />
     <script>
       (function() {
         try {
           var origin = window.location.origin || (window.location.protocol + '//' + window.location.host);
           var canonical = document.getElementById('canonical-url');
-          if (canonical) {
+          if (canonical && origin.indexOf('localhost') === -1 && origin.indexOf('ais-') === -1) {
             canonical.setAttribute('href', origin + '/');
           }
         } catch(e) {}

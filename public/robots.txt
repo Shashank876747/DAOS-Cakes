@@ -32,4 +32,3 @@ Allow: /
 
 # Sitemap Declarations
 Sitemap: https://daoscakes.pages.dev/sitemap.xml
-Sitemap: https://daoscakes.netlify.app/sitemap.xml
