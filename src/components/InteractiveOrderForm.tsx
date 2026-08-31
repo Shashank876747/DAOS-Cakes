@@ -342,7 +342,31 @@ export default function InteractiveOrderForm({ googleFormUrl }: InteractiveOrder
         depositAmount: currentDeposit,
         lastSyncedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
-      localStorage.setItem('daos_estimated_order', JSON.stringify(syncPayload));
+      const storagePayload = {
+        cakeType: updated.cakeType,
+        cakeTypeOther: updated.cakeTypeOther,
+        cakeSize: updated.cakeSize,
+        cakeSizeOther: updated.cakeSizeOther,
+        icingType: updated.icingType,
+        icingTypeOther: updated.icingTypeOther,
+        occasion: updated.occasion,
+        occasionOther: updated.occasionOther,
+        colors: updated.colors,
+        wordsOnCake: updated.wordsOnCake,
+        filling: updated.filling,
+        fillingOther: updated.fillingOther,
+        allergies: updated.allergies,
+        allergiesOther: updated.allergiesOther,
+        cakeStyle: updated.cakeStyle,
+        cakeStyleOther: updated.cakeStyleOther,
+        customDesignNotes: updated.customDesignNotes,
+        location: updated.location,
+        pickupLocation: updated.location,
+        estimatedTotal: currentEstimatedTotal,
+        depositAmount: currentDeposit,
+        lastSyncedAt: syncPayload.lastSyncedAt
+      };
+      localStorage.setItem('daos_estimated_order', JSON.stringify(storagePayload));
       window.dispatchEvent(new CustomEvent('daos_form_sync', { detail: syncPayload }));
     } catch {
       // Ignore

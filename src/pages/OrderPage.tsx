@@ -18,6 +18,7 @@ import {
   buildPrefilledGoogleFormUrl,
   GoogleFormOrderPayload
 } from '../lib/googleFormService';
+import { loadSecureItem } from '../lib/storageSecurity';
 
 export default function OrderPage() {
   const [refreshKey, setRefreshKey] = useState<number>(Date.now());
@@ -27,14 +28,13 @@ export default function OrderPage() {
 
   // Load estimator specifications from localStorage if available
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('daos_estimated_order');
+    loadSecureItem('daos_estimated_order').then((saved) => {
       if (saved) {
-        setSyncedOrder(JSON.parse(saved));
+        setSyncedOrder(saved);
       }
-    } catch {
+    }).catch(() => {
       // Ignore
-    }
+    });
 
     const handleEstimatorSync = (e: Event) => {
       const customEvent = e as CustomEvent;
