@@ -46,6 +46,8 @@ const toBase64 = (bytes: Uint8Array): string => {
   return btoa(binary);
 };
 
+const fromBase64 = (base64: string): Uint8Array => {
+  const binary = atob(base64);
 const fromBase64 = (value: string): Uint8Array => {
   const binary = atob(value);
   const bytes = new Uint8Array(binary.length);
@@ -53,6 +55,53 @@ const fromBase64 = (value: string): Uint8Array => {
     bytes[i] = binary.charCodeAt(i);
   }
   return bytes;
+};
+
+const getLocalStorageCryptoKey = async (): Promise<CryptoKey> => {
+  const secretBytes = textEncoder.encode(LOCAL_STORAGE_CRYPTO_SECRET);
+  const keyMaterial = await crypto.subtle.digest('SHA-256', secretBytes);
+  return crypto.subtle.importKey('raw', keyMaterial, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+};
+
+const encryptForLocalStorage = async (plainText: string): Promise<string> => {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await getLocalStorageCryptoKey();
+  const cipherBuffer = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    textEncoder.encode(plainText)
+  );
+
+  const cipherBytes = new Uint8Array(cipherBuffer);
+  const packed = new Uint8Array(iv.length + cipherBytes.length);
+  packed.set(iv, 0);
+  packed.set(cipherBytes, iv.length);
+  return toBase64(packed);
+};
+
+const decryptFromLocalStorage = async (encryptedBase64: string): Promise<string | null> => {
+  try {
+    const packed = fromBase64(encryptedBase64);
+    if (packed.length <= 12) return null;
+
+    const iv = packed.slice(0, 12);
+    const cipherBytes = packed.slice(12);
+    const key = await getLocalStorageCryptoKey();
+    const plainBuffer = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      cipherBytes
+    );
+
+    return textDecoder.decode(plainBuffer);
+  } catch {
+    return null;
+  }
+};
+
+const deriveAesKey = async (): Promise<CryptoKey> => {
+  const hash = await crypto.subtle.digest('SHA-256', textEncoder.encode(LOCAL_STORAGE_CRYPTO_SECRET));
+  return crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['encrypt']);
 };
 
 const deriveKeyFromSecret = async (salt: Uint8Array): Promise<CryptoKey> => {
@@ -362,6 +411,43 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
 
   // Load from local storage
   useEffect(() => {
+    try {
+      const loadSavedEstimate = async () => {
+        const saved = localStorage.getItem('daos_estimated_order');
+        if (!saved) return;
+
+        const decrypted = await decryptFromLocalStorage(saved);
+        const parsed = JSON.parse(decrypted ?? saved);
+
+        if (parsed.cakeSize) setCakeSize(parsed.cakeSize);
+        if (parsed.cakeSizeOther) setCakeSizeOther(parsed.cakeSizeOther);
+        if (parsed.cakeType) setCakeType(parsed.cakeType);
+        if (parsed.cakeTypeOther) setCakeTypeOther(parsed.cakeTypeOther);
+        if (parsed.icingType) setIcingType(parsed.icingType);
+        if (parsed.icingTypeOther) setIcingTypeOther(parsed.icingTypeOther);
+        if (parsed.occasion) setOccasion(parsed.occasion);
+        if (parsed.occasionOther) setOccasionOther(parsed.occasionOther);
+        if (parsed.colors) setColors(parsed.colors);
+        if (parsed.colorsOther) setColorsOther(parsed.colorsOther);
+        if (parsed.wordsOnCake) setWordsOnCake(parsed.wordsOnCake);
+        if (parsed.filling) setFilling(parsed.filling);
+        if (parsed.fillingOther) setFillingOther(parsed.fillingOther);
+        if (parsed.pickupLocation) setPickupLocation(parsed.pickupLocation);
+        if (parsed.pickupLocationOther) setPickupLocationOther(parsed.pickupLocationOther);
+        if (parsed.deliveryAddress) setDeliveryAddress(parsed.deliveryAddress);
+        if (parsed.allergies) setAllergies(parsed.allergies);
+        if (parsed.allergiesOther) setAllergiesOther(parsed.allergiesOther);
+        if (parsed.cakeStyle) setCakeStyle(parsed.cakeStyle);
+        if (parsed.cakeStyleOther) setCakeStyleOther(parsed.cakeStyleOther);
+        if (parsed.customDesignNotes) setCustomDesignNotes(parsed.customDesignNotes);
+        if (parsed.firstName) setFirstName(parsed.firstName);
+        if (parsed.lastName) setLastName(parsed.lastName);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.phoneNumber) setPhoneNumber(parsed.phoneNumber);
+      };
+
+      void loadSavedEstimate();
+        const parsed = JSON.parse(saved);
     const loadSavedOrder = async () => {
       try {
         const saved = localStorage.getItem('daos_estimated_order');
@@ -502,6 +588,17 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
       lastSyncedAt: lastMarketSync
     };
 
+    try {
+      void encryptForLocalStorage(JSON.stringify(payload))
+        .then((encryptedPayload) => {
+          localStorage.setItem('daos_estimated_order', encryptedPayload);
+        })
+        .catch(() => {
+          // Ignore
+        });
+    } catch {
+      // Ignore
+    }
     const persistEstimatedOrder = async () => {
       try {
         const encryptedPayload = await encryptForLocalStorage(payload);
@@ -655,8 +752,14 @@ MARKET STATUS: Synced (${lastMarketSync})`;
     };
 
     try {
-      localStorage.setItem('daos_estimated_order', JSON.stringify(payloadObj));
-      window.dispatchEvent(new CustomEvent('daos_estimator_sync', { detail: payloadObj }));
+      void encryptForLocalStorage(JSON.stringify(payloadObj))
+        .then((encryptedPayload) => {
+          localStorage.setItem('daos_estimated_order', encryptedPayload);
+          window.dispatchEvent(new CustomEvent('daos_estimator_sync', { detail: payloadObj }));
+        })
+        .catch(() => {
+          // Ignore
+        });
     } catch {
       // Ignore
     }
