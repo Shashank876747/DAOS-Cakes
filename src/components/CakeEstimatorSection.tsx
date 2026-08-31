@@ -36,6 +36,7 @@ const LOCAL_STORAGE_CRYPTO_SECRET =
   'replace-this-default-secret-in-env';
 
 const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
 
 const toBase64 = (bytes: Uint8Array): string => {
   let binary = '';
@@ -43,6 +44,65 @@ const toBase64 = (bytes: Uint8Array): string => {
     binary += String.fromCharCode(b);
   });
   return btoa(binary);
+};
+
+const fromBase64 = (value: string): Uint8Array => {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
+const deriveKeyFromSecret = async (salt: Uint8Array): Promise<CryptoKey> => {
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    textEncoder.encode(LOCAL_STORAGE_CRYPTO_SECRET),
+    'PBKDF2',
+    false,
+    ['deriveKey']
+  );
+
+  return crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: 100000,
+      hash: 'SHA-256'
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+};
+
+const encryptForLocalStorage = async (payload: unknown): Promise<string> => {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKeyFromSecret(salt);
+  const plaintext = textEncoder.encode(JSON.stringify(payload));
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
+  return JSON.stringify({
+    v: 1,
+    iv: toBase64(iv),
+    salt: toBase64(salt),
+    data: toBase64(new Uint8Array(ciphertext))
+  });
+};
+
+const decryptFromLocalStorage = async (stored: string): Promise<any> => {
+  const envelope = JSON.parse(stored);
+  if (!envelope || typeof envelope !== 'object' || !envelope.iv || !envelope.salt || !envelope.data) {
+    throw new Error('Invalid encrypted payload');
+  }
+  const iv = fromBase64(envelope.iv);
+  const salt = fromBase64(envelope.salt);
+  const data = fromBase64(envelope.data);
+  const key = await deriveKeyFromSecret(salt);
+  const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+  return JSON.parse(textDecoder.decode(plaintext));
 };
 
 const deriveAesKey = async (): Promise<CryptoKey> => {
@@ -323,9 +383,50 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
 
   // Load from local storage
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('daos_estimated_order');
-      if (saved) {
+    const loadSavedOrder = async () => {
+      try {
+        const saved = localStorage.getItem('daos_estimated_order');
+        if (!saved) return;
+
+        let parsed: any;
+        try {
+          parsed = await decryptFromLocalStorage(saved);
+        } catch {
+          // Backward compatibility for previously stored plaintext payloads
+          parsed = JSON.parse(saved);
+        }
+
+        if (parsed.cakeSize) setCakeSize(parsed.cakeSize);
+        if (parsed.cakeSizeOther) setCakeSizeOther(parsed.cakeSizeOther);
+        if (parsed.cakeType) setCakeType(parsed.cakeType);
+        if (parsed.cakeTypeOther) setCakeTypeOther(parsed.cakeTypeOther);
+        if (parsed.icingType) setIcingType(parsed.icingType);
+        if (parsed.icingTypeOther) setIcingTypeOther(parsed.icingTypeOther);
+        if (parsed.occasion) setOccasion(parsed.occasion);
+        if (parsed.occasionOther) setOccasionOther(parsed.occasionOther);
+        if (parsed.colors) setColors(parsed.colors);
+        if (parsed.colorsOther) setColorsOther(parsed.colorsOther);
+        if (parsed.wordsOnCake) setWordsOnCake(parsed.wordsOnCake);
+        if (parsed.filling) setFilling(parsed.filling);
+        if (parsed.fillingOther) setFillingOther(parsed.fillingOther);
+        if (parsed.pickupLocation) setPickupLocation(parsed.pickupLocation);
+        if (parsed.pickupLocationOther) setPickupLocationOther(parsed.pickupLocationOther);
+        if (parsed.deliveryAddress) setDeliveryAddress(parsed.deliveryAddress);
+        if (parsed.allergies) setAllergies(parsed.allergies);
+        if (parsed.allergiesOther) setAllergiesOther(parsed.allergiesOther);
+        if (parsed.cakeStyle) setCakeStyle(parsed.cakeStyle);
+        if (parsed.cakeStyleOther) setCakeStyleOther(parsed.cakeStyleOther);
+        if (parsed.customDesignNotes) setCustomDesignNotes(parsed.customDesignNotes);
+        if (parsed.firstName) setFirstName(parsed.firstName);
+        if (parsed.lastName) setLastName(parsed.lastName);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.phoneNumber) setPhoneNumber(parsed.phoneNumber);
+      } catch {
+        // Ignore
+      }
+    };
+
+    loadSavedOrder();
         const parsed = JSON.parse(saved);
         if (parsed.cakeSize) setCakeSize(parsed.cakeSize);
         if (parsed.cakeSizeOther !== undefined) setCakeSizeOther(parsed.cakeSizeOther);
@@ -449,11 +550,16 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
       lastSyncedAt: lastMarketSync
     };
 
-    try {
-      localStorage.setItem('daos_estimated_order', JSON.stringify(payload));
-    } catch {
-      // Ignore
-    }
+    const persistEstimatedOrder = async () => {
+      try {
+        const encryptedPayload = await encryptForLocalStorage(payload);
+        localStorage.setItem('daos_estimated_order', encryptedPayload);
+      } catch {
+        // Ignore
+      }
+    };
+
+    persistEstimatedOrder();
 
     window.dispatchEvent(new CustomEvent('daos_estimator_sync', { detail: payload }));
   }, [
