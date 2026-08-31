@@ -57,6 +57,11 @@ export default function OrderPage() {
     const payload: GoogleFormOrderPayload = {};
 
     if (syncedOrder) {
+      if (syncedOrder.firstName) payload.firstName = syncedOrder.firstName;
+      if (syncedOrder.lastName) payload.lastName = syncedOrder.lastName;
+      if (syncedOrder.email) payload.email = syncedOrder.email;
+      if (syncedOrder.phoneNumber) payload.phoneNumber = syncedOrder.phoneNumber;
+
       if (syncedOrder.cakeSize) payload.cakeSize = syncedOrder.cakeSize;
       if (syncedOrder.cakeType) {
         payload.cakeType = syncedOrder.cakeType === 'Other' && syncedOrder.cakeTypeOther
@@ -75,6 +80,10 @@ export default function OrderPage() {
       }
       if (syncedOrder.colors) payload.colors = syncedOrder.colors;
       if (syncedOrder.wordsOnCake) payload.wordsOnCake = syncedOrder.wordsOnCake;
+
+      if (syncedOrder.location || syncedOrder.pickupLocation) {
+        payload.location = syncedOrder.location || syncedOrder.pickupLocation;
+      }
     }
 
     const embedded = buildPrefilledGoogleFormUrl(payload, { embedded: true });
@@ -96,16 +105,21 @@ export default function OrderPage() {
 
   const handleCopySpecs = () => {
     if (!syncedOrder) return;
-    const text = `--- DAOS CAKES ORDER SPECIFICATIONS (ESTIMATOR SYNC) ---
-Cake Size: ${syncedOrder.cakeSize || '8 INCH'}
-Sponge Flavor: ${syncedOrder.cakeType || 'Vanilla Sponge'}${syncedOrder.cakeTypeOther ? ` (${syncedOrder.cakeTypeOther})` : ''}
-Frosting / Icing: ${syncedOrder.icingType || 'American Buttercream'}${syncedOrder.icingTypeOther ? ` (${syncedOrder.icingTypeOther})` : ''}
-Occasion: ${syncedOrder.occasion || 'Birthday'}${syncedOrder.occasionOther ? ` (${syncedOrder.occasionOther})` : ''}
-Color Palette / Theme: ${syncedOrder.colors || 'Custom Palette'}
-Words on Cake / Inscription: ${syncedOrder.wordsOnCake || 'None specified'}
-${syncedOrder.filling ? `Gourmet Filling: ${syncedOrder.filling}\n` : ''}${syncedOrder.addCupcakes ? `Add-On: 1 Dozen Matching Cupcakes\n` : ''}${syncedOrder.addMacarons ? `Add-On: 1 Dozen French Macarons\n` : ''}Estimated Total: $${syncedOrder.estimatedTotal || '85'}
-Estimated 50% Deposit: $${syncedOrder.depositAmount || '43'}
-Pickup: Smyrna, GA`;
+    const text = `--- DAOS CAKES 11-QUESTION SPECIFICATIONS ---
+1. Cake Size: ${syncedOrder.cakeSize || '8 INCH'}
+2. Sponge Flavor: ${syncedOrder.cakeType || 'Vanilla Sponge'}${syncedOrder.cakeTypeOther ? ` (${syncedOrder.cakeTypeOther})` : ''}
+3. Frosting / Icing: ${syncedOrder.icingType || 'American Buttercream'}${syncedOrder.icingTypeOther ? ` (${syncedOrder.icingTypeOther})` : ''}
+4. Occasion: ${syncedOrder.occasion || 'Birthday'}${syncedOrder.occasionOther ? ` (${syncedOrder.occasionOther})` : ''}
+5. Color Palette: ${syncedOrder.colors || 'Custom Palette'}
+6. Words on Cake: "${syncedOrder.wordsOnCake || 'None'}"
+7. Inner Layer Filling: ${syncedOrder.finalFilling || syncedOrder.filling || 'Matching Buttercream'}
+8. Location: ${syncedOrder.location || syncedOrder.pickupLocation || "Truist Park, Atlanta"}${syncedOrder.deliveryAddress ? ` (Address: ${syncedOrder.deliveryAddress})` : ''}
+9. Dietary Requirements: ${syncedOrder.allergies || 'Standard Traditional'}
+10. Aesthetic Style: ${syncedOrder.cakeStyle || 'Modern Minimalist'}${syncedOrder.customDesignNotes ? ` (Notes: ${syncedOrder.customDesignNotes})` : ''}
+11. Client Contact: ${syncedOrder.firstName || ''} ${syncedOrder.lastName || ''} | ${syncedOrder.phoneNumber || ''} | ${syncedOrder.email || ''}
+--------------------------------------------------
+Estimated Total: $${syncedOrder.estimatedTotal || '85'}
+50% Deposit: $${syncedOrder.depositAmount || '43'}`;
 
     navigator.clipboard.writeText(text).then(() => {
       setCopiedSpecs(true);
@@ -203,30 +217,52 @@ Pickup: Smyrna, GA`;
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-xs">
               <div className="p-2.5 rounded-xl bg-stone-800/80 border border-stone-700/60">
-                <span className="text-[10px] text-stone-400 block uppercase font-bold">Size (Pre-filled)</span>
+                <span className="text-[10px] text-stone-400 block uppercase font-bold">1. Size</span>
                 <span className="font-semibold text-stone-100">{syncedOrder.cakeSize || '8 INCH'}</span>
               </div>
               <div className="p-2.5 rounded-xl bg-stone-800/80 border border-stone-700/60">
-                <span className="text-[10px] text-stone-400 block uppercase font-bold">Flavor (Pre-filled)</span>
+                <span className="text-[10px] text-stone-400 block uppercase font-bold">2. Flavor / Sponge</span>
                 <span className="font-semibold text-stone-100">{syncedOrder.cakeType || 'Vanilla Sponge'}</span>
               </div>
               <div className="p-2.5 rounded-xl bg-stone-800/80 border border-stone-700/60">
-                <span className="text-[10px] text-stone-400 block uppercase font-bold">Frosting (Pre-filled)</span>
+                <span className="text-[10px] text-stone-400 block uppercase font-bold">3. Frosting / Icing</span>
                 <span className="font-semibold text-stone-100">{syncedOrder.icingType || 'Buttercream'}</span>
               </div>
               <div className="p-2.5 rounded-xl bg-stone-800/80 border border-stone-700/60">
-                <span className="text-[10px] text-stone-400 block uppercase font-bold">Est. Quote</span>
-                <span className="font-bold text-amber-300">${syncedOrder.estimatedTotal || '85'}</span>
+                <span className="text-[10px] text-stone-400 block uppercase font-bold">4. Occasion</span>
+                <span className="font-semibold text-stone-100">{syncedOrder.occasion || 'Birthday'}</span>
               </div>
             </div>
 
-            {(syncedOrder.colors || syncedOrder.wordsOnCake) && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2.5 text-xs">
+              <div className="p-2.5 rounded-xl bg-stone-800/80 border border-stone-700/60">
+                <span className="text-[10px] text-stone-400 block uppercase font-bold">7. Filling</span>
+                <span className="font-semibold text-stone-100">{syncedOrder.finalFilling || syncedOrder.filling || 'Buttercream'}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-stone-800/80 border border-stone-700/60">
+                <span className="text-[10px] text-stone-400 block uppercase font-bold">8. Location</span>
+                <span className="font-semibold text-stone-100 truncate block">{syncedOrder.location || syncedOrder.pickupLocation || 'Pickup Point'}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-stone-800/80 border border-stone-700/60">
+                <span className="text-[10px] text-stone-400 block uppercase font-bold">9 &amp; 10. Dietary &amp; Style</span>
+                <span className="font-semibold text-stone-100">{syncedOrder.allergies || 'Standard'} • {syncedOrder.cakeStyle || 'Modern'}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-amber-950/80 border border-amber-500/60">
+                <span className="text-[10px] text-amber-300 block uppercase font-bold">Market Quote</span>
+                <span className="font-bold text-amber-300 text-sm">${syncedOrder.estimatedTotal || '85'}</span>
+              </div>
+            </div>
+
+            {(syncedOrder.colors || syncedOrder.wordsOnCake || syncedOrder.firstName) && (
               <div className="mt-3 pt-3 border-t border-stone-800/80 flex flex-wrap items-center gap-4 text-xs text-stone-300">
                 {syncedOrder.colors && (
-                  <span>Palette: <strong className="text-white">"{syncedOrder.colors}"</strong></span>
+                  <span>5. Palette: <strong className="text-white">"{syncedOrder.colors}"</strong></span>
                 )}
                 {syncedOrder.wordsOnCake && (
-                  <span>Writing: <strong className="text-white">"{syncedOrder.wordsOnCake}"</strong></span>
+                  <span>6. Inscription: <strong className="text-white">"{syncedOrder.wordsOnCake}"</strong></span>
+                )}
+                {syncedOrder.firstName && (
+                  <span>11. Contact: <strong className="text-white">{syncedOrder.firstName} {syncedOrder.lastName || ''} ({syncedOrder.phoneNumber || ''})</strong></span>
                 )}
               </div>
             )}

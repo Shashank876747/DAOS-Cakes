@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Calculator,
   Sparkles,
-  Check,
   ArrowRight,
-  Info,
   ShieldCheck,
   Cake,
   Users,
@@ -13,16 +11,21 @@ import {
   Palette,
   Type,
   Calendar,
-  Gift,
-  X,
+  Clock,
+  MapPin,
+  Heart,
+  FileText,
   Copy,
   CheckCircle2,
-  FileText,
-  DollarSign,
-  Layers,
-  ShoppingBag,
+  X,
   ExternalLink,
-  Zap
+  Zap,
+  AlertTriangle,
+  Send,
+  User,
+  Mail,
+  Phone,
+  Check
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { buildPrefilledGoogleFormUrl } from '../lib/googleFormService';
@@ -33,7 +36,6 @@ const LOCAL_STORAGE_CRYPTO_SECRET =
   'replace-this-default-secret-in-env';
 
 const textEncoder = new TextEncoder();
-const textDecoder = new TextDecoder();
 
 const toBase64 = (bytes: Uint8Array): string => {
   let binary = '';
@@ -195,37 +197,131 @@ const FILLING_UPGRADES = [
   { id: 'lemon-curd', name: 'Florida Lemon Curd & Cream', price: 12, desc: 'Tart citrus reduction' },
   { id: 'caramel-ganache', name: 'Salted Caramel & Belgian Ganache', price: 12, desc: 'Flaked sea salt with fudge' },
   { id: 'raspberry', name: 'Wild Raspberry Reduction', price: 10, desc: 'Seedless berry puree' },
+  { id: 'belgian-mousse', name: 'Belgian Dark Chocolate Mousse', price: 12, desc: 'Aerated rich cocoa ganache' },
   { id: 'other', name: 'Other / Custom Filling', price: 10, desc: 'Custom fruit compote, mousse, curd, or specialty filling' }
+];
+
+const TIME_WINDOWS = [
+  { id: '10:00 - 12:00', label: 'Morning (10:00 AM – 12:00 PM)' },
+  { id: '12:00 - 14:00', label: 'Early Afternoon (12:00 PM – 2:00 PM)' },
+  { id: '14:00 - 17:00', label: 'Late Afternoon (2:00 PM – 5:00 PM)' },
+  { id: '17:00 - 19:00', label: 'Evening (5:00 PM – 7:00 PM)' },
+  { id: 'Other', label: 'Other / Specific Time Window' }
+];
+
+const PICKUP_OPTIONS = [
+  {
+    id: "1. Truist Park: Infront of Children's Healthcare of Atlanta Park",
+    name: 'Truist Park',
+    desc: "Infront of Children's Healthcare of Atlanta Park (755 Battery Ave SE)",
+    cost: 0
+  },
+  {
+    id: '2. BP Gas Station : Cobb Pkwy and Herodian Way Intersection',
+    name: 'BP Gas Station',
+    desc: 'Cobb Pkwy & Herodian Way Intersection (2535 Cobb Pkwy SE)',
+    cost: 0
+  },
+  {
+    id: '3. Public Storage - Herodian Way',
+    name: 'Public Storage',
+    desc: '2460 Herodian Way, Smyrna, GA 30080',
+    cost: 0
+  },
+  {
+    id: 'White Glove Hand Delivery',
+    name: 'White Glove Refrigerated Delivery',
+    desc: 'Metro Atlanta / North Georgia direct door-to-door courier service',
+    cost: 25
+  },
+  {
+    id: 'Other',
+    name: 'Other / Custom Pickup Location',
+    desc: 'Special venue arrangement or private coordination',
+    cost: 0
+  }
+];
+
+const DIETARY_OPTIONS = [
+  { id: 'None / Standard', label: 'Standard Premium Recipe (Contains dairy, wheat, eggs)', cost: 0 },
+  { id: 'Nut-Free Kitchen Focus', label: 'Strict 100% Nut-Free Preparation', cost: 0 },
+  { id: 'Gluten-Friendly Flour', label: 'Gluten-Friendly Artisan Flour Blend', cost: 10 },
+  { id: 'Dairy-Free Frosting', label: 'Dairy-Free Plant Buttercream', cost: 10 },
+  { id: 'Egg-Free / Vegan Recipe', label: 'Egg-Free / Full Vegan Sponge Recipe', cost: 15 },
+  { id: 'Other', label: 'Other / Custom Allergy Concern', cost: 0 }
+];
+
+const CAKE_STYLES = [
+  { id: 'Vintage Lambeth Piping', name: 'Vintage Lambeth & Frills', desc: 'Over-piped scalloped ruffles and Victorian royal borders', cost: 15 },
+  { id: 'Modern Minimalist', name: 'Modern Minimalist & Clean', desc: 'Crisp razor-sharp edges, smooth canvas, subtle texture', cost: 0 },
+  { id: 'Fresh Floral & Botanical', name: 'Botanical & Organic Florals', desc: 'Pressed edible petals, organic greenery, floral crown accents', cost: 15 },
+  { id: 'Luxe Gold Leaf & Geode', name: 'Luxe Gold Foil & Geode', desc: '24-karat edible gold flake, crystal rock candy accents', cost: 20 },
+  { id: 'Cartoon / Character Pop', name: 'Illustrated / Pop Art Comic', desc: 'Bold black contour piping with vibrant comic pop colors', cost: 15 },
+  { id: 'Other', name: 'Other / Custom Theme & Motif', desc: 'Custom bespoke cake art from your reference moodboard', cost: 10 }
 ];
 
 export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorProps) {
   const navigate = useNavigate();
 
-  // Section 2: Order Details State
+  // 11 Form Questions State (Date & Time removed per user instruction)
+  // Question 1: Cake Size
   const [cakeSize, setCakeSize] = useState<string>('8 INCH');
   const [cakeSizeOther, setCakeSizeOther] = useState<string>('');
+
+  // Question 2: Cake Flavor
   const [cakeType, setCakeType] = useState<string>('Vanilla Sponge');
   const [cakeTypeOther, setCakeTypeOther] = useState<string>('');
+
+  // Question 3: Icing Type
   const [icingType, setIcingType] = useState<string>('American Buttercream');
   const [icingTypeOther, setIcingTypeOther] = useState<string>('');
+
+  // Question 4: Occasion
   const [occasion, setOccasion] = useState<string>('Birthday');
   const [occasionOther, setOccasionOther] = useState<string>('');
+
+  // Question 5: Colors / Palette
   const [colors, setColors] = useState<string>('Sage Green & Gold Accents');
+  const [colorsOther, setColorsOther] = useState<string>('');
+
+  // Question 6: Words on Cake
   const [wordsOnCake, setWordsOnCake] = useState<string>('Happy Birthday!');
+
+  // Question 7: Gourmet Filling
   const [filling, setFilling] = useState<string>('strawberry');
   const [fillingOther, setFillingOther] = useState<string>('');
+
+  // Question 8: Pickup / Delivery Location
+  const [pickupLocation, setPickupLocation] = useState<string>("1. Truist Park: Infront of Children's Healthcare of Atlanta Park");
+  const [pickupLocationOther, setPickupLocationOther] = useState<string>('');
+  const [deliveryAddress, setDeliveryAddress] = useState<string>('');
+
+  // Question 9: Dietary & Allergy
+  const [allergies, setAllergies] = useState<string>('None / Standard');
+  const [allergiesOther, setAllergiesOther] = useState<string>('');
+
+  // Question 10: Cake Aesthetic & Custom Notes
+  const [cakeStyle, setCakeStyle] = useState<string>('Modern Minimalist');
+  const [cakeStyleOther, setCakeStyleOther] = useState<string>('');
+  const [customDesignNotes, setCustomDesignNotes] = useState<string>('');
+
+  // Question 11: Contact Details
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
 
   // Market Price Sync Engine State
   const [isSyncingMarket, setIsSyncingMarket] = useState<boolean>(false);
   const [lastMarketSync, setLastMarketSync] = useState<string>('Just now');
-  const [marketIndexRate, setMarketIndexRate] = useState<number>(1.0); // 1.0 = Baseline standard 2026 market
+  const [marketIndexRate, setMarketIndexRate] = useState<number>(1.0);
   const [syncMessage, setSyncMessage] = useState<string>('Synchronized with Metro Atlanta / Florida regional bakery market');
 
-  // Order Details Popup Modal State
+  // Modal State
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
   const [hasCopied, setHasCopied] = useState<boolean>(false);
 
-  // Load from storage on mount & listen to order form updates
+  // Load from local storage
   useEffect(() => {
     try {
       const saved = localStorage.getItem('daos_estimated_order');
@@ -243,6 +339,16 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
         if (parsed.wordsOnCake !== undefined) setWordsOnCake(parsed.wordsOnCake);
         if (parsed.filling) setFilling(parsed.filling);
         if (parsed.fillingOther !== undefined) setFillingOther(parsed.fillingOther);
+        if (parsed.pickupLocation) setPickupLocation(parsed.pickupLocation);
+        if (parsed.location) setPickupLocation(parsed.location);
+        if (parsed.deliveryAddress) setDeliveryAddress(parsed.deliveryAddress);
+        if (parsed.allergies) setAllergies(parsed.allergies);
+        if (parsed.cakeStyle) setCakeStyle(parsed.cakeStyle);
+        if (parsed.customDesignNotes) setCustomDesignNotes(parsed.customDesignNotes);
+        if (parsed.firstName) setFirstName(parsed.firstName);
+        if (parsed.lastName) setLastName(parsed.lastName);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.phoneNumber) setPhoneNumber(parsed.phoneNumber);
       }
     } catch {
       // Ignore
@@ -262,85 +368,81 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
         if (d.occasionOther !== undefined) setOccasionOther(d.occasionOther);
         if (d.colors !== undefined) setColors(d.colors);
         if (d.wordsOnCake !== undefined) setWordsOnCake(d.wordsOnCake);
+        if (d.location) setPickupLocation(d.location);
+        if (d.pickupLocation) setPickupLocation(d.pickupLocation);
+        if (d.firstName) setFirstName(d.firstName);
+        if (d.lastName) setLastName(d.lastName);
+        if (d.email) setEmail(d.email);
+        if (d.phoneNumber) setPhoneNumber(d.phoneNumber);
       }
     };
 
     window.addEventListener('daos_form_sync', handleFormSync);
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'daos_estimated_order' && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          if (parsed.cakeSize) setCakeSize(parsed.cakeSize);
-          if (parsed.cakeType) setCakeType(parsed.cakeType);
-          if (parsed.icingType) setIcingType(parsed.icingType);
-          if (parsed.occasion) setOccasion(parsed.occasion);
-          if (parsed.colors !== undefined) setColors(parsed.colors);
-          if (parsed.wordsOnCake !== undefined) setWordsOnCake(parsed.wordsOnCake);
-        } catch {
-          // Ignore
-        }
-      }
-    });
-
     return () => {
       window.removeEventListener('daos_form_sync', handleFormSync);
     };
   }, []);
 
-  // Current selections lookup
+  // Lookups
   const currentSizeObj = CAKE_SIZES.find((s) => s.id === cakeSize) || CAKE_SIZES[2];
   const currentTypeObj = CAKE_TYPES.find((t) => t.id === cakeType) || CAKE_TYPES[0];
   const currentIcingObj = ICING_TYPES.find((i) => i.id === icingType) || ICING_TYPES[0];
   const currentOccasionObj = OCCASIONS.find((o) => o.id === occasion) || OCCASIONS[0];
   const currentFillingObj = FILLING_UPGRADES.find((f) => f.id === filling) || FILLING_UPGRADES[0];
+  const currentDietaryObj = DIETARY_OPTIONS.find((d) => d.id === allergies) || DIETARY_OPTIONS[0];
+  const currentStyleObj = CAKE_STYLES.find((st) => st.id === cakeStyle) || CAKE_STYLES[1];
+  const currentPickupObj = PICKUP_OPTIONS.find((p) => p.id === pickupLocation) || PICKUP_OPTIONS[0];
 
-  // Real-time market synchronized formula calculation
+  // Price Calculation Engine
   const rawSubtotal =
     currentSizeObj.marketBasePrice +
     currentTypeObj.premium +
     currentIcingObj.price +
     currentOccasionObj.structurePrice +
-    currentFillingObj.price;
+    currentFillingObj.price +
+    currentDietaryObj.cost +
+    currentStyleObj.cost +
+    currentPickupObj.cost;
 
   const estimatedTotal = Math.round(rawSubtotal * marketIndexRate);
   const pricePerServing = (estimatedTotal / currentSizeObj.guestCount).toFixed(2);
   const depositAmount = Math.round(estimatedTotal / 2);
 
-  // Auto-sync state to localStorage and broadcast real-time sync event
+  // Sync state changes
   useEffect(() => {
-    const finalCakeSize = cakeSize === 'Other' ? (cakeSizeOther || 'Custom Size') : cakeSize;
-    const finalCakeType = cakeType === 'Other' ? (cakeTypeOther || 'Custom') : cakeType;
-    const finalIcing = icingType === 'Other' ? (icingTypeOther || 'Custom') : icingType;
-    const finalOccasion = occasion === 'Other' ? (occasionOther || 'Event') : occasion;
+    const finalSize = cakeSize === 'Other' ? (cakeSizeOther || 'Custom Size') : cakeSize;
+    const finalFlavor = cakeType === 'Other' ? (cakeTypeOther || 'Custom Flavor') : cakeType;
+    const finalIcing = icingType === 'Other' ? (icingTypeOther || 'Custom Frosting') : icingType;
+    const finalOccasion = occasion === 'Other' ? (occasionOther || 'Custom Event') : occasion;
+    const finalColor = colors === 'Other / Custom Palette' ? (colorsOther || 'Custom Palette') : colors;
     const finalFilling = filling === 'other' ? (fillingOther || 'Custom Filling') : currentFillingObj.name;
+    const finalLocation = pickupLocation === 'Other' ? (pickupLocationOther || 'Custom Location') : pickupLocation;
 
     const payload = {
       cakeSize: currentSizeObj.id,
       cakeSizeOther: cakeSize === 'Other' ? cakeSizeOther : '',
-      finalCakeSize: finalCakeSize,
-      cakeType: finalCakeType,
+      finalCakeSize: finalSize,
+      cakeType: finalFlavor,
       cakeTypeOther: cakeType === 'Other' ? cakeTypeOther : '',
       icingType: finalIcing,
       icingTypeOther: icingType === 'Other' ? icingTypeOther : '',
       occasion: finalOccasion,
       occasionOther: occasion === 'Other' ? occasionOther : '',
-      colors: colors,
+      colors: finalColor,
       wordsOnCake: wordsOnCake,
       filling: filling,
       fillingOther: filling === 'other' ? fillingOther : '',
       finalFilling: finalFilling,
-      estimatedTotal: estimatedTotal,
-      depositAmount: depositAmount,
-      pricePerServing: pricePerServing,
-      lastSyncedAt: lastMarketSync
-    };
-
-    // Persist only non-sensitive estimator fields to localStorage.
-    const storagePayload = {
-      cakeSize: currentSizeObj.id,
-      cakeSizeOther: cakeSize === 'Other' ? cakeSizeOther : '',
-      filling: filling,
-      fillingOther: filling === 'other' ? fillingOther : '',
+      pickupLocation: finalLocation,
+      location: finalLocation,
+      deliveryAddress: deliveryAddress,
+      allergies: allergies === 'Other' ? (allergiesOther || 'Custom Accommodation') : allergies,
+      cakeStyle: cakeStyle === 'Other' ? (cakeStyleOther || 'Custom Theme') : cakeStyle,
+      customDesignNotes: customDesignNotes,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phoneNumber: phoneNumber,
       estimatedTotal: estimatedTotal,
       depositAmount: depositAmount,
       pricePerServing: pricePerServing,
@@ -348,12 +450,11 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
     };
 
     try {
-      localStorage.setItem('daos_estimated_order', JSON.stringify(storagePayload));
+      localStorage.setItem('daos_estimated_order', JSON.stringify(payload));
     } catch {
       // Ignore
     }
 
-    // Broadcast custom event for instant in-tab auto-sync with InteractiveOrderForm
     window.dispatchEvent(new CustomEvent('daos_estimator_sync', { detail: payload }));
   }, [
     cakeSize,
@@ -365,9 +466,22 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
     occasion,
     occasionOther,
     colors,
+    colorsOther,
     wordsOnCake,
     filling,
     fillingOther,
+    pickupLocation,
+    pickupLocationOther,
+    deliveryAddress,
+    allergies,
+    allergiesOther,
+    cakeStyle,
+    cakeStyleOther,
+    customDesignNotes,
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
     estimatedTotal,
     depositAmount,
     pricePerServing,
@@ -376,7 +490,6 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
     currentFillingObj.name
   ]);
 
-  // Market price sync handler
   const handleSyncMarketPrice = () => {
     setIsSyncingMarket(true);
     setTimeout(() => {
@@ -384,69 +497,113 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setLastMarketSync(`Today at ${timeStr}`);
-      setMarketIndexRate(1.0); // Calibrated real market rates
-      setSyncMessage('Live Market Sync Complete: Ingredient indices verified (organic dairy, cage-free eggs, pure Madagascar vanilla).');
-    }, 700);
+      setMarketIndexRate(1.0);
+      setSyncMessage('Live Market Sync Complete: Ingredient rates verified with Georgia/Florida local suppliers.');
+    }, 600);
   };
 
-  // Generate clean Order Details specification summary
-  const getOrderDetailsSummary = () => {
-    const finalSize = cakeSize === 'Other' ? `Other / Custom Size (${cakeSizeOther || 'Custom Dimensions'})` : `${currentSizeObj.id} (${currentSizeObj.servings})`;
-    const finalCakeType = cakeType === 'Other' ? `Custom (${cakeTypeOther || 'Special Request'})` : cakeType;
+  const getFullSummaryText = () => {
+    const finalSize = cakeSize === 'Other' ? `Other (${cakeSizeOther || 'Custom Dimensions'})` : `${currentSizeObj.id} (${currentSizeObj.servings})`;
+    const finalType = cakeType === 'Other' ? `Custom (${cakeTypeOther || 'Bespoke Recipe'})` : cakeType;
     const finalIcing = icingType === 'Other' ? `Custom (${icingTypeOther || 'Special Finish'})` : icingType;
     const finalOccasion = occasion === 'Other' ? `Other (${occasionOther || 'Event'})` : occasion;
-    const finalFilling = filling === 'other' ? `Custom Filling (${fillingOther || 'Special Request'})` : currentFillingObj.name;
+    const finalColor = colors === 'Other / Custom Palette' ? (colorsOther || 'Custom Palette') : colors;
+    const finalFill = filling === 'other' ? `Custom (${fillingOther || 'Special Filling'})` : currentFillingObj.name;
+    const finalLoc = pickupLocation === 'Other' ? (pickupLocationOther || 'Custom Location') : pickupLocation;
+    const finalDiet = allergies === 'Other' ? (allergiesOther || 'Custom Dietary') : allergies;
+    const finalStyle = cakeStyle === 'Other' ? (cakeStyleOther || 'Custom Aesthetic') : cakeStyle;
 
-    return `=== DAOS CAKES - ORDER DETAILS & ESTIMATE ===
-• Cake Size: ${finalSize}
-• Cake Flavor: ${finalCakeType}
-• Icing Finish: ${finalIcing}
-• Occasion: ${finalOccasion}
-• Color Palette: ${colors}
-• Inscription / Words: "${wordsOnCake}"
-• Gourmet Filling: ${finalFilling}
-• Estimated Total: $${estimatedTotal}
-• 50% Deposit: $${depositAmount}
-• Market Status: Synced (${lastMarketSync})`;
+    return `=== DAOS CAKES - 11 QUESTION COMPLETE ESTIMATE ===
+1. Cake Size & Tiers: ${finalSize}
+2. Cake Flavor: ${finalType}
+3. Icing & Exterior Finish: ${finalIcing}
+4. Occasion: ${finalOccasion}
+5. Color Palette: ${finalColor}
+6. Words on Cake: "${wordsOnCake}"
+7. Inner Layer Filling: ${finalFill}
+8. Location / Delivery: ${finalLoc} ${deliveryAddress ? `(Address: ${deliveryAddress})` : ''}
+9. Dietary Requirements: ${finalDiet}
+10. Design Style & Notes: ${finalStyle} ${customDesignNotes ? `(Notes: ${customDesignNotes})` : ''}
+11. Client Contact: ${firstName} ${lastName} | ${email} | ${phoneNumber}
+---------------------------------------------
+ESTIMATED TOTAL: $${estimatedTotal}
+50% BOOKING DEPOSIT: $${depositAmount}
+COST PER GUEST: ~$${pricePerServing}
+MARKET STATUS: Synced (${lastMarketSync})`;
   };
 
   const handleCopySpecs = () => {
-    navigator.clipboard.writeText(getOrderDetailsSummary());
+    navigator.clipboard.writeText(getFullSummaryText());
     setHasCopied(true);
     setTimeout(() => setHasCopied(false), 2500);
   };
 
-  const handleApplyAndTransfer = async () => {
+  const handleApplyAndTransfer = () => {
     const finalSize = cakeSize === 'Other' ? (cakeSizeOther || 'Custom Size') : currentSizeObj.id;
-    const finalCakeType = cakeType === 'Other' ? (cakeTypeOther || 'Custom') : cakeType;
-    const finalIcing = icingType === 'Other' ? (icingTypeOther || 'Custom') : icingType;
-    const finalOccasion = occasion === 'Other' ? (occasionOther || 'Event') : occasion;
+    const finalType = cakeType === 'Other' ? (cakeTypeOther || 'Custom Flavor') : cakeType;
+    const finalIcing = icingType === 'Other' ? (icingTypeOther || 'Custom Frosting') : icingType;
+    const finalOccasion = occasion === 'Other' ? (occasionOther || 'Custom Occasion') : occasion;
+    const finalColor = colors === 'Other / Custom Palette' ? (colorsOther || 'Custom Palette') : colors;
+    const finalFilling = filling === 'other' ? (fillingOther || 'Custom Filling') : currentFillingObj.name;
+    const finalLocation = pickupLocation === 'Other' ? (pickupLocationOther || 'Custom Location') : pickupLocation;
+    const finalDiet = allergies === 'Other' ? (allergiesOther || 'Custom Dietary') : allergies;
+    const finalStyle = cakeStyle === 'Other' ? (cakeStyleOther || 'Custom Aesthetic') : cakeStyle;
 
-    // Save to localStorage for instant synchronization with InteractiveOrderForm
+    const payloadObj = {
+      // 1. Size
+      cakeSize: currentSizeObj.id,
+      cakeSizeOther: cakeSize === 'Other' ? cakeSizeOther : '',
+      finalCakeSize: finalSize,
+      // 2. Flavor
+      cakeType: finalType,
+      cakeTypeOther: cakeType === 'Other' ? cakeTypeOther : '',
+      // 3. Icing
+      icingType: finalIcing,
+      icingTypeOther: icingType === 'Other' ? icingTypeOther : '',
+      // 4. Occasion
+      occasion: finalOccasion,
+      occasionOther: occasion === 'Other' ? occasionOther : '',
+      // 5. Colors
+      colors: finalColor,
+      colorsOther: colorsOther,
+      // 6. Words
+      wordsOnCake: wordsOnCake,
+      // 7. Filling
+      filling: filling,
+      fillingOther: fillingOther,
+      finalFilling: finalFilling,
+      // 8. Location / Delivery
+      location: finalLocation,
+      pickupLocation: finalLocation,
+      pickupLocationOther: pickupLocationOther,
+      deliveryAddress: deliveryAddress,
+      // 9. Dietary & Allergies
+      allergies: finalDiet,
+      allergiesOther: allergiesOther,
+      // 10. Cake Style & Notes
+      cakeStyle: finalStyle,
+      cakeStyleOther: cakeStyleOther,
+      customDesignNotes: customDesignNotes,
+      // 11. Contact Info
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phoneNumber: phoneNumber,
+      // Financials
+      estimatedTotal: estimatedTotal,
+      depositAmount: depositAmount,
+      pricePerServing: pricePerServing,
+      lastSyncedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
     try {
-      const estimatePayload = JSON.stringify({
-        cakeType: finalCakeType,
-        cakeTypeOther: cakeType === 'Other' ? cakeTypeOther : '',
-        cakeSize: currentSizeObj.id,
-        cakeSizeOther: cakeSize === 'Other' ? cakeSizeOther : '',
-        icingType: finalIcing,
-        icingTypeOther: icingType === 'Other' ? icingTypeOther : '',
-        occasion: finalOccasion,
-        occasionOther: occasion === 'Other' ? occasionOther : '',
-        colors: colors,
-        wordsOnCake: wordsOnCake,
-        filling: filling,
-        fillingOther: filling === 'other' ? fillingOther : '',
-        estimatedTotal: estimatedTotal,
-        lastSyncedAt: lastMarketSync
-      });
-      const encryptedPayload = await encryptForLocalStorage(estimatePayload);
-      localStorage.setItem('daos_estimated_order', encryptedPayload);
+      localStorage.setItem('daos_estimated_order', JSON.stringify(payloadObj));
+      window.dispatchEvent(new CustomEvent('daos_estimator_sync', { detail: payloadObj }));
     } catch {
-      // Ignore local storage error in restricted env
+      // Ignore
     }
 
-    const summaryText = `Custom Estimate: ${finalSize} ${finalCakeType} Cake, ${finalIcing}, Colors: ${colors}, Words: "${wordsOnCake}". Est: $${estimatedTotal}`;
+    const summaryText = `Custom Estimate: ${finalSize} ${finalType} Cake, ${finalIcing}, Colors: ${finalColor}, Inscription: "${wordsOnCake}". Est: $${estimatedTotal}`;
     
     if (onApplyToOrder) {
       onApplyToOrder(summaryText);
@@ -463,7 +620,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
         <div className="text-center max-w-3xl mx-auto mb-10 space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold uppercase tracking-wider border border-amber-200">
             <Calculator className="w-3.5 h-3.5 text-amber-800" />
-            <span>Interactive Order Details &amp; Price Calculator</span>
+            <span>Complete 11-Question Price &amp; Specification Calculator</span>
           </div>
 
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-stone-900 tracking-tight">
@@ -471,7 +628,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
           </h2>
 
           <p className="text-stone-700 text-base sm:text-lg leading-relaxed font-normal">
-            Configure every single order detail from our form—size, sponge flavor, frosting texture, occasion, color theme, and custom writing—with live market-price synchronization.
+            Configure every question from our official order form below—sizes, flavors, frostings, occasions, palettes, gourmet fillings, pickup locations, dietary options, aesthetics, and client info—with live market quote calculations.
           </p>
 
           {/* Live Market Price Sync Bar */}
@@ -510,7 +667,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                 className="px-3.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
               >
                 <FileText className="w-3.5 h-3.5 text-amber-300" />
-                <span>View Order Details Popup</span>
+                <span>Open All Questions Popup</span>
               </button>
             </div>
           </div>
@@ -519,36 +676,40 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
         {/* Calculator Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Options Column (8 cols): Order Details Section */}
-          <div className="lg:col-span-8 space-y-8 bg-white p-6 sm:p-8 rounded-3xl border border-stone-200/90 shadow-xs text-left">
+          {/* Options Column (8 cols): All 11 Questions */}
+          <div className="lg:col-span-8 space-y-10 bg-white p-6 sm:p-8 rounded-3xl border border-stone-200/90 shadow-xs text-left">
             
-            <div className="border-b border-stone-200 pb-3 flex items-center justify-between">
+            <div className="border-b border-stone-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-800">Form Section 2 Mirror</span>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-stone-900">
-                  Configure Order Details &amp; Pricing
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-800">Complete Interactive Questionnaire</span>
+                <h3 className="font-serif text-2xl font-bold text-stone-900">
+                  All 11 Order Questions &amp; Preferences
                 </h3>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsPopupOpen(true)}
-                className="text-xs text-amber-800 hover:text-amber-900 font-bold underline cursor-pointer"
-              >
-                Open Summary Popup
-              </button>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 text-xs font-bold">
+                  11 of 11 Questions Active
+                </span>
+              </div>
             </div>
 
-            {/* 1. Cake Size (Matching Form Section 2) */}
-            <div className="space-y-3">
+            {/* ========================================================================= */}
+            {/* QUESTION 1: Cake Size & Servings */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
               <div className="flex items-center justify-between">
-                <label className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold">1</span>
-                  Select Cake Size &amp; Servings
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">1</span>
+                  Select Cake Size &amp; Guest Servings
                 </label>
-                <span className="text-xs text-stone-500 font-medium">Standard 3-Layer Sponge</span>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 1 of 11</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              <p className="text-xs text-stone-600">
+                Choose the size based on your guest count. All tiers include 3 generous sponge layers and gourmet filling.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
                 {CAKE_SIZES.map((sizeItem) => {
                   const isSelected = cakeSize === sizeItem.id;
                   return (
@@ -558,7 +719,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                       onClick={() => setCakeSize(sizeItem.id)}
                       className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
-                          ? 'border-amber-800 bg-amber-50/80 shadow-2xs ring-2 ring-amber-800/20'
+                          ? 'border-amber-800 bg-amber-50/90 shadow-2xs ring-2 ring-amber-800/20'
                           : 'border-stone-200 bg-white hover:border-amber-300 hover:bg-stone-50'
                       }`}
                     >
@@ -572,11 +733,11 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                           </span>
                         </div>
                         <div className="flex items-center gap-1 text-xs text-stone-600 font-medium">
-                          <Users className="w-3 h-3 text-amber-800 shrink-0" />
+                          <Users className="w-3.5 h-3.5 text-amber-800 shrink-0" />
                           <span>{sizeItem.servings}</span>
                         </div>
                       </div>
-                      <p className="text-[10px] text-stone-500 mt-2 line-clamp-1">
+                      <p className="text-[11px] text-stone-500 mt-2 line-clamp-1">
                         {sizeItem.recommended}
                       </p>
                     </button>
@@ -585,26 +746,36 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
               </div>
 
               {cakeSize === 'Other' && (
-                <div className="pt-1">
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Specify Custom Size / Custom Tiers:</label>
                   <input
                     type="text"
-                    placeholder="Specify custom size, tiers, or guest count (e.g., 14-inch round, 4-tier grand wedding, half sheet)..."
+                    placeholder="e.g. 14-inch round, 4-tier grand wedding structure, sheet cake for 100 guests..."
                     value={cakeSizeOther}
                     onChange={(e) => setCakeSizeOther(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
                   />
                 </div>
               )}
             </div>
 
-            {/* 2. Cake Type (Flavor) */}
-            <div className="space-y-3 pt-2">
-              <label className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold">2</span>
-                Cake Type &amp; Flavor Sponge
-              </label>
+            {/* ========================================================================= */}
+            {/* QUESTION 2: Cake Flavor / Sponge */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">2</span>
+                  Cake Type &amp; Sponge Flavor
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 2 of 13</span>
+              </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <p className="text-xs text-stone-600">
+                Freshly baked from scratch with unbleached organic flour, pure butter, and real vanilla bean.
+              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
                 {CAKE_TYPES.map((typeItem) => {
                   const isSelected = cakeType === typeItem.id;
                   return (
@@ -614,7 +785,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                       onClick={() => setCakeType(typeItem.id)}
                       className={`p-3 rounded-2xl border text-left text-xs transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
-                          ? 'border-amber-800 bg-amber-50/80 font-bold text-amber-950 ring-2 ring-amber-800/20'
+                          ? 'border-amber-800 bg-amber-50/90 font-bold text-amber-950 ring-2 ring-amber-800/20'
                           : 'border-stone-200 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50'
                       }`}
                     >
@@ -633,26 +804,32 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
               </div>
 
               {cakeType === 'Other' && (
-                <div className="pt-1">
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Specify Custom Flavor / Sponge Recipe:</label>
                   <input
                     type="text"
-                    placeholder="Specify custom sponge flavor (e.g., Lavender Earl Grey, Coconut Passionfruit)..."
+                    placeholder="e.g. Lavender Earl Grey, Coconut Passionfruit, Almond Amaretto..."
                     value={cakeTypeOther}
                     onChange={(e) => setCakeTypeOther(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
                   />
                 </div>
               )}
             </div>
 
-            {/* 3. Icing Type & Finish */}
-            <div className="space-y-3 pt-2">
-              <label className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold">3</span>
-                Icing Type &amp; Exterior Finish
-              </label>
+            {/* ========================================================================= */}
+            {/* QUESTION 3: Icing Type & Finish */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">3</span>
+                  Icing Type &amp; Exterior Finish
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 3 of 13</span>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
                 {ICING_TYPES.map((icingItem) => {
                   const isSelected = icingType === icingItem.id;
                   return (
@@ -662,7 +839,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                       onClick={() => setIcingType(icingItem.id)}
                       className={`p-3 rounded-2xl border text-left text-xs transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
-                          ? 'border-amber-800 bg-amber-50/80 font-bold text-amber-950 ring-2 ring-amber-800/20'
+                          ? 'border-amber-800 bg-amber-50/90 font-bold text-amber-950 ring-2 ring-amber-800/20'
                           : 'border-stone-200 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50'
                       }`}
                     >
@@ -681,26 +858,32 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
               </div>
 
               {icingType === 'Other' && (
-                <div className="pt-1">
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Specify Custom Frosting / Exterior Finish:</label>
                   <input
                     type="text"
-                    placeholder="Specify custom frosting finish (e.g., textured palette knife, caramel drizzle, stenciled)..."
+                    placeholder="e.g. Textured palette knife, espresso mirror glaze, marshmallow fluff..."
                     value={icingTypeOther}
                     onChange={(e) => setIcingTypeOther(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
                   />
                 </div>
               )}
             </div>
 
-            {/* 4. Occasion */}
-            <div className="space-y-3 pt-2">
-              <label className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold">4</span>
-                Occasion &amp; Event Structure
-              </label>
+            {/* ========================================================================= */}
+            {/* QUESTION 4: Occasion & Event Structure */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">4</span>
+                  Occasion &amp; Event Type
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 4 of 13</span>
+              </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 pt-1">
                 {OCCASIONS.map((occItem) => {
                   const isSelected = occasion === occItem.id;
                   return (
@@ -721,105 +904,139 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
               </div>
 
               {occasion === 'Other' && (
-                <div className="pt-1">
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Specify Custom Event Type:</label>
                   <input
                     type="text"
-                    placeholder="Specify event type (e.g., Graduation, Retirement, Quinceañera, Housewarming)..."
+                    placeholder="e.g. Graduation, Retirement, Quinceañera, Housewarming, Bridal Shower..."
                     value={occasionOther}
                     onChange={(e) => setOccasionOther(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
                   />
                 </div>
               )}
             </div>
 
-            {/* 5. Colors & Inscription (Words on Cake) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              
-              {/* Color Customization */}
-              <div className="space-y-2">
-                <label className="block text-xs sm:text-sm font-bold text-stone-900 flex items-center gap-1.5">
-                  <Palette className="w-4 h-4 text-amber-800" />
-                  <span>Colors / Palette Theme <span className="text-red-600">*</span></span>
+            {/* ========================================================================= */}
+            {/* QUESTION 5: Colors / Palette Theme */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">5</span>
+                  Color Theme &amp; Styling Palette <span className="text-red-600">*</span>
                 </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 5 of 13</span>
+              </div>
+
+              <div className="space-y-2">
                 <input
                   type="text"
                   value={colors}
                   onChange={(e) => setColors(e.target.value)}
-                  placeholder="e.g. Sage green, ivory, and gold leaf"
+                  placeholder="e.g. Sage green, ivory white, and 24K gold leaf accents"
                   className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
                 />
                 
-                {/* Quick Presets */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  <span className="text-[10px] text-stone-400 font-medium">Presets:</span>
-                  {COLOR_PRESETS.slice(0, 4).map((preset) => (
+                {/* Quick Palette Presets */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <span className="text-[11px] text-stone-400 font-medium self-center">Popular Presets:</span>
+                  {COLOR_PRESETS.map((preset) => (
                     <button
                       key={preset}
                       type="button"
                       onClick={() => setColors(preset)}
-                      className="text-[10px] bg-stone-100 hover:bg-amber-100 text-stone-700 px-2 py-0.5 rounded-md transition-colors cursor-pointer"
+                      className={`text-xs px-2.5 py-1 rounded-lg border transition-colors cursor-pointer ${
+                        colors === preset
+                          ? 'bg-amber-100 border-amber-400 text-amber-950 font-bold'
+                          : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-amber-50'
+                      }`}
                     >
                       {preset}
                     </button>
                   ))}
                 </div>
+
+                {colors === 'Other / Custom Palette' && (
+                  <div className="pt-2 animate-in fade-in">
+                    <input
+                      type="text"
+                      placeholder="Specify your exact custom hex codes, Pantone shades, or party decor colors..."
+                      value={colorsOther}
+                      onChange={(e) => setColorsOther(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* QUESTION 6: Words on Cake / Inscription */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">6</span>
+                  Words on Cake / Custom Inscription <span className="text-red-600">*</span>
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 6 of 13</span>
               </div>
 
-              {/* Words on Cake */}
               <div className="space-y-2">
-                <label className="block text-xs sm:text-sm font-bold text-stone-900 flex items-center gap-1.5">
-                  <Type className="w-4 h-4 text-amber-800" />
-                  <span>Words on Cake / Inscription <span className="text-red-600">*</span></span>
-                </label>
                 <input
                   type="text"
                   value={wordsOnCake}
                   onChange={(e) => setWordsOnCake(e.target.value)}
-                  placeholder="e.g. Happy 30th Birthday Jessica!"
+                  placeholder="e.g. Happy 30th Birthday Jessica! (or leave blank for no piping)"
                   className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
                 />
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  <span className="text-[10px] text-stone-400 font-medium">Suggestions:</span>
-                  {['Happy Birthday!', 'Congratulations!', 'Mr. & Mrs.', 'Sweet 16'].map((msg) => (
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <span className="text-[11px] text-stone-400 font-medium self-center">Suggestions:</span>
+                  {['Happy Birthday!', 'Congratulations!', 'Mr. & Mrs.', 'Sweet 16', 'Oh Baby!', 'None (Clean Top)'].map((msg) => (
                     <button
                       key={msg}
                       type="button"
-                      onClick={() => setWordsOnCake(msg)}
-                      className="text-[10px] bg-stone-100 hover:bg-amber-100 text-stone-700 px-2 py-0.5 rounded-md transition-colors cursor-pointer"
+                      onClick={() => setWordsOnCake(msg === 'None (Clean Top)' ? '' : msg)}
+                      className="text-xs bg-stone-100 hover:bg-amber-100 text-stone-700 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                     >
                       "{msg}"
                     </button>
                   ))}
                 </div>
               </div>
-
             </div>
 
-            {/* 6. Gourmet Filling Selection */}
-            <div className="space-y-3 pt-2">
-              <label className="font-serif font-bold text-stone-900 text-base flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold">6</span>
-                Select Gourmet Inner Layer Filling
-              </label>
+            {/* ========================================================================= */}
+            {/* QUESTION 7: Gourmet Inner Layer Filling */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">7</span>
+                  Select Gourmet Inner Layer Filling
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 7 of 13</span>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                 {FILLING_UPGRADES.map((fillItem) => (
                   <button
                     key={fillItem.id}
                     type="button"
                     onClick={() => setFilling(fillItem.id)}
-                    className={`p-3 rounded-xl border text-left text-xs transition-all cursor-pointer flex items-center justify-between ${
+                    className={`p-3.5 rounded-xl border text-left text-xs transition-all cursor-pointer flex items-center justify-between ${
                       filling === fillItem.id
-                        ? 'border-amber-800 bg-amber-50/80 text-amber-950 font-semibold ring-1 ring-amber-800'
-                        : 'border-stone-200 bg-white text-stone-700 hover:border-amber-300'
+                        ? 'border-amber-800 bg-amber-50/90 text-amber-950 font-semibold ring-1 ring-amber-800'
+                        : 'border-stone-200 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50'
                     }`}
                   >
                     <div>
-                      <p className="font-semibold text-stone-900">{fillItem.name}</p>
-                      <p className="text-[10px] text-stone-500">{fillItem.desc}</p>
+                      <p className="font-semibold text-stone-900 text-xs sm:text-sm">{fillItem.name}</p>
+                      <p className="text-[11px] text-stone-500 mt-0.5">{fillItem.desc}</p>
                     </div>
-                    <span className="text-[11px] text-stone-600 font-bold shrink-0 ml-2">
+                    <span className="text-xs text-amber-900 font-bold shrink-0 ml-3 bg-amber-100 px-2 py-1 rounded-md">
                       {fillItem.price === 0 ? 'Included' : `+$${fillItem.price}`}
                     </span>
                   </button>
@@ -827,16 +1044,274 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
               </div>
 
               {filling === 'other' && (
-                <div className="pt-1">
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Specify Custom Layer Filling:</label>
                   <input
                     type="text"
-                    placeholder="Specify custom filling (e.g., Passionfruit curd, Nutella hazelnut mousse, Guava cream)..."
+                    placeholder="e.g. Passionfruit curd, Nutella hazelnut mousse, Guava cream, Salted dulce de leche..."
                     value={fillingOther}
                     onChange={(e) => setFillingOther(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/30"
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
                   />
                 </div>
               )}
+            </div>
+
+            {/* ========================================================================= */}
+            {/* QUESTION 8: Pickup Location / Delivery */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">8</span>
+                  Pickup Location &amp; Delivery Method
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 8 of 11</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {PICKUP_OPTIONS.map((locItem) => {
+                  const isSelected = pickupLocation === locItem.id;
+                  return (
+                    <button
+                      key={locItem.id}
+                      type="button"
+                      onClick={() => setPickupLocation(locItem.id)}
+                      className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                        isSelected
+                          ? 'border-amber-800 bg-amber-50/90 text-amber-950 font-semibold ring-1 ring-amber-800'
+                          : 'border-stone-200 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-xs sm:text-sm text-stone-900">{locItem.name}</span>
+                          <span className="text-[11px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-md">
+                            {locItem.cost === 0 ? 'Free Pickup' : `+$${locItem.cost}`}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-stone-500">{locItem.desc}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {pickupLocation === 'White Glove Hand Delivery' && (
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Delivery Address &amp; Venue Details:</label>
+                  <input
+                    type="text"
+                    placeholder="Enter street address, suite/apt, city, zip code, and venue contact..."
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
+                  />
+                </div>
+              )}
+
+              {pickupLocation === 'Other' && (
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Specify Custom Pickup / Delivery Instructions:</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Special restaurant drop-off, catering coordinator handover..."
+                    value={pickupLocationOther}
+                    onChange={(e) => setPickupLocationOther(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* ========================================================================= */}
+            {/* QUESTION 9: Dietary & Allergy Accommodations */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">9</span>
+                  Dietary &amp; Allergy Accommodations
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 9 of 11</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1">
+                {DIETARY_OPTIONS.map((dietItem) => {
+                  const isSelected = allergies === dietItem.id;
+                  return (
+                    <button
+                      key={dietItem.id}
+                      type="button"
+                      onClick={() => setAllergies(dietItem.id)}
+                      className={`p-3 rounded-xl border text-left text-xs transition-all cursor-pointer flex flex-col justify-between ${
+                        isSelected
+                          ? 'border-amber-800 bg-amber-50/90 text-amber-950 font-bold ring-1 ring-amber-800'
+                          : 'border-stone-200 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-stone-900">{dietItem.id}</span>
+                        {dietItem.cost > 0 && (
+                          <span className="text-[10px] text-amber-800 font-bold bg-amber-100 px-1.5 py-0.5 rounded-full">
+                            +${dietItem.cost}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-stone-500">{dietItem.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {allergies === 'Other' && (
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Specify Specific Allergy or Sensitivity:</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Severe peanut allergy, soy sensitivity, alcohol-free vanilla extract..."
+                    value={allergiesOther}
+                    onChange={(e) => setAllergiesOther(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* ========================================================================= */}
+            {/* QUESTION 10: Cake Style, Theme & Custom Design Notes */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 border-b border-stone-100 pb-8">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">10</span>
+                  Cake Aesthetic Style &amp; Custom Design Notes
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 10 of 11</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1">
+                {CAKE_STYLES.map((styleItem) => {
+                  const isSelected = cakeStyle === styleItem.id;
+                  return (
+                    <button
+                      key={styleItem.id}
+                      type="button"
+                      onClick={() => setCakeStyle(styleItem.id)}
+                      className={`p-3 rounded-xl border text-left text-xs transition-all cursor-pointer flex flex-col justify-between ${
+                        isSelected
+                          ? 'border-amber-800 bg-amber-50/90 text-amber-950 font-bold ring-1 ring-amber-800'
+                          : 'border-stone-200 bg-white text-stone-700 hover:border-amber-300 hover:bg-stone-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-stone-900">{styleItem.name}</span>
+                        {styleItem.cost > 0 && (
+                          <span className="text-[10px] text-amber-800 font-bold bg-amber-100 px-1.5 py-0.5 rounded-full">
+                            +${styleItem.cost}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-stone-500">{styleItem.desc}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {cakeStyle === 'Other' && (
+                <div className="pt-2 animate-in fade-in">
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Specify Custom Theme or Style:</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Enchanted forest, celestial astrology, retro disco 70s..."
+                    value={cakeStyleOther}
+                    onChange={(e) => setCakeStyleOther(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amber-300 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900 bg-amber-50/40"
+                  />
+                </div>
+              )}
+
+              <div className="pt-2">
+                <label className="block text-xs font-bold text-stone-700 mb-1">Additional Design Notes, Inspiration &amp; Special Requests:</label>
+                <textarea
+                  rows={2}
+                  value={customDesignNotes}
+                  onChange={(e) => setCustomDesignNotes(e.target.value)}
+                  placeholder="Describe your design vision, toppers, florals, reference links, or specific placement requests..."
+                  className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
+                />
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* QUESTION 11: Contact Details for Estimate / Order */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 pb-2">
+              <div className="flex items-center justify-between">
+                <label className="font-serif font-bold text-stone-900 text-lg flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-sans font-bold shadow-xs">11</span>
+                  Contact Information for Order Confirmation &amp; Quote
+                </label>
+                <span className="text-xs text-stone-500 font-medium bg-stone-100 px-2.5 py-1 rounded-lg">Question 11 of 11</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-stone-500" />
+                    <span>First Name <span className="text-red-600">*</span></span>
+                  </label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="e.g. Jessica"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-stone-500" />
+                    <span>Last Name <span className="text-red-600">*</span></span>
+                  </label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="e.g. Miller"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-stone-500" />
+                    <span>Email Address <span className="text-red-600">*</span></span>
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="jessica@example.com"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-stone-500" />
+                    <span>Phone Number <span className="text-red-600">*</span></span>
+                  </label>
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="(404) 555-0199"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-xs sm:text-sm text-stone-900"
+                  />
+                </div>
+              </div>
             </div>
 
           </div>
@@ -846,7 +1321,7 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
             
             <div className="flex items-center justify-between border-b border-stone-800 pb-4">
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400">Live Market Calculation</span>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400">Live 11-Question Calculation</span>
                 <h3 className="font-serif text-xl font-bold text-white">Estimated Quote</h3>
               </div>
               <div className="w-9 h-9 rounded-full bg-amber-800/60 text-amber-300 flex items-center justify-center">
@@ -855,11 +1330,11 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
             </div>
 
             {/* Selected Configuration Summary */}
-            <div className="space-y-2.5 text-xs text-stone-300">
+            <div className="space-y-2.5 text-xs text-stone-300 max-h-[300px] overflow-y-auto pr-1">
               <div className="flex justify-between items-start pb-2 border-b border-stone-800/60">
                 <div>
                   <p className="font-semibold text-white">
-                    {cakeSize === 'Other' ? (cakeSizeOther ? `Other (${cakeSizeOther})` : 'Other / Custom Size') : currentSizeObj.name}
+                    {cakeSize === 'Other' ? (cakeSizeOther ? `Other (${cakeSizeOther})` : 'Other Size') : currentSizeObj.name}
                   </p>
                   <p className="text-[11px] text-stone-400">{currentSizeObj.servings}</p>
                 </div>
@@ -877,23 +1352,23 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
               </div>
 
               <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                <span className="text-stone-400">Occasion: {occasion === 'Other' ? (occasionOther || 'Custom Event') : occasion}</span>
+                <span className="text-stone-400">Occasion: {occasion === 'Other' ? (occasionOther || 'Custom') : occasion}</span>
                 <span className="font-semibold text-white">{currentOccasionObj.structurePrice > 0 ? `+$${currentOccasionObj.structurePrice}` : 'Included'}</span>
               </div>
 
               <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                <span className="text-stone-400">Filling: {filling === 'other' ? (fillingOther || 'Custom Filling') : currentFillingObj.name}</span>
+                <span className="text-stone-400">Filling: {filling === 'other' ? (fillingOther || 'Custom') : currentFillingObj.name}</span>
                 <span className="font-semibold text-white">{currentFillingObj.price > 0 ? `+$${currentFillingObj.price}` : 'Included'}</span>
               </div>
 
               <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                <span className="text-stone-400 truncate max-w-[170px]">Colors: {colors}</span>
-                <span className="text-emerald-400 font-medium">Included</span>
+                <span className="text-stone-400">Style: {cakeStyle === 'Other' ? (cakeStyleOther || 'Custom') : cakeStyle}</span>
+                <span className="font-semibold text-white">{currentStyleObj.cost > 0 ? `+$${currentStyleObj.cost}` : 'Included'}</span>
               </div>
 
               <div className="flex justify-between items-center pb-2 border-b border-stone-800/60">
-                <span className="text-stone-400 truncate max-w-[170px]">Words: "{wordsOnCake}"</span>
-                <span className="text-emerald-400 font-medium">Included</span>
+                <span className="text-stone-400">Pickup / Delivery:</span>
+                <span className="font-semibold text-white">{currentPickupObj.cost > 0 ? `+$${currentPickupObj.cost}` : 'Free Pickup'}</span>
               </div>
             </div>
 
@@ -921,18 +1396,23 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                 className="w-full py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Zap className="w-4 h-4 text-stone-950" />
-                <span>Apply to Order Form (Pre-Filled)</span>
+                <span>Apply All Questions to Order Form</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <a
                 href={buildPrefilledGoogleFormUrl({
+                  firstName: firstName,
+                  lastName: lastName,
+                  email: email,
+                  phoneNumber: phoneNumber,
                   cakeType: cakeType === 'Other' ? (cakeTypeOther || 'Custom') : cakeType,
                   cakeSize: currentSizeObj.id,
                   icingType: icingType === 'Other' ? (icingTypeOther || 'Custom') : icingType,
                   occasion: occasion === 'Other' ? (occasionOther || 'Event') : occasion,
-                  colors: colors,
-                  wordsOnCake: wordsOnCake
+                  colors: colors === 'Other / Custom Palette' ? (colorsOther || 'Custom') : colors,
+                  wordsOnCake: wordsOnCake,
+                  location: pickupLocation === 'Other' ? (pickupLocationOther || 'Custom Location') : pickupLocation
                 })}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -948,11 +1428,11 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                 className="w-full py-2.5 px-4 rounded-2xl bg-stone-900/60 hover:bg-stone-900 text-stone-300 font-semibold text-xs border border-stone-800 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <FileText className="w-3.5 h-3.5 text-stone-400" />
-                <span>View Full Specifications Breakdown</span>
+                <span>📋 Pop Up All Questions &amp; Live Summary</span>
               </button>
 
               <p className="text-[10px] text-stone-400 text-center leading-relaxed">
-                *Final invoice confirmed by bakery upon date availability verification.
+                *Final invoice confirmed by bakery upon availability verification.
               </p>
             </div>
 
@@ -963,10 +1443,10 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
       </div>
 
       {/* ========================================================================= */}
-      {/* ORDER DETAILS POPUP MODAL */}
+      {/* 11-QUESTION ORDER DETAILS POPUP MODAL */}
       {/* ========================================================================= */}
       {isPopupOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-amber-200/80 p-6 sm:p-8 space-y-6 text-left relative">
             
             {/* Close Button */}
@@ -983,13 +1463,13 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
             <div className="space-y-1 pr-8">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-mono font-semibold uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Live Order Details Specification</span>
+                <span>11 Questions Complete Specification</span>
               </div>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
-                Order Details &amp; Price Breakdown
+                11-Question Order &amp; Price Breakdown
               </h3>
               <p className="text-xs sm:text-sm text-stone-600">
-                Generated from your selections in Section 2 of our cake specification form.
+                Every single question answered in the interactive price estimator.
               </p>
             </div>
 
@@ -999,47 +1479,69 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span><strong>Market Status:</strong> Synced with Georgia/Florida ingredient indices ({lastMarketSync})</span>
               </div>
-              <span className="font-bold text-emerald-800 shrink-0">100% Guaranteed Rate</span>
+              <span className="font-bold text-emerald-800 shrink-0">100% Verified Rate</span>
             </div>
 
-            {/* Detailed Order Specifications Table */}
+            {/* Detailed Order Specifications Table (All 11 Questions) */}
             <div className="bg-stone-50 rounded-2xl border border-stone-200 overflow-hidden divide-y divide-stone-200 text-xs sm:text-sm">
               
-              <div className="p-3.5 flex justify-between items-center">
+              <div className="p-3 flex justify-between items-center">
                 <span className="text-stone-500 font-medium">1. Cake Size &amp; Guest Servings:</span>
                 <span className="font-bold text-stone-900">
-                  {cakeSize === 'Other' ? (cakeSizeOther ? `Other / Custom (${cakeSizeOther})` : 'Other / Custom Size') : `${currentSizeObj.name} (${currentSizeObj.servings})`}
+                  {cakeSize === 'Other' ? (cakeSizeOther ? `Other (${cakeSizeOther})` : 'Other Size') : `${currentSizeObj.name} (${currentSizeObj.servings})`}
                 </span>
               </div>
 
-              <div className="p-3.5 flex justify-between items-center">
-                <span className="text-stone-500 font-medium">2. Cake Type / Flavor:</span>
+              <div className="p-3 flex justify-between items-center">
+                <span className="text-stone-500 font-medium">2. Cake Type / Flavor Sponge:</span>
                 <span className="font-bold text-stone-900">{cakeType === 'Other' ? (cakeTypeOther || 'Custom') : cakeType}</span>
               </div>
 
-              <div className="p-3.5 flex justify-between items-center">
+              <div className="p-3 flex justify-between items-center">
                 <span className="text-stone-500 font-medium">3. Icing Type &amp; Exterior Finish:</span>
                 <span className="font-bold text-stone-900">{icingType === 'Other' ? (icingTypeOther || 'Custom') : icingType}</span>
               </div>
 
-              <div className="p-3.5 flex justify-between items-center">
-                <span className="text-stone-500 font-medium">4. Occasion:</span>
+              <div className="p-3 flex justify-between items-center">
+                <span className="text-stone-500 font-medium">4. Occasion &amp; Event Type:</span>
                 <span className="font-bold text-stone-900">{occasion === 'Other' ? (occasionOther || 'Event') : occasion}</span>
               </div>
 
-              <div className="p-3.5 flex justify-between items-center">
+              <div className="p-3 flex justify-between items-center">
                 <span className="text-stone-500 font-medium">5. Colors &amp; Styling Palette:</span>
-                <span className="font-bold text-amber-950">{colors}</span>
+                <span className="font-bold text-amber-950">{colors === 'Other / Custom Palette' ? (colorsOther || 'Custom') : colors}</span>
               </div>
 
-              <div className="p-3.5 flex justify-between items-center">
+              <div className="p-3 flex justify-between items-center">
                 <span className="text-stone-500 font-medium">6. Words / Inscription on Cake:</span>
                 <span className="font-bold text-stone-900">"{wordsOnCake}"</span>
               </div>
 
-              <div className="p-3.5 flex justify-between items-center">
+              <div className="p-3 flex justify-between items-center">
                 <span className="text-stone-500 font-medium">7. Gourmet Inner Layer Filling:</span>
                 <span className="font-bold text-stone-900">{filling === 'other' ? (fillingOther || 'Custom Filling') : currentFillingObj.name}</span>
+              </div>
+
+              <div className="p-3 flex justify-between items-center">
+                <span className="text-stone-500 font-medium">8. Location / Delivery:</span>
+                <span className="font-bold text-stone-900">{pickupLocation === 'Other' ? (pickupLocationOther || 'Custom') : pickupLocation}</span>
+              </div>
+
+              <div className="p-3 flex justify-between items-center">
+                <span className="text-stone-500 font-medium">9. Dietary Requirements:</span>
+                <span className="font-bold text-stone-900">{allergies === 'Other' ? (allergiesOther || 'Custom') : allergies}</span>
+              </div>
+
+              <div className="p-3 flex justify-between items-center">
+                <span className="text-stone-500 font-medium">10. Aesthetic Style &amp; Notes:</span>
+                <span className="font-bold text-stone-900">{cakeStyle === 'Other' ? (cakeStyleOther || 'Custom') : cakeStyle}</span>
+              </div>
+
+              <div className="p-3 flex justify-between items-center">
+                <span className="text-stone-500 font-medium">11. Client Contact Info:</span>
+                <span className="font-bold text-stone-900">
+                  {firstName || lastName ? `${firstName} ${lastName} • ${phoneNumber || email || ''}` : 'Not provided yet (can be added on order form)'}
+                </span>
               </div>
 
             </div>
@@ -1066,12 +1568,12 @@ export default function CakeEstimatorSection({ onApplyToOrder }: CakeEstimatorPr
                 {hasCopied ? (
                   <>
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Copied to Clipboard!</span>
+                    <span>Copied All 11 Specs!</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-4 h-4 text-stone-600" />
-                    <span>Copy Order Specifications</span>
+                    <span>Copy All 11 Questions Specs</span>
                   </>
                 )}
               </button>
