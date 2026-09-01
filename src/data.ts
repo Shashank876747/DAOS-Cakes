@@ -165,32 +165,74 @@ export const FAQS: FaqItem[] = [
   {
     id: 'faq-1',
     question: 'How far in advance should I place my custom cake order?',
-    answer: 'We recommend submitting your order request at least 2 to 3 weeks in advance. Because we are a small-batch artisanal home bakery, our dates fill up quickly — especially for weekend celebrations. For short notice (under 7 days), submit a form and we will check our availability!',
+    answer: 'We recommend submitting your order inquiry at least 2 to 4 weeks in advance for standard celebration cakes and 2 to 6 months for tiered wedding cakes. Because we operate as an artisanal, small-batch home bakery in Smyrna, GA, our weekly calendar fills up quickly. If your event is sooner (within 7 days), please still submit the form — we will gladly check if we have an open baking slot!',
     category: 'ordering'
   },
   {
     id: 'faq-2',
     question: 'How does the ordering & payment process work?',
-    answer: '1) Submit the online Cake Order Form with your preferred date, size, and flavor ideas. 2) We will confirm availability and send your custom invoice. 3) A 50% non-refundable deposit secures your date. 4) The remaining balance is due prior to or at pickup.',
+    answer: 'The process is simple and transparent: 1) Fill out our online Cake Order Form detailing your date, guest count, flavor preferences, and inspiration photos. 2) We will contact you with a customized quote and design confirmation. 3) A 50% non-refundable deposit secures your date on our calendar. 4) The remaining balance is due prior to or at pickup.',
     category: 'ordering'
   },
   {
     id: 'faq-3',
-    question: 'Do you offer gluten-friendly or dietary accommodations?',
-    answer: 'Yes! Our French Macarons are naturally gluten-free (made with 100% almond flour). We can also prepare gluten-friendly and nut-conscious cake sponges upon request. Please note baked goods are prepared in a kitchen that handles wheat, dairy, eggs, and nuts.',
-    category: 'flavors'
+    question: 'What methods of payment do you accept?',
+    answer: 'We accept secure digital payments including Zelle, Apple Pay, Venmo, credit cards via electronic invoice, and cash upon pickup. Your booking deposit is processed electronically with an itemized invoice detailing your design specifications.',
+    category: 'ordering'
   },
   {
     id: 'faq-4',
-    question: 'Where and when do I pick up my cake?',
-    answer: 'Pickup is coordinated from our Smyrna, Georgia home kitchen in a sanitized, temperature-controlled environment. We provide specific pickup time windows. We recommend transporting cakes on the flat floorboard of an air-conditioned vehicle rather than on a car seat.',
-    category: 'pickup'
+    question: 'Can you recreate a specific Pinterest or Instagram cake design?',
+    answer: 'Yes! We love drawing inspiration from your reference photos, mood boards, party themes, and invitations. Please note that every cake artist has a unique hand and medium; while we capture the exact color palette, floral style, texture, and aesthetic of your inspiration, we also bring our signature artisanal scratch craftsmanship to the final piece.',
+    category: 'flavors'
   },
   {
     id: 'faq-5',
+    question: 'What makes Swiss Meringue Buttercream different from regular grocery store frosting?',
+    answer: 'Traditional American frosting relies on powdered confectioner sugar and shortening, resulting in an overly sweet, gritty texture. We exclusively use Swiss Meringue Buttercream — crafted by gently whipping pasteurized egg whites and pure cane sugar into a glossy meringue, then slowly beating in Grade-AA sweet cream butter. It has approximately 50% less perceived sweetness, a cloud-like texture, and melts like silk on the tongue.',
+    category: 'flavors'
+  },
+  {
+    id: 'faq-6',
+    question: 'Do you offer gluten-friendly or dietary accommodations?',
+    answer: 'Yes! Our handcrafted French Macarons are naturally 100% gluten-free (made with almond flour). We can also prepare gluten-conscious and nut-conscious cake sponges upon request. Please note that our kitchen is a licensed Georgia Cottage bakery that also handles wheat, dairy, eggs, and nuts, so we cannot guarantee a certified medical celiac environment.',
+    category: 'flavors'
+  },
+  {
+    id: 'faq-7',
+    question: 'Where and when do I pick up my custom cake?',
+    answer: 'Scheduled pickups take place at our home bakery in Smyrna, Georgia (serving Cobb County, Vinings, Marietta, and Greater Atlanta). We coordinate a 30-minute pickup window with you so your cake is freshly boxed and chilled at ideal transport temperature.',
+    category: 'pickup'
+  },
+  {
+    id: 'faq-8',
+    question: 'What is the safest way to transport my cake in a car?',
+    answer: 'Always place the cake box on the completely flat floorboard of your vehicle (preferably the front passenger floorboard) with the vehicle air conditioner set to cold. Never place a cake on a slanted car seat, in a passenger lap, or in an unventilated hot car trunk. Drive gently and take turns with care.',
+    category: 'pickup'
+  },
+  {
+    id: 'faq-9',
+    question: 'How should I store the cake before my event and when should it be served?',
+    answer: 'Keep the cake in its box inside your refrigerator until approximately 1.5 to 2 hours before serving. Custom buttercreams are made with real butter and taste best when enjoyed at room temperature (around 68°F–70°F), allowing the crumb to soften and the flavor notes to fully develop.',
+    category: 'pickup'
+  },
+  {
+    id: 'faq-10',
     question: 'What is Georgia Cottage Food compliance?',
-    answer: 'DAOS Cakes operates in compliance with Georgia Cottage Food regulations (Georgia Department of Agriculture). We adhere strictly to sanitary standards, food safety protocols, and proper packaging and labeling for all homemade baked delicacies.',
+    answer: 'DAOS Cakes operates under the Georgia Department of Agriculture Cottage Food Law. We maintain strict sanitization standards, food safety protocols, clear ingredient disclosures, and sanitary packaging. All cakes are produced with pride in a dedicated, inspected home kitchen environment.',
     category: 'compliance'
+  },
+  {
+    id: 'faq-11',
+    question: 'How do you ensure multi-tier cakes remain stable during transport and display?',
+    answer: 'Every tiered cake is engineered with food-grade internal center dowels and individual tier cake boards. This structural framework supports the weight of upper tiers, ensuring the cake remains plumb, level, and secure throughout your celebration.',
+    category: 'compliance'
+  },
+  {
+    id: 'faq-12',
+    question: 'Can you provide matching treats like cupcakes and macarons for dessert tables?',
+    answer: 'Absolutely! We offer gourmet swirl cupcakes, handcrafted French macarons, cake pops, and dessert shooter cups tailored to match your cake theme, color palette, and event branding for stunning dessert table spreads.',
+    category: 'flavors'
   }
 ];
 

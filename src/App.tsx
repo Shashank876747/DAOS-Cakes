@@ -15,6 +15,10 @@ import AboutPage from './pages/AboutPage';
 import FaqPage from './pages/FaqPage';
 import ContactPage from './pages/ContactPage';
 import EstimatorPage from './pages/EstimatorPage';
+import FlavorGuidePage from './pages/FlavorGuidePage';
+import CakeCareGuidePage from './pages/CakeCareGuidePage';
+import WeddingGuidePage from './pages/WeddingGuidePage';
+import BakingCraftPage from './pages/BakingCraftPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -53,6 +57,20 @@ export default function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/contact" element={<ContactPage />} />
+
+            {/* In-Depth Masterclass & Content Guides */}
+            <Route path="/flavor-guide" element={<FlavorGuidePage />} />
+            <Route path="/flavors" element={<Navigate to="/flavor-guide" replace />} />
+            
+            <Route path="/cake-care-guide" element={<CakeCareGuidePage />} />
+            <Route path="/cake-care" element={<Navigate to="/cake-care-guide" replace />} />
+            <Route path="/transport-guide" element={<Navigate to="/cake-care-guide" replace />} />
+
+            <Route path="/wedding-guide" element={<WeddingGuidePage />} />
+            <Route path="/weddings" element={<Navigate to="/wedding-guide" replace />} />
+
+            <Route path="/baking-craft" element={<BakingCraftPage />} />
+            <Route path="/craft" element={<Navigate to="/baking-craft" replace />} />
 
             {/* Additional Distinct Feature Routes */}
             <Route path="/pricing-estimator" element={<EstimatorPage />} />

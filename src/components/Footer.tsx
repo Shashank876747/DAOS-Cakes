@@ -46,9 +46,9 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
           {/* Site Navigation Links */}
           <div className="space-y-4">
             <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
-              Explore Pages
+              Pages &amp; Guides
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-1.5 text-xs sm:text-sm">
               <li>
                 <Link to="/" className="text-stone-400 hover:text-amber-300 transition-colors">
                   Home (/)
@@ -56,7 +56,27 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
               </li>
               <li>
                 <Link to="/pricing-estimator" className="text-stone-400 hover:text-amber-300 transition-colors">
-                  Price &amp; Size Estimator (/pricing-estimator)
+                  Price Estimator (/pricing-estimator)
+                </Link>
+              </li>
+              <li>
+                <Link to="/flavor-guide" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Flavor Guide (/flavor-guide)
+                </Link>
+              </li>
+              <li>
+                <Link to="/cake-care-guide" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Cake Care &amp; Transport (/cake-care-guide)
+                </Link>
+              </li>
+              <li>
+                <Link to="/wedding-guide" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Wedding Guide (/wedding-guide)
+                </Link>
+              </li>
+              <li>
+                <Link to="/baking-craft" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Baking Craft (/baking-craft)
                 </Link>
               </li>
               <li>
@@ -65,13 +85,13 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
                 </Link>
               </li>
               <li>
-                <Link to="/order" className="text-stone-400 hover:text-amber-300 transition-colors font-semibold text-amber-400">
+                <Link to="/order" className="text-amber-400 hover:text-amber-300 transition-colors font-semibold">
                   Order Form (/order)
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-stone-400 hover:text-amber-300 transition-colors">
-                  About the Baker (/about)
+                  About Us (/about)
                 </Link>
               </li>
               <li>
