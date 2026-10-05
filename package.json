@@ -20,7 +20,7 @@
     "motion": "^13.4.4",
     "react": "^19.0.1",
     "react-dom": "^19.3.0",
-    "react-router-dom": "^7.18.3"
+    "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
