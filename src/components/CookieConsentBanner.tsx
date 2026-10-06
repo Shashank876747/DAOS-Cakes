@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Cookie, ShieldCheck, X } from 'lucide-react';
 
 interface CookieConsentBannerProps {
-  onOpenPrivacy: () => void;
+  onOpenPrivacy?: () => void;
 }
 
 export default function CookieConsentBanner({ onOpenPrivacy }: CookieConsentBannerProps) {
@@ -87,12 +88,12 @@ export default function CookieConsentBanner({ onOpenPrivacy }: CookieConsentBann
               Essential Only
             </button>
 
-            <button
-              onClick={onOpenPrivacy}
+            <Link
+              to="/privacy-policy"
               className="text-xs text-amber-300 hover:text-amber-200 underline font-medium cursor-pointer ml-auto"
             >
               Read Policy
-            </button>
+            </Link>
           </div>
         </div>
       </div>

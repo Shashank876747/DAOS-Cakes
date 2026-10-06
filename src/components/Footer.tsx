@@ -162,37 +162,25 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
             </p>
 
             <div className="space-y-2 pt-1">
-              <a
-                href="/privacy-policy.html"
-                onClick={(e) => {
-                  if (onOpenPrivacy) {
-                    e.preventDefault();
-                    onOpenPrivacy();
-                  }
-                }}
+              <Link
+                to="/privacy-policy"
                 className="flex items-center gap-2.5 text-stone-300 hover:text-amber-400 transition-colors text-xs sm:text-sm font-medium group"
                 id="footer-privacy-policy-link"
                 title="View Privacy Policy"
               >
                 <Shield className="w-4 h-4 text-amber-400" />
                 <span className="underline decoration-stone-700 group-hover:decoration-amber-400">Privacy Policy</span>
-              </a>
+              </Link>
 
-              <a
-                href="/terms.html"
-                onClick={(e) => {
-                  if (onOpenTerms) {
-                    e.preventDefault();
-                    onOpenTerms();
-                  }
-                }}
+              <Link
+                to="/terms"
                 className="flex items-center gap-2.5 text-stone-300 hover:text-amber-400 transition-colors text-xs sm:text-sm font-medium group"
                 id="footer-terms-link"
                 title="View Terms of Service"
               >
                 <FileText className="w-4 h-4 text-amber-400" />
                 <span className="underline decoration-stone-700 group-hover:decoration-amber-400">Terms of Service</span>
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -203,31 +191,19 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-center sm:text-left">
             <span>© {new Date().getFullYear()} DAOS Cakes. All rights reserved. Smyrna, GA.</span>
             <span className="hidden sm:inline text-stone-700">•</span>
-            <a
-              href="/privacy-policy.html"
-              onClick={(e) => {
-                if (onOpenPrivacy) {
-                  e.preventDefault();
-                  onOpenPrivacy();
-                }
-              }}
+            <Link
+              to="/privacy-policy"
               className="hover:text-amber-400 transition-colors underline decoration-stone-700"
             >
               Privacy Policy
-            </a>
+            </Link>
             <span className="hidden sm:inline text-stone-700">•</span>
-            <a
-              href="/terms.html"
-              onClick={(e) => {
-                if (onOpenTerms) {
-                  e.preventDefault();
-                  onOpenTerms();
-                }
-              }}
+            <Link
+              to="/terms"
               className="hover:text-amber-400 transition-colors underline decoration-stone-700"
             >
               Terms of Service
-            </a>
+            </Link>
           </div>
           
           <button

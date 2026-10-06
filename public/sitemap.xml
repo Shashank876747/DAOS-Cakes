@@ -67,14 +67,14 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://daoscakes.pages.dev/privacy-policy.html</loc>
-    <lastmod>2026-09-01</lastmod>
+    <loc>https://daoscakes.pages.dev/privacy-policy</loc>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://daoscakes.pages.dev/terms.html</loc>
-    <lastmod>2026-09-01</lastmod>
+    <loc>https://daoscakes.pages.dev/terms</loc>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

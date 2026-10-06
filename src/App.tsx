@@ -19,6 +19,8 @@ import FlavorGuidePage from './pages/FlavorGuidePage';
 import CakeCareGuidePage from './pages/CakeCareGuidePage';
 import WeddingGuidePage from './pages/WeddingGuidePage';
 import BakingCraftPage from './pages/BakingCraftPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsPage from './pages/TermsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -26,13 +28,6 @@ export default function App() {
 
   useEffect(() => {
     initGA();
-    if (typeof window !== 'undefined') {
-      const path = window.location.pathname.toLowerCase();
-      const hash = window.location.hash.toLowerCase();
-      if (path.includes('privacy') || hash.includes('privacy')) {
-        setPrivacyModalOpen(true);
-      }
-    }
   }, []);
 
   return (
@@ -77,6 +72,15 @@ export default function App() {
             <Route path="/estimator" element={<Navigate to="/pricing-estimator" replace />} />
             <Route path="/pricing" element={<Navigate to="/pricing-estimator" replace />} />
 
+            {/* Legal & AdSense Compliance Dynamic Routes */}
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
+            <Route path="/privacy-policy.html" element={<PrivacyPolicyPage />} />
+
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/terms-of-service" element={<Navigate to="/terms" replace />} />
+            <Route path="/terms.html" element={<TermsPage />} />
+
             {/* 404 Catch-All Page */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
@@ -85,11 +89,6 @@ export default function App() {
         {/* Persistent Global Footer */}
         <Footer
           onOpenPrivacy={() => setPrivacyModalOpen(true)}
-          onOpenTerms={() => {
-            if (typeof window !== 'undefined') {
-              window.location.href = '/terms.html';
-            }
-          }}
         />
 
         {/* Global Compliance & Cookie Banner */}
