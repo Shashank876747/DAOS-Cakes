@@ -2,80 +2,164 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://daoscakes.pages.dev/</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://daoscakes.pages.dev/baking-journal</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-calculators</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/swiss-vs-italian-vs-american-buttercream</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/structural-engineering-multi-tier-wedding-cakes</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/southern-red-velvet-chemistry-buttermilk-cocoa</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/baking-science-cake-flour-protein-gluten-development</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/how-to-temper-chocolate-and-formulate-drip-ganache</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/transporting-tiered-cakes-in-summer-heat-humidity</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/scratch-fruit-curds-and-compotes-pectin-science</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/how-to-cut-tall-celebration-cakes-wedding-servings</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/reverse-creaming-method-vs-conventional-creaming</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/natural-food-coloring-botanical-dyes-buttercream</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/georgia-cottage-food-law-kitchen-sanitation-guide</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://daoscakes.pages.dev/baking-journal/allergen-friendly-cake-formulation-egg-dairy-substitutes</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://daoscakes.pages.dev/flavor-guide</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/cake-care-guide</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/wedding-guide</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/baking-craft</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/pricing-estimator</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/how-it-works</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/order</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/about</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/faq</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/contact</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/privacy-policy</loc>
-    <lastmod>2026-10-05</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://daoscakes.pages.dev/terms</loc>
-    <lastmod>2026-10-05</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
 </urlset>

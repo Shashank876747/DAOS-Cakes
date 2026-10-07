@@ -63,9 +63,11 @@
       (function() {
         try {
           var origin = window.location.origin || (window.location.protocol + '//' + window.location.host);
+          var path = window.location.pathname || '/';
+          var cleanPath = path === '/' ? '/' : path.replace(/\/+$/, '');
           var canonical = document.getElementById('canonical-url');
           if (canonical && origin.indexOf('localhost') === -1 && origin.indexOf('ais-') === -1) {
-            canonical.setAttribute('href', origin + '/');
+            canonical.setAttribute('href', origin + cleanPath);
           }
         } catch(e) {}
       })();
@@ -124,13 +126,15 @@
             </div>
             <nav style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; font-weight: 500;">
               <a href="/" style="color: #78350f; text-decoration: none;">Home</a>
-              <a href="/about" style="color: #44403c; text-decoration: none;">About</a>
+              <a href="/baking-journal" style="color: #44403c; text-decoration: none;">Baking Journal</a>
+              <a href="/baking-calculators" style="color: #44403c; text-decoration: none;">Baking Calculators</a>
               <a href="/flavor-guide" style="color: #44403c; text-decoration: none;">Flavor Guide</a>
               <a href="/cake-care-guide" style="color: #44403c; text-decoration: none;">Cake Care Guide</a>
               <a href="/wedding-guide" style="color: #44403c; text-decoration: none;">Wedding Guide</a>
               <a href="/baking-craft" style="color: #44403c; text-decoration: none;">Baking Craft</a>
               <a href="/pricing-estimator" style="color: #44403c; text-decoration: none;">Pricing Estimator</a>
               <a href="/how-it-works" style="color: #44403c; text-decoration: none;">How It Works</a>
+              <a href="/about" style="color: #44403c; text-decoration: none;">About</a>
               <a href="/faq" style="color: #44403c; text-decoration: none;">FAQ</a>
               <a href="/contact" style="color: #44403c; text-decoration: none;">Contact</a>
             </nav>

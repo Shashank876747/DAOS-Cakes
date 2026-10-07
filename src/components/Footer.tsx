@@ -46,12 +46,37 @@ export default function Footer({ onOpenPrivacy, onOpenTerms }: FooterProps) {
           {/* Site Navigation Links */}
           <div className="space-y-4">
             <h4 className="font-serif text-lg font-bold text-white uppercase tracking-wider text-xs">
-              Explore Pages
+              Guides, Tools &amp; Pages
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/" className="text-stone-400 hover:text-amber-300 transition-colors">
-                  Home (/)
+                <Link to="/baking-journal" className="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                  The Artisanal Baking Journal (/baking-journal)
+                </Link>
+              </li>
+              <li>
+                <Link to="/baking-calculators" className="text-stone-300 hover:text-amber-300 transition-colors">
+                  Interactive Baker&apos;s Calculators (/baking-calculators)
+                </Link>
+              </li>
+              <li>
+                <Link to="/flavor-guide" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Flavor &amp; Pairing Guide (/flavor-guide)
+                </Link>
+              </li>
+              <li>
+                <Link to="/cake-care-guide" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Cake Care &amp; Transport Guide (/cake-care-guide)
+                </Link>
+              </li>
+              <li>
+                <Link to="/wedding-guide" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Wedding &amp; Tiered Cake Guide (/wedding-guide)
+                </Link>
+              </li>
+              <li>
+                <Link to="/baking-craft" className="text-stone-400 hover:text-amber-300 transition-colors">
+                  Our Scratch-Baking Craft (/baking-craft)
                 </Link>
               </li>
               <li>

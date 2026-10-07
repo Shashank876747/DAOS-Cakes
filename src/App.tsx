@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import RouteSeoUpdater from './components/RouteSeoUpdater';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 import { initGA } from './utils/analytics';
@@ -19,6 +20,9 @@ import FlavorGuidePage from './pages/FlavorGuidePage';
 import CakeCareGuidePage from './pages/CakeCareGuidePage';
 import WeddingGuidePage from './pages/WeddingGuidePage';
 import BakingCraftPage from './pages/BakingCraftPage';
+import BakingJournalPage from './pages/BakingJournalPage';
+import BakingArticlePage from './pages/BakingArticlePage';
+import BakingCalculatorsPage from './pages/BakingCalculatorsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsPage from './pages/TermsPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -33,6 +37,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <RouteSeoUpdater />
       <div className="min-h-screen bg-stone-50 text-stone-900 font-sans selection:bg-amber-200 selection:text-amber-900 flex flex-col">
         
         {/* Persistent Global Header */}
@@ -43,6 +48,14 @@ export default function App() {
           <Routes>
             {/* Primary Multi-Page Routes */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/baking-journal" element={<BakingJournalPage />} />
+            <Route path="/baking-journal/:slug" element={<BakingArticlePage />} />
+            <Route path="/journal" element={<Navigate to="/baking-journal" replace />} />
+            <Route path="/blog" element={<Navigate to="/baking-journal" replace />} />
+
+            <Route path="/baking-calculators" element={<BakingCalculatorsPage />} />
+            <Route path="/calculators" element={<Navigate to="/baking-calculators" replace />} />
+
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/process" element={<Navigate to="/how-it-works" replace />} />
             
